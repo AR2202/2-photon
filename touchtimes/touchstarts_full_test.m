@@ -6,12 +6,12 @@
 %for each touch event, corresponding fluorescence data are found. The
 %events are aligned. They are then averaged per experiment and experiment
 %results are averaged for each species.
-touchdir = ('/Users/annika/Documents/projects/dsx_GABAergic_neurons/imaging/P1_female_touch/touchtimes_active');
+touchdir = ('/Users/annika/Documents/projects/dsx_GABAergic_neurons/imaging/aDN_female_male_touch/touchtimes2');
 % The folder where the touchtimes files are located
-resultsdir = ('/Users/annika/Documents/projects/dsx_GABAergic_neurons/imaging/P1_female_touch/Results_P1');
+resultsdir = ('/Users/annika/Documents/projects/dsx_GABAergic_neurons/imaging/aDN_female_male_touch/Results');
 % The folder where the results of single experiments are located
-outputdirmean=('/Users/annika/Documents/projects/dsx_GABAergic_neurons/imaging/P1_female_touch/Results_mean');
-outputdirsingles=('/Users/annika/Documents/projects/dsx_GABAergic_neurons/imaging/P1_female_touch/Results_single_exp');
+outputdirmean=('/Users/annika/Documents/projects/dsx_GABAergic_neurons/imaging/aDN_female_male_touch/Results_mean');
+outputdirsingles=('/Users/annika/Documents/projects/dsx_GABAergic_neurons/imaging/aDN_female_male_touch/Results_single_exp');
 %The folder where the mean data should be written to
 
 %This part of the script reads in the data
@@ -162,7 +162,7 @@ framerate=5.92;
 %number of frames in the imaging file
 numframes=500;
 %time for calculating the baseline before each touch
-basetime=2.5;
+basetime=2;
 %time of the event after start of touch
 eventtime=17.5;
 %shift the matrix to the right by one 

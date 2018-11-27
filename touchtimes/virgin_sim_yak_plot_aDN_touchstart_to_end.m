@@ -14,9 +14,9 @@ numberframes=600;% number of frames
 duration_acquisition = numberframes/framerate; 
 
 startdir=pwd;
-pathname='/Users/annika/Documents/projects/dsx_GABAergic_neurons/imaging/aDN_female_male_touch/touchtimes_reduced';
+pathname='/Users/annika/Documents/projects/dsx_GABAergic_neurons/imaging/aDN_female_male_touch/touchtimes2';
 
-touchdir = ('/Users/annika/Documents/projects/dsx_GABAergic_neurons/imaging/aDN_female_male_touch/touchtimes_reduced');
+touchdir = ('/Users/annika/Documents/projects/dsx_GABAergic_neurons/imaging/aDN_female_male_touch/touchtimes2');
 % The folder where the touchtimes files are located
 resultsdir = ('/Users/annika/Documents/projects/dsx_GABAergic_neurons/imaging/aDN_female_male_touch/Results');
 % The folder where the results of single experiments are located
