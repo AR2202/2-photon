@@ -14,7 +14,7 @@ startdir=pwd;
 pathname='/Users/annika/Documents/projects/dsx_GABAergic_neurons/imaging/aDN_female_male_touch/imaging_preprocessed';
 %pathname has to be the path to the folder were files to be processed are
 %located
-foldername='2018_04_17';%the name of the imaging folder
+foldername='2018_12_18';%the name of the imaging folder
 subfoldername='ROI';%must be a folder within the imaging folder
 stackdir = fullfile(pathname,foldername,subfoldername);
 outputdirv=('/Users/annika/Documents/projects/dsx_GABAergic_neurons/imaging/aDN_female_male_touch/Results');
@@ -91,7 +91,7 @@ filenames(:) = {''};
         virgins = strfind(filenames,'virgin');
         sims = strfind(filenames, 'sim');
         yaks = strfind(filenames, 'yak');
-       males = strfind(filenames, 'male');
+       males = strfind(filenames, 'touch_male');
        
         nonsim = cellfun('isempty',sims);
         nonvirgin = cellfun('isempty',virgins);
@@ -103,29 +103,33 @@ filenames(:) = {''};
                
                 virgin =virgin+1;
                 virgindff(:,virgin) =   dff(:,v);
+                virginf(:,virgin) =   f(:,v);
                 virginname(virgin)=filenames(v);
                
             elseif nonsim(v) == 0
                 sim = sim+1;
                 simdff(:,sim) =   dff(:,v);
+                simf(:,sim) =   f(:,v);
                 simname(sim)=filenames(v);
                
             elseif nonyak(v) == 0
                 yak = yak+1;
                 yakdff(:,yak) =   dff(:,v);
+                yakf(:,yak) =   f(:,v);
                 yakname(yak)=filenames(v);
                 
              elseif nonmale(v) == 0
                 male = male+1;
                 maledff(:,male) =   dff(:,v);
+                malef(:,male) =   f(:,v);
                 malename(male)=filenames(v);
                
             end
         end
         
        
-        if exist('virgindff') == 1
-        Tv=table(virgindff);
+        if exist('virginf') == 1
+        Tv=table(virginf);
         
         virginlegend=cellfun(@(name) regexp(name,'(\d\d\d)','match'), virginname, 'UniformOutput', true);
        
@@ -141,8 +145,8 @@ filenames(:) = {''};
         saveas(virfig,outputimgv,'epsc');
         
         end
-        if exist('simdff')==1 
-        Ts=table(simdff);
+        if exist('simf')==1 
+        Ts=table(simf);
          Tsnames=table(simname);
         simlegend=cellfun(@(name) regexp(name,'(\d\d\d)','match'), simname, 'UniformOutput', true);
        
@@ -155,8 +159,8 @@ filenames(:) = {''};
         saveas(simfig,outputimgs,'epsc');
         end
        
-        if exist('yakdff')==1
-        Ty=table(yakdff);
+        if exist('yakf')==1
+        Ty=table(yakf);
          Tynames=table(yakname);
             yaklegend=cellfun(@(name) regexp(name,'(\d\d\d)','match'), yakname, 'UniformOutput', true);
        
@@ -170,8 +174,8 @@ filenames(:) = {''};
         end
         
         
-        if exist('maledff')==1
-        Tm=table(maledff);
+        if exist('malef')==1
+        Tm=table(malef);
          Tmnames=table(malename);
            malelegend=cellfun(@(name) regexp(name,'(\d\d\d)','match'), malename, 'UniformOutput', true);
        
