@@ -289,9 +289,9 @@ framerate=5.92;
 %number of frames in the imaging file
 numframes=600;
 %time for calculating the baseline before each touch
-basetime=2.5;
+basetime=3;
 %time of the event after start of touch
-eventtime=17.5;
+eventtime=17;
 %shift the matrix to the right by one 
 %framerate of imaging to be entered here
 
@@ -300,14 +300,12 @@ touchtimes_shifted(1)=0;
 %subtract the shifted matrix from the original one (corresponds to
 %substracting the previous element from each element
 intervals=touchtimes-touchtimes_shifted;
-%find intervals of more than 10s between the touches (output type is
+%find intervals of more than 5s between the touches (output type is
 %logical)
 starts=intervals>=5;
 %find starttimes of the touchevents
 starttimes=starts.*touchtimes;%This contains zeros for all spaces in the matrix that are not starts of touch events
-%disp(starttimes);
-%subtract the shifted matrix from the original one (corresponds to
-%substracting the previous element from each element
+
 endtime_intervals=((numframes-1)/framerate)-touchtimes;
 
 %find out if event starts at least 'eventtime' before end of recording (output type is
@@ -318,7 +316,7 @@ starttimes=ends_on_time.*starttimes;%This contains zeros for all spaces in the m
 %disp(starttimes);
 touchstarts=nonzeros(starttimes);%reduce matrix to contain only starts
 %calculate the frame number from the time of the touchstarts
-touchstartframes=round(touchstarts*framerate)+1;
+touchstartframes=round(touchstarts*framerate);
 %calculate the timepoints
 x=1:numframes;
 x=(x-1)/framerate;
@@ -332,7 +330,7 @@ newfig=@(tt) figure();
 %this defines events and saves them to a cell array called events 
 %the events are defined as the fluorescence trace starting at basetime
 %before touchstart and ending at touchstart + eventtime
-events=arrayfun(@(touchstart) fluo(touchstart-(round(basetime*framerate)):touchstart+round(eventtime*framerate)), touchstartframes,'UniformOutput',false);
+events=arrayfun(@(touchstart) fluo(touchstart-(ceil(basetime*framerate)):touchstart+floor(eventtime*framerate)), touchstartframes,'UniformOutput',false);
 %convert cell array events to a matrix - necessary for subsequent
 %calculations
 %[eventsmat, event]=makemyevents(events);
@@ -344,7 +342,7 @@ eventsmat=transpose(eventsmat);
 if isempty(eventsmat)==0
 
 eventbases1=mean(eventsmat((1:round(basetime*framerate)+1),:));
-%subtract baseline from the events in eventsmat
+%calculate dF/F using the baseline from the events in eventsmat
 eventsmat=(eventsmat-eventbases1)/eventbases1;
 
 
