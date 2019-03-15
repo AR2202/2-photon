@@ -20,7 +20,7 @@
 %use of reduced touchtimes option requires the name of touch directory to
 %contain the string 'reduced'
 
-touchdir = ('/Users/annika/Documents/projects/dsx_GABAergic_neurons/imaging/aDN_female_male_touch/touch_medial_reduced');
+touchdir = ('/Users/annika/Documents/projects/dsx_GABAergic_neurons/imaging/aDN_female_male_touch/touchtimes_l_r_reduced');
 % The folder where the touchtimes files are located
 resultsdir = ('/Users/annika/Documents/projects/dsx_GABAergic_neurons/imaging/aDN_female_male_touch/Results');
 % The folder where the results of single experiments are located
@@ -43,10 +43,15 @@ files = dir('*.xlsx');
 files = {files.name};
 %read in all the touchtimes from the files
 touchtimes=cellfun(@(filename) table2array(readtable(filename,'Range','E:E','ReadVariableNames',1)), files, 'UniformOutput', false);
+touchtimes_r=cellfun(@(filename) table2array(readtable(filename,'Range','I:I','ReadVariableNames',1)), files, 'UniformOutput', false);
+
 if reduced
     disp ('reduced touchtime format was used.');
     touchtimes=cellfun(@(testtimes) expand_reduced_touchtimes(testtimes),touchtimes,'UniformOutput',false);
+    touchtimes_r=cellfun(@(testtimes) expand_reduced_touchtimes(testtimes),touchtimes_r,'UniformOutput',false);
+
 end
+%touchtimes(cellfun ('isempty', touchtimes)) ={[0;0]};
 resultfilestrings=cellfun(@(filename) strrep((regexprep(filename,'_(\d+).xlsx','_')),'touchtimes_',''), files, 'UniformOutput', false);
 numberstrings=cellfun(@(filename) strrep((regexprep(filename,'touchtimes_(\d+)_(\d+)_(\d+)_','')),'.xlsx',''), files, 'UniformOutput', false);
                
@@ -64,36 +69,49 @@ foundstr=cellfun(@(numbers,files) cellfun(@(resultsfiles) cellfun(@(exp) contain
  
  all_expresults=cellfun(@(foundname,foundindex) resultfinder(string(foundname),foundindex{1,1}), foundin,fileindex,'UniformOutput',false);
   
- data_array=cellfun(@(data1,data2,filename,resultname) {transpose(data1),transpose(data2),transpose(filename),transpose(resultname)}, touchtimes, all_expresults,foundfilename,foundin,'UniformOutput', false);  
+ data_array=cellfun(@(data1,data2,filename,resultname,data3) {transpose(data1),transpose(data2),transpose(filename),transpose(resultname),transpose(data3)}, touchtimes, all_expresults,foundfilename,foundin,touchtimes_r,'UniformOutput', false);  
  data_array=transpose(data_array);                  
-
+ data_array_swapped=cellfun(@(data1,data2,filename,resultname,data3) {transpose(data1),transpose(data2),transpose(filename),transpose(resultname),transpose(data3)}, touchtimes_r, all_expresults,foundfilename,foundin,touchtimes,'UniformOutput', false);
+ data_array_swapped=transpose(data_array_swapped); 
 
 
 
 
 %This part of the script defines the events, aligns them and performs the
 %calculations
-[touchstartframes,eventsmat,eventpeaks,eventpeaks_mean,eventpeaks_SEM,mean_event,SEM_event,touchtimes,fluo,x_events,first_touch_events]= cellfun(@(data_arr) find_touch_events(data_arr), data_array, 'UniformOutput', false);
+[touchstartframes,eventsmat,eventpeaks,eventpeaks_mean,eventpeaks_SEM,mean_event,SEM_event,touchtimes,fluo,x_events]= cellfun(@(data_arr) find_touch_events(data_arr), data_array, 'UniformOutput', false);
+[touchstartframes_contra,eventsmat_contra,eventpeaks_contra,eventpeaks_mean_contra,eventpeaks_SEM_contra,mean_event_contra,SEM_event_contra,touchtimes_contra,fluo_contra,x_events_contra]= cellfun(@(data_arr) find_touch_events(data_arr), data_array_swapped, 'UniformOutput', false);
 
 t_foundfilename=transpose(foundfilename);
 t_foundin=transpose(foundin);
 
 %This part of the script averages over the experiments of each species type
 
-combinedtable=table(eventpeaks_mean, mean_event, t_foundfilename,t_foundin,eventsmat,first_touch_events);
+combinedtable=table(eventpeaks_mean, mean_event, t_foundfilename,t_foundin,eventsmat);
+combinedtable_contra=table(eventpeaks_mean_contra, mean_event_contra, t_foundfilename,t_foundin,eventsmat_contra);
 %find the male experimental flies
 
 combinedtable_male = combinedtable( contains(string(combinedtable.t_foundfilename),'_male_fly'), : ); 
-%extract the different species from the table
 
+combinedtable_male_contra = combinedtable_contra( contains(string(combinedtable_contra.t_foundfilename),'_male_fly'), : ); 
+%extract the different species from the table
 simtable_m = combinedtable_male( contains(string(combinedtable_male.t_foundin),'simulans'), : ); 
 yaktable_m = combinedtable_male( contains(string(combinedtable_male.t_foundin),'yakuba'), : ); 
 virtable_m = combinedtable_male( contains(string(combinedtable_male.t_foundin),'vir'), : ); 
 maletable_m = combinedtable_male( contains(string(combinedtable_male.t_foundin),'male'), : ); 
+simtable_m_contra = combinedtable_male_contra( contains(string(combinedtable_male_contra.t_foundin),'simulans'), : ); 
+yaktable_m_contra = combinedtable_male_contra( contains(string(combinedtable_male_contra.t_foundin),'yakuba'), : ); 
+virtable_m_contra = combinedtable_male_contra( contains(string(combinedtable_male_contra.t_foundin),'vir'), : ); 
+maletable_m_contra = combinedtable_male_contra( contains(string(combinedtable_male_contra.t_foundin),'male'), : ); 
+
 simdata_m=table2cell(simtable_m);
 yakdata_m=table2cell(yaktable_m);
 virdata_m=table2cell(virtable_m);
 maledata_m=table2cell(maletable_m);
+simdata_m_contra=table2cell(simtable_m);
+yakdata_m_contra=table2cell(yaktable_m);
+virdata_m_contra=table2cell(virtable_m);
+maledata_m_contra=table2cell(maletable_m);
 %mean of virgin
  
 vir_eventpeaks_mean_m=mean(cell2mat(virtable_m.eventpeaks_mean));
@@ -103,6 +121,11 @@ cell_mean_event_m=cell2mat(transpose(virtable_m.mean_event(~cellfun(@isempty, vi
 
 vir_mean_event_m=mean(cell_mean_event_m,2);
 vir_SEM_event_m=std(cell_mean_event_m,0,2)/sqrt(size(cell_mean_event_m,2));
+
+cell_mean_event_m_contra=cell2mat(transpose(virtable_m_contra.mean_event_contra(~cellfun(@isempty, virtable_m_contra.mean_event_contra))));
+
+vir_mean_event_m_contra=mean(cell_mean_event_m_contra,2);
+vir_SEM_event_m_contra=std(cell_mean_event_m_contra,0,2)/sqrt(size(cell_mean_event_m_contra,2));
 
 
 %mean of male
@@ -117,18 +140,34 @@ cell_mean_event_m=cell2mat(transpose(maletable_m.mean_event(~cellfun(@isempty, m
 male_mean_event_m=mean(cell_mean_event_m,2);
 male_SEM_event_m=std(cell_mean_event_m,0,2)/sqrt(size(cell_mean_event_m,2));
 
+cell_mean_event_m_contra=cell2mat(transpose(maletable_m_contra.mean_event_contra(~cellfun(@isempty, maletable_m_contra.mean_event_contra))));
+
+male_mean_event_m_contra=mean(cell_mean_event_m_contra,2);
+male_SEM_event_m_contra=std(cell_mean_event_m_contra,0,2)/sqrt(size(cell_mean_event_m_contra,2));
+
 %find the female experimental flies
 
 combinedtable_female = combinedtable( contains(string(combinedtable.t_foundfilename),'_female_fly'), : ); 
+combinedtable_female_contra = combinedtable_contra( contains(string(combinedtable_contra.t_foundfilename),'_female_fly'), : ); 
 
 simtable_f = combinedtable_female( contains(string(combinedtable_female.t_foundin),'simulans'), : ); 
 yaktable_f = combinedtable_female( contains(string(combinedtable_female.t_foundin),'yakuba'), : ); 
 virtable_f = combinedtable_female( contains(string(combinedtable_female.t_foundin),'vir'), : ); 
 maletable_f = combinedtable_female( contains(string(combinedtable_female.t_foundin),'male'), : ); 
+simtable_f_contra = combinedtable_female_contra( contains(string(combinedtable_female_contra.t_foundin),'simulans'), : ); 
+yaktable_f_contra = combinedtable_female_contra( contains(string(combinedtable_female_contra.t_foundin),'yakuba'), : ); 
+virtable_f_contra = combinedtable_female_contra( contains(string(combinedtable_female_contra.t_foundin),'vir'), : ); 
+maletable_f_contra = combinedtable_female_contra( contains(string(combinedtable_female_contra.t_foundin),'male'), : ); 
+
+
 simdata_f=table2cell(simtable_f);
 yakdata_f=table2cell(yaktable_f);
 virdata_f=table2cell(virtable_f);
 maledata_f=table2cell(maletable_f);
+imdata_f_contra=table2cell(simtable_f_contra);
+yakdata_f_contra=table2cell(yaktable_f_contra);
+virdata_f_contra=table2cell(virtable_f_contra);
+maledata_f_contra=table2cell(maletable_f_contra);
  %mean of virgin
  
 vir_eventpeaks_mean_f=mean(cell2mat(virtable_f.eventpeaks_mean));
@@ -138,6 +177,11 @@ cell_mean_event_f=cell2mat(transpose(virtable_f.mean_event(~cellfun(@isempty, vi
 
 vir_mean_event_f=mean(cell_mean_event_f,2);
 vir_SEM_event_f=std(cell_mean_event_f,0,2)/sqrt(size(cell_mean_event_f,2));
+
+cell_mean_event_f_contra=cell2mat(transpose(virtable_f_contra.mean_event_contra(~cellfun(@isempty, virtable_f_contra.mean_event_contra))));
+
+vir_mean_event_f_contra=mean(cell_mean_event_f_contra,2);
+vir_SEM_event_f_contra=std(cell_mean_event_f_contra,0,2)/sqrt(size(cell_mean_event_f_contra,2));
 
 %mean of male
 
@@ -150,76 +194,106 @@ cell_mean_event_f=cell2mat(transpose(maletable_f.mean_event(~cellfun(@isempty, m
 
 male_mean_event_f=mean(cell_mean_event_f,2);
 male_SEM_event_f=std(cell_mean_event_f,0,2)/sqrt(size(cell_mean_event_f,2));
+cell_mean_event_f_contra=cell2mat(transpose(maletable_f_contra.mean_event_contra(~cellfun(@isempty, maletable_f_contra.mean_event_contra))));
+
+male_mean_event_f_contra=mean(cell_mean_event_f_contra,2);
+male_SEM_event_f_contra=std(cell_mean_event_f_contra,0,2)/sqrt(size(cell_mean_event_f_contra,2));
 
 %plot the mean event of virgin
 
 %--for male experimental flies
-mean_first_touch_event_m=cell2mat(transpose(virtable_m.first_touch_events(~cellfun(@isempty, virtable_m.first_touch_events))));
-vir_mean_first_m=mean(mean_first_touch_event_m,2);
-vir_SEM_first_m=std(mean_first_touch_event_m,0,2)/sqrt(size(mean_first_touch_event_m,2));
+%mean_first_touch_event_m=cell2mat(transpose(virtable_m.first_touch_events(~cellfun(@isempty, virtable_m.first_touch_events))));
+%vir_mean_first_m=mean(mean_first_touch_event_m,2);
+%vir_SEM_first_m=std(mean_first_touch_event_m,0,2)/sqrt(size(mean_first_touch_event_m,2));
 
 %plot the mean event of virgin
-fignew2=figure('Name','virgin_first_touch_males');
+%fignew2=figure('Name','virgin_first_touch_males');
 %requires package boundedline
-plot_first_touch_event_m=boundedline(x_events{2,1},vir_mean_first_m,vir_SEM_first_m,'m');
-fignew=figure('Name','virgin_mean_event_males');
+%plot_first_touch_event_m=boundedline(x_events{2,1},vir_mean_first_m,vir_SEM_first_m,'m');
+fignew=figure('Name','virgin_mean_event_males_ipsi');
 %requires package boundedline
 plot_vir_event_m=boundedline(x_events{1,1},vir_mean_event_m,vir_SEM_event_m,'m');
 cd(outputdirmean);
- saveas(fignew,'virgin_mean_event_male','epsc');
- saveas(fignew2,'virgin_first_touches_male','epsc');
+ saveas(fignew,'virgin_mean_event_male_ipsi','epsc');
+ 
+ fignew=figure('Name','virgin_mean_event_males_contra');
+%requires package boundedline
+plot_vir_event_m_contra=boundedline(x_events_contra{1,1},vir_mean_event_m_contra,vir_SEM_event_m_contra,'m');
+cd(outputdirmean);
+ saveas(fignew,'virgin_mean_event_male_contra','epsc');
+ %saveas(fignew2,'virgin_first_touches_male','epsc');
 %--for female experimental flies
-mean_first_touch_event_f=cell2mat(transpose(virtable_f.first_touch_events(~cellfun(@isempty, virtable_f.first_touch_events))));
-vir_mean_first_f=mean(mean_first_touch_event_f,2);
-vir_SEM_first_f=std(mean_first_touch_event_f,0,2)/sqrt(size(mean_first_touch_event_f,2));
+%mean_first_touch_event_f=cell2mat(transpose(virtable_f.first_touch_events(~cellfun(@isempty, virtable_f.first_touch_events))));
+%vir_mean_first_f=mean(mean_first_touch_event_f,2);
+%vir_SEM_first_f=std(mean_first_touch_event_f,0,2)/sqrt(size(mean_first_touch_event_f,2));
 
 %plot the mean event of virgin
-fignew2=figure('Name','virgin_first_touch_females');
+%fignew2=figure('Name','virgin_first_touch_females');
 %requires package boundedline
-plot_first_touch_event_F=boundedline(x_events{2,1},vir_mean_first_f,vir_SEM_first_f,'m');
-fignew=figure('Name','virgin_mean_event_females');
+%plot_first_touch_event_F=boundedline(x_events{2,1},vir_mean_first_f,vir_SEM_first_f,'m');
+fignew=figure('Name','virgin_mean_event_females_ipsi');
 %requires package boundedline
 plot_vir_event_f=boundedline(x_events{1,1},vir_mean_event_f,vir_SEM_event_f,'m');
 
 cd(outputdirmean);
- saveas(fignew,'virgin_mean_event_female','epsc');
- saveas(fignew2,'virgin_first_touches_female','epsc');
+ saveas(fignew,'virgin_mean_event_female_ipsi','epsc');
+ 
+ fignew=figure('Name','virgin_mean_event_females_contra');
+%requires package boundedline
+plot_vir_event_f_contra=boundedline(x_events_contra{1,1},vir_mean_event_f_contra,vir_SEM_event_f_contra,'m');
+
+cd(outputdirmean);
+ saveas(fignew,'virgin_mean_event_female_contra','epsc');
+% saveas(fignew2,'virgin_first_touches_female','epsc');
  
  
 
 %plot the mean event of male
 
 %--for male experimental flies
-mean_first_touch_event_m=cell2mat(transpose(maletable_m.first_touch_events(~cellfun(@isempty, maletable_m.first_touch_events))));
-male_mean_first_m=mean(mean_first_touch_event_m,2);
-male_SEM_first_m=std(mean_first_touch_event_m,0,2)/sqrt(size(mean_first_touch_event_m,2));
+%mean_first_touch_event_m=cell2mat(transpose(maletable_m.first_touch_events(~cellfun(@isempty, maletable_m.first_touch_events))));
+%male_mean_first_m=mean(mean_first_touch_event_m,2);
+%male_SEM_first_m=std(mean_first_touch_event_m,0,2)/sqrt(size(mean_first_touch_event_m,2));
 
 %plot the mean event of male
-fignew2=figure('Name','male_first_touch_males');
+%fignew2=figure('Name','male_first_touch_males');
 %requires package boundedline
-plot_first_touch_event_m=boundedline(x_events{2,1},male_mean_first_m,male_SEM_first_m,'m');
-fignew=figure('Name','male_mean_event_males');
+%plot_first_touch_event_m=boundedline(x_events{2,1},male_mean_first_m,male_SEM_first_m,'m');
+fignew=figure('Name','male_mean_event_males_ipsi');
 %requires package boundedline
 plot_male_event_m=boundedline(x_events{1,1},male_mean_event_m,male_SEM_event_m,'m');
 cd(outputdirmean);
- saveas(fignew,'male_mean_event_male','epsc');
- saveas(fignew2,'male_first_touches_male','epsc');
+ saveas(fignew,'male_mean_event_male_ipsi','epsc');
+ 
+ fignew=figure('Name','male_mean_event_males_contra');
+%requires package boundedline
+plot_male_event_m_contra=boundedline(x_events_contra{1,1},male_mean_event_m_contra,male_SEM_event_m_contra,'m');
+cd(outputdirmean);
+ saveas(fignew,'male_mean_event_male_contra','epsc');
+ %saveas(fignew2,'male_first_touches_male','epsc');
 %--for female experimental flies
-mean_first_touch_event_f=cell2mat(transpose(maletable_f.first_touch_events(~cellfun(@isempty, maletable_f.first_touch_events))));
-male_mean_first_f=mean(mean_first_touch_event_f,2);
-male_SEM_first_f=std(mean_first_touch_event_f,0,2)/sqrt(size(mean_first_touch_event_f,2));
+%mean_first_touch_event_f=cell2mat(transpose(maletable_f.first_touch_events(~cellfun(@isempty, maletable_f.first_touch_events))));
+%male_mean_first_f=mean(mean_first_touch_event_f,2);
+%male_SEM_first_f=std(mean_first_touch_event_f,0,2)/sqrt(size(mean_first_touch_event_f,2));
 
 %plot the mean event of male
-fignew2=figure('Name','male_first_touch_females');
+%fignew2=figure('Name','male_first_touch_females');
 %requires package boundedline
-plot_first_touch_event_F=boundedline(x_events{2,1},male_mean_first_f,male_SEM_first_f,'m');
-fignew=figure('Name','male_mean_event_females');
+%plot_first_touch_event_F=boundedline(x_events{2,1},male_mean_first_f,male_SEM_first_f,'m');
+fignew=figure('Name','male_mean_event_females_ipsi');
 %requires package boundedline
 plot_male_event_f=boundedline(x_events{1,1},male_mean_event_f,male_SEM_event_f,'m');
 
 cd(outputdirmean);
- saveas(fignew,'male_mean_event_female','epsc');
- saveas(fignew2,'male_first_touches_female','epsc');
+ saveas(fignew,'male_mean_event_female_ipsi','epsc');
+ 
+ fignew=figure('Name','male_mean_event_females_contra');
+%requires package boundedline
+plot_male_event_f_contra=boundedline(x_events_contra{1,1},male_mean_event_f_contra,male_SEM_event_f_contra,'m');
+
+cd(outputdirmean);
+ saveas(fignew,'male_mean_event_female_contra','epsc');
+ %saveas(fignew2,'male_first_touches_female','epsc');
  
 % male_eventpeaks_mean=mean(cell2mat(maletable.eventpeaks_mean));
 % male_eventpeaks_SEM=std(cell2mat(maletable.eventpeaks_mean))/sqrt(size(cell2mat(maletable.eventpeaks_mean),1));
@@ -278,10 +352,19 @@ cd(outputdirmean);
 %This part is the definition of the functions used in the previous parts of
 %the script.
 
-function [touchstartframes,eventsmat,eventpeaks,eventpeaks_mean,eventpeaks_SEM,mean_event,SEM_event,touchtimes,fluo,x_events,first_touch_event] = find_touch_events(data)
+function [touchstartframes,eventsmat,eventpeaks,eventpeaks_mean,eventpeaks_SEM,mean_event,SEM_event,touchtimes,fluo,x_events] = find_touch_events(data)
 %function [eventpeaks_mean,eventpeaks_SEM,mean_event,SEM_event,touchtimes,fluo] = find_touch_events(data)
+if contains(string(data{3}),'_right_')
+    disp('imaged right side');
+    touchtimes=data{5};
+    touch_other_side=data{1};
+else
+    disp('imaged left side');
+    touchtimes=data{1};
+    touch_other_side=data{5};
+end
 
-touchtimes=data{1};
+
 fluo=data{2};
 outputfig=string(data{3});
 %framerate of imaging to be entered here
@@ -291,7 +374,9 @@ numframes=600;
 %time for calculating the baseline before each touch
 basetime=3;
 %time of the event after start of touch
-eventtime=17;
+eventtime=15;
+intervaltime=3;
+excludedoubles=0;
 %shift the matrix to the right by one 
 %framerate of imaging to be entered here
 
@@ -302,7 +387,7 @@ touchtimes_shifted(1)=0;
 intervals=touchtimes-touchtimes_shifted;
 %find intervals of more than 5s between the touches (output type is
 %logical)
-starts=intervals>=5;
+starts=intervals>=intervaltime;
 %find starttimes of the touchevents
 starttimes=starts.*touchtimes;%This contains zeros for all spaces in the matrix that are not starts of touch events
 
@@ -314,6 +399,10 @@ ends_on_time=endtime_intervals>=eventtime+(1/framerate);
 %find starttimes of the touchevents
 starttimes=ends_on_time.*starttimes;%This contains zeros for all spaces in the matrix that do not end on time
 %disp(starttimes);
+if excludedoubles
+tfarray=arrayfun(@(time) (~doubletouch(time,intervaltime,eventtime,touch_other_side)),starttimes);
+starttimes=tfarray.*starttimes;%This contains zeros for all spaces in the matrix that overlap with a touch from the contralateral side
+end
 touchstarts=nonzeros(starttimes);%reduce matrix to contain only starts
 %calculate the frame number from the time of the touchstarts
 touchstartframes=round(touchstarts*framerate);
@@ -353,7 +442,7 @@ mean_event=mean(eventsmat,2);
 %SEM for each point in the averaged event
 SEM_event=std(eventsmat,0,2)/sqrt(size(eventsmat,2));
 %calculate single peak of each event during eventtime
-first_touch_event=eventsmat(:,1);
+%first_touch_event=eventsmat(:,1);
 eventpeaks=transpose(max(eventsmat((round(basetime*framerate)+1:size(eventsmat,1)),:)));
 % baseline for each event before the touch
 if isempty(eventsmat)==0
@@ -444,4 +533,8 @@ end
                                end
                            end
                        end
+                       end
+                       
+                       function tf=doubletouch(touchtime,interval,dur,touchtimes_other_side)
+                       tf=any((touchtime-interval)<touchtimes_other_side&touchtimes_other_side<(touchtime+dur));
                        end

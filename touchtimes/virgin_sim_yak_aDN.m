@@ -14,7 +14,7 @@ startdir=pwd;
 pathname='/Users/annika/Documents/projects/dsx_GABAergic_neurons/imaging/aDN_female_male_touch/imaging_preprocessed';
 %pathname has to be the path to the folder were files to be processed are
 %located
-foldername='2018_12_18';%the name of the imaging folder
+foldername='2019_01_07';%the name of the imaging folder
 subfoldername='ROI';%must be a folder within the imaging folder
 stackdir = fullfile(pathname,foldername,subfoldername);
 outputdirv=('/Users/annika/Documents/projects/dsx_GABAergic_neurons/imaging/aDN_female_male_touch/Results');
