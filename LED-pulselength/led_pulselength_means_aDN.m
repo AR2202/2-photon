@@ -17,13 +17,13 @@ numberframes=600;% number of frames
 duration_acquisition = numberframes/framerate; 
 
 startdir=pwd;
-pathname='/Users/annika/Documents/projects/dsx_GABAergic_neurons/imaging/LC10-lexA_lexAop-CSChrimson_aDN_GCaMP6f/Results_in_vivo';
+pathname='/Volumes/LaCie/Projects/aDN/imaging/LC10-lexA_lexAop-CSChrimson_aDN_GCaMP6f/Results';
 %pathname has to be the path to the folder were files to be processed are
 %located
 
-stackdir = ('/Users/annika/Documents/projects/dsx_GABAergic_neurons/imaging/LC10-lexA_lexAop-CSChrimson_aDN_GCaMP6f/Results_in_vivo');
+stackdir = ('/Volumes/LaCie/Projects/aDN/imaging/LC10-lexA_lexAop-CSChrimson_aDN_GCaMP6f/Results');
 % The folder where the results of single experiments are located
-outputdirmean=('/Users/annika/Documents/projects/dsx_GABAergic_neurons/imaging/LC10-lexA_lexAop-CSChrimson_aDN_GCaMP6f/Results_in_vivo');
+outputdirmean=('/Volumes/LaCie/Projects/aDN/imaging/LC10-lexA_lexAop-CSChrimson_aDN_GCaMP6f/Results');
 %The folder where the mean data should be written to
 x = (1:numberframes)';% this is a column vector of the frame numbers
 x= (x-1)/framerate;%calculate the timepoints of the frames from the frame number
@@ -52,7 +52,7 @@ pulsedur02s=2;
  
 %These are the strings that must appear in the names and specify which type
 %of experiment it is. For example: 1p05s stands for 1 pulse of 5s
-namestrings=['1p05s.xlsx';'2p05s.xlsx';'4p05s.xlsx';'1p20s.xlsx';'2p20s.xlsx';'4p01s.xlsx';'4p02s.xlsx'];
+namestrings=['_Male_1p05s.xlsx';'_Male_2p05s.xlsx';'_Male_4p05s.xlsx';'_Male_1p20s.xlsx';'_Male_2p20s.xlsx';'_Male_4p01s.xlsx';'_Male_4p02s.xlsx';'_contr_male_1p05s.xlsx';'_contr_male_2p05s.xlsx';'_contr_male_4p05s.xlsx';'_contr_male_1p20s.xlsx';'_contr_male_2p20s.xlsx';'_contr_male_4p01s.xlsx';'_contr_male_4p02s.xlsx';'_Female_1p05s.xlsx';'_Female_2p05s.xlsx';'_Female_4p05s.xlsx';'_Female_1p20s.xlsx';'_Female_2p20s.xlsx';'_Female_4p01s.xlsx';'_Female_4p02s.xlsx';'_contr_female_1p05s.xlsx';'_contr_female_2p05s.xlsx';'_contr_female_4p05s.xlsx';'_contr_female_1p20s.xlsx';'_contr_female_2p20s.xlsx';'_contr_female_4p01s.xlsx';'_contr_female_4p02s.xlsx'];
 for nn = 1:size(namestrings,1)%loop through all namestrings
     %identify the correct pulsetimes from the name of the file
     pulsetimes=eval(strcat('pulsetimes',strrep(namestrings(nn,:),'.xlsx','')));
