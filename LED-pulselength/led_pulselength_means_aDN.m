@@ -23,7 +23,7 @@ pathname='/Volumes/LaCie/Projects/aDN/imaging/LC10-lexA_lexAop-CSChrimson_aDN_GC
 
 stackdir = ('/Volumes/LaCie/Projects/aDN/imaging/LC10-lexA_lexAop-CSChrimson_aDN_GCaMP6f/Results');
 % The folder where the results of single experiments are located
-outputdirmean=('/Volumes/LaCie/Projects/aDN/imaging/LC10-lexA_lexAop-CSChrimson_aDN_GCaMP6f/Results');
+outputdirmean=('/Volumes/LaCie/Projects/aDN/imaging/ppk23-lexA_aDN-GCaMP6f/Results');
 %The folder where the mean data should be written to
 x = (1:numberframes)';% this is a column vector of the frame numbers
 x= (x-1)/framerate;%calculate the timepoints of the frames from the frame number
@@ -52,7 +52,7 @@ pulsedur02s=2;
  
 %These are the strings that must appear in the names and specify which type
 %of experiment it is. For example: 1p05s stands for 1 pulse of 5s
-namestrings={'_Male_1p05s.xlsx' ;'_Male_2p05s.xlsx';'_Male_4p05s.xlsx';'_Male_1p20s.xlsx';'_Male_2p20s.xlsx';'_Male_4p01s.xlsx';'_Male_4p02s.xlsx','_contr_male_1p05s.xlsx','_contr_male_2p05s.xlsx','_contr_male_4p05s.xlsx','_contr_male_1p20s.xlsx','_contr_male_2p20s.xlsx','_contr_male_4p01s.xlsx','_contr_male_4p02s.xlsx','_Female_1p05s.xlsx','_Female_2p05s.xlsx','_Female_4p05s.xlsx','_Female_1p20s.xlsx','_Female_2p20s.xlsx','_Female_4p01s.xlsx','_Female_4p02s.xlsx','_contr_female_1p05s.xlsx','_contr_female_2p05s.xlsx','_contr_female_4p05s.xlsx','_contr_female_1p20s.xlsx','_contr_female_2p20s.xlsx','_contr_female_4p01s.xlsx','_contr_female_4p02s.xlsx'};
+namestrings=['4p05s.xlsx';'2p20s.xlsx';'4p01s.xlsx'];
 for nn = 1:size(namestrings,1)%loop through all namestrings
     %identify the correct pulsetimes from the name of the file
     pulsetimes=eval(strcat('pulsetimes',strrep(namestrings(nn,:),'.xlsx','')));
@@ -62,7 +62,8 @@ for nn = 1:size(namestrings,1)%loop through all namestrings
  
 cd(stackdir)
 %find files with the namestring in it
-files{ii}{ee} = dir(strcat('*_',namestrings(nn,:)));
+%this is just for females
+files{ii}{ee} = dir(strcat('*female_',namestrings(nn,:)));
 files{ii}{ee} = {files{ii}{ee}.name};
  
 filenames = cell((length(files{ii}{ee})),1);
@@ -76,30 +77,30 @@ filenames(:) = {''};
             filename = files{ii}{ee}{gg};
             [~, sheets] = xlsfinfo(filename);
            
-            if ismember('overview',sheets)== 1%check if the excel file contains a sheet named "overview"
-                overview = table2array(readtable(filename,'Sheet','overview','ReadVariableNames',0));
-                if exist('overviews') ==1%check if the array exists
-                    overviews = horzcat(overviews,overview);%add the current data to the array
-                else
-                    overviews=overview;
-                end
-            end
-            if ismember('medial_superficial',sheets)== 1
-                middle_sup = table2array(readtable(filename,'Sheet','medial_superficial','ReadVariableNames',0));
-                if exist('middle_sups') ==1
-                    middle_sups = horzcat(middle_sups,middle_sup);
-                else
-                    middle_sups=middle_sup;
-                end
-            end
-            if ismember('lateral_mid',sheets)== 1
-                lateral = table2array(readtable(filename,'Sheet','lateral_mid','ReadVariableNames',0));
-                 if exist('laterals') ==1
-                    laterals = horzcat(laterals,lateral);
-                else
-                    laterals=lateral;
-                end
-            end
+%             if ismember('overview',sheets)== 1%check if the excel file contains a sheet named "overview"
+%                 overview = table2array(readtable(filename,'Sheet','overview','ReadVariableNames',0));
+%                 if exist('overviews') ==1%check if the array exists
+%                     overviews = horzcat(overviews,overview);%add the current data to the array
+%                 else
+%                     overviews=overview;
+%                 end
+%             end
+if ismember('medial_superficial',sheets)== 1
+    middle_sup = table2array(readtable(filename,'Sheet','medial_superficial','ReadVariableNames',0));
+    if exist('middle_sups') ==1
+        middle_sups = horzcat(middle_sups,middle_sup);
+    else
+        middle_sups=middle_sup;
+    end
+end
+%             if ismember('lateral_mid',sheets)== 1
+%                 lateral = table2array(readtable(filename,'Sheet','lateral_mid','ReadVariableNames',0));
+%                  if exist('laterals') ==1
+%                     laterals = horzcat(laterals,lateral);
+%                 else
+%                     laterals=lateral;
+%                 end
+%             end
             if ismember('lateral_deep',sheets)== 1
                 lat_cellbodies = table2array(readtable(filename,'Sheet','lateral_deep','ReadVariableNames',0));
                  
@@ -109,62 +110,62 @@ filenames(:) = {''};
                     lat_cellbodiess=lat_cellbodies;
                 end
             end
-            if ismember('dorsal_deep',sheets)== 1
-                dorsal_deep = table2array(readtable(filename,'Sheet','dorsal_deep','ReadVariableNames',0));
-                if exist('dorsal_deeps') ==1
-                    dorsal_deeps = horzcat(dorsal_deeps,dorsal_deep);
-                else
-                    dorsal_deeps=dorsal_deep;
-                end
-            end
-            if ismember('frontal_lateral',sheets)== 1
-                frontal_lateral = table2array(readtable(filename,'Sheet','frontal_lateral','ReadVariableNames',0));
-                if exist('frontal_laterals') ==1
-                    frontal_laterals = horzcat(frontal_laterals,frontal_lateral);
-                else
-                    frontal_laterals=frontal_lateral;
-                end
-            end
-           if ismember('cellbodies',sheets)== 1
-                dorsal_sup = table2array(readtable(filename,'Sheet','cellbodies','ReadVariableNames',0));
-                if exist('dorsal_sups') ==1
-                    dorsal_sups = horzcat(dorsal_sups,dorsal_sup);
-                else
-                    dorsal_sups=dorsal_sup;
-                end
-           end
-            if ismember('frontal_deep',sheets)== 1
-                frontal_deep = table2array(readtable(filename,'Sheet','frontal_deep','ReadVariableNames',0));
-                if exist('frontal_deeps') ==1
-                    frontal_deeps = horzcat(frontal_deeps,frontal_deep);
-                else
-                    frontal_deeps=frontal_deep;
-                end
-            end
-           if ismember('medial_deep',sheets)== 1
-                middle_deep = table2array(readtable(filename,'Sheet','medial_deep','ReadVariableNames',0));
-                if exist('middle_deeps') ==1
-                    middle_deeps = horzcat(middle_deeps,middle_deep);
-                else
-                    middle_deeps=middle_deep;
-                end
-           end
-            if ismember('lateral_sup',sheets)== 1%check if the excel file contains a sheet named "frontal_sup"
-                frontal_sup = table2array(readtable(filename,'Sheet','lateral_sup','ReadVariableNames',0));
-                if exist('frontal_sups') ==1%check if the array exists
-                    frontal_sups = horzcat(frontal_sups,frontal_sup);%add the current data to the array
-                else
-                    frontal_sups=frontal_sup;
-                end
-            end
-            if ismember('middle_connection',sheets)== 1
-                middle_connection = table2array(readtable(filename,'Sheet','middle_connection','ReadVariableNames',0));
-                 if exist('middle_connections') ==1
-                    middle_connections = horzcat(middle_connections,middle_connection);
-                else
-                    middle_connections=middle_connection;
-                end
-            end
+%             if ismember('dorsal_deep',sheets)== 1
+%                 dorsal_deep = table2array(readtable(filename,'Sheet','dorsal_deep','ReadVariableNames',0));
+%                 if exist('dorsal_deeps') ==1
+%                     dorsal_deeps = horzcat(dorsal_deeps,dorsal_deep);
+%                 else
+%                     dorsal_deeps=dorsal_deep;
+%                 end
+%             end
+%             if ismember('frontal_lateral',sheets)== 1
+%                 frontal_lateral = table2array(readtable(filename,'Sheet','frontal_lateral','ReadVariableNames',0));
+%                 if exist('frontal_laterals') ==1
+%                     frontal_laterals = horzcat(frontal_laterals,frontal_lateral);
+%                 else
+%                     frontal_laterals=frontal_lateral;
+%                 end
+%             end
+%            if ismember('cellbodies',sheets)== 1
+%                 dorsal_sup = table2array(readtable(filename,'Sheet','cellbodies','ReadVariableNames',0));
+%                 if exist('dorsal_sups') ==1
+%                     dorsal_sups = horzcat(dorsal_sups,dorsal_sup);
+%                 else
+%                     dorsal_sups=dorsal_sup;
+%                 end
+%            end
+%             if ismember('frontal_deep',sheets)== 1
+%                 frontal_deep = table2array(readtable(filename,'Sheet','frontal_deep','ReadVariableNames',0));
+%                 if exist('frontal_deeps') ==1
+%                     frontal_deeps = horzcat(frontal_deeps,frontal_deep);
+%                 else
+%                     frontal_deeps=frontal_deep;
+%                 end
+%             end
+%            if ismember('medial_deep',sheets)== 1
+%                 middle_deep = table2array(readtable(filename,'Sheet','medial_deep','ReadVariableNames',0));
+%                 if exist('middle_deeps') ==1
+%                     middle_deeps = horzcat(middle_deeps,middle_deep);
+%                 else
+%                     middle_deeps=middle_deep;
+%                 end
+%            end
+%             if ismember('lateral_sup',sheets)== 1%check if the excel file contains a sheet named "frontal_sup"
+%                 frontal_sup = table2array(readtable(filename,'Sheet','lateral_sup','ReadVariableNames',0));
+%                 if exist('frontal_sups') ==1%check if the array exists
+%                     frontal_sups = horzcat(frontal_sups,frontal_sup);%add the current data to the array
+%                 else
+%                     frontal_sups=frontal_sup;
+%                 end
+%             end
+%             if ismember('middle_connection',sheets)== 1
+%                 middle_connection = table2array(readtable(filename,'Sheet','middle_connection','ReadVariableNames',0));
+%                  if exist('middle_connections') ==1
+%                     middle_connections = horzcat(middle_connections,middle_connection);
+%                 else
+%                     middle_connections=middle_connection;
+%                 end
+%             end
             
        
 
