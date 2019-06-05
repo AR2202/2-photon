@@ -14,7 +14,7 @@ startdir=pwd;
 pathname='/Volumes/LaCie/Projects/aDN/imaging/LC10-lexA_lexAop-CSChrimson_aDN_GCaMP6f/imaging_preprocessed';
 %pathname has to be the path to the folder were files to be processed are
 %located
-foldername='2018_04_06';%the name of the imaging folder
+foldername='2019_05_20';%the name of the imaging folder
 subfoldername='ROI';%must be a folder within the imaging folder
 stackdir = fullfile(pathname,foldername,subfoldername);
 outputdirv=('/Volumes/LaCie/Projects/aDN/imaging/LC10-lexA_lexAop-CSChrimson_aDN_GCaMP6f/Results');
@@ -191,7 +191,7 @@ files{ii}{ee} = dir('*.tif');
 files{ii}{ee} = {files{ii}{ee}.name};
 f = zeros(numberframes,(length(files{ii}{ee})));%make f array to safe fluorescence in number of frames is 600
 df = zeros(numberframes,(length(files{ii}{ee})));%make the df array
-dff4p5s = zeros(numberframes,(length(files{ii}{ee})));%make dff array  
+%dff4p5s = zeros(numberframes,(length(files{ii}{ee})));%make dff array  
 filenames = cell((length(files{ii}{ee})),1);
 filenames(:) = {''};
 
@@ -277,14 +277,17 @@ filenames(:) = {''};
         nonconnect = cellfun('isempty',fconnect);
         
         female = strfind(filenames,'female');
+        %disp(female);
         male = cellfun('isempty',female);
-        
+        %disp(male);
         controls = strfind(filenames,'_contr_');
+        %disp(controls);
         experimentals = cellfun('isempty',controls);
-       
+        %disp(experimentals);
+       variablestoclear={'dff1p5s','name1p5s','dff1p5so','dff1p5so','dff1p5sms','name1p5sms','dff1p5sl','name1p5sl','dff1p5slc','name1p5slc','dff1p5sfs','name1p5sfs','dff1p5sdd','name1p5sdd','dff1p5sfl','name1p5sfl','dff1p5sds','name1p5sds','dff1p5smd','name1p5smd','dff1p5sc','name1p5sc','dff2p5s','name2p5s','dff2p5so','dff2p5so','dff2p5sms','name2p5sms','dff2p5sl','name2p5sl','dff2p5slc','name2p5slc','dff2p5sfs','name2p5sfs','dff2p5sdd','name2p5sdd','dff2p5sfl','name2p5sfl','dff2p5sds','name2p5sds','dff2p5smd','name2p5smd','dff2p5sc','name2p5sc','dff4p5s','name4p5s','dff4p5so','dff4p5so','dff4p5sms','name4p5sms','dff4p5sl','name4p5sl','dff4p5slc','name4p5slc','dff4p5sfs','name4p5sfs','dff4p5sdd','name4p5sdd','dff4p5sfl','name4p5sfl','dff4p5sds','name4p5sds','dff4p5smd','name4p5smd','dff4p5sc','name4p5sc','dff2p20s','name2p20s','dff2p20so','dff2p20so','dff2p20sms','name2p20sms','dff2p20sl','name2p20sl','dff2p20slc','name2p20slc','dff2p20sfs','name2p20sfs','dff2p20sdd','name2p20sdd','dff2p20sfl','name2p20sfl','dff2p20sds','name2p20sds','dff2p20smd','name2p20smd','dff2p20sc','name2p20sc','dff4p1s','name4p1s','dff4p1so','dff4p1so','dff4p1sms','name4p1sms','dff4p1sl','name4p1sl','dff4p1slc','name4p1slc','dff4p1sfs','name4p1sfs','dff4p1sdd','name4p1sdd','dff4p1sfl','name4p1sfl','dff4p1sds','name4p1sds','dff4p1smd','name4p1smd','dff4p1sc','name4p1sc'};
         for v = 1:length(filenames)
-            if male ==1
-                if experimentals ==1
+            if male(v) ==1
+                if experimentals(v) ==1
             if non1p5s(v) == 0 %if the file has a 1pulse_5s pulse protocol
                
                 n1p5s =n1p5s+1;
@@ -1105,11 +1108,13 @@ n4p1so = 0;
  n4p2sds =0;
  n4p2smd =0;
  n4p2sc =0;
- 
+ for i=1:numel(variablestoclear)
+     clear (char(variablestoclear{i}));
+ end
  
         for v = 1:length(filenames)
-            if male ==0 %females
-                if experimentals ==1
+            if male(v) ==0 %females
+                if experimentals(v) ==1
             if non1p5s(v) == 0 %if the file has a 1pulse_5s pulse protocol
                
                 n1p5s =n1p5s+1;
@@ -1930,11 +1935,13 @@ n4p1so = 0;
  n4p2sds =0;
  n4p2smd =0;
  n4p2sc =0;
- 
+ for i=1:numel(variablestoclear)
+     clear (char(variablestoclear{i}));
+ end
  
         for v = 1:length(filenames)
             if male ==1 %males
-                if experimentals ==0 %controls
+                if experimentals(v) ==0 %controls
             if non1p5s(v) == 0 %if the file has a 1pulse_5s pulse protocol
                
                 n1p5s =n1p5s+1;
@@ -2755,11 +2762,13 @@ n4p1so = 0;
  n4p2sds =0;
  n4p2smd =0;
  n4p2sc =0;
- 
+ for i=1:numel(variablestoclear)
+     clear (char(variablestoclear{i}));
+ end
  
         for v = 1:length(filenames)
             if male ==0 %females
-                if experimentals ==0 %controls
+                if experimentals (v)==0 %controls
             if non1p5s(v) == 0 %if the file has a 1pulse_5s pulse protocol
                
                 n1p5s =n1p5s+1;
