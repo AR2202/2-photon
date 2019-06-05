@@ -21,10 +21,11 @@ pathname='/Volumes/LaCie/Projects/aDN/imaging/LC10-lexA_lexAop-CSChrimson_aDN_GC
 %pathname has to be the path to the folder were files to be processed are
 %located
 
-stackdir = ('/Volumes/LaCie/Projects/aDN/imaging/LC10-lexA_lexAop-CSChrimson_aDN_GCaMP6f/Results');
+stackdir = ('/Volumes/LaCie/Projects/aDN/imaging/ppk23-lexA_aDN-GCaMP6f/Results');
 % The folder where the results of single experiments are located
 outputdirmean=('/Volumes/LaCie/Projects/aDN/imaging/ppk23-lexA_aDN-GCaMP6f/Results');
 %The folder where the mean data should be written to
+matfilename = 'ppk23_Female';
 x = (1:numberframes)';% this is a column vector of the frame numbers
 x= (x-1)/framerate;%calculate the timepoints of the frames from the frame number
 
@@ -59,11 +60,12 @@ for nn = 1:size(namestrings,1)%loop through all namestrings
     %identify the pulseduration from the name of the file
     pulsedurstring=strrep(strcat('pulsedur',regexprep(namestrings(nn,:),'(\w)p','')),'.xlsx','');
     pulsedur=eval(pulsedurstring);
+    
  
 cd(stackdir)
 %find files with the namestring in it
 %this is just for females
-files{ii}{ee} = dir(strcat('*female_',namestrings(nn,:)));
+files{ii}{ee} = dir(strcat('*Female_',namestrings(nn,:)));
 files{ii}{ee} = {files{ii}{ee}.name};
  
 filenames = cell((length(files{ii}{ee})),1);
@@ -175,7 +177,7 @@ end
         end
         
         outfile=strcat('mean',namestrings(nn,:));%generate the name for the output excel file
-        
+        outmatfile = strcat(matfilename,strrep(namestrings(nn,:),'.xlsx','.mat'));
         if exist('overviews', 'var') == 1
             %write the data to the Excel file
             overview_mean=mean(overviews,2);
@@ -400,6 +402,7 @@ end
             end
             saveas(fignew,outputfig,'epsc');
         end
+        save(outmatfile,'x','lat_cellbodies_mean','lat_cellbodies_SEM','lat_cellbodies_n','middle_sup_mean','middle_sup_SEM','middle_sup_n' );
         clearvars middle_connections middle_deeps frontal_deeps dorsal_sups frontal_laterals dorsal_deeps lat_cellbodiess laterals frontal_sups middle_sups overviews 
 end
         
