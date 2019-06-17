@@ -11,28 +11,29 @@ duration_acquisition = numberframes/framerate;
 baseline_start = 2;
 baseline_end = 11;
 startdir=pwd;
-pathname='/Users/annika/Documents/projects/dsx_GABAergic_neurons/imaging/aDN_female_male_touch/imaging_preprocessed';
+pathname='/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/imaging_preprocessed';
 %pathname has to be the path to the folder were files to be processed are
 %located
-foldername='2019_01_07';%the name of the imaging folder
+foldername='2019_06_13'
+0';%the name of the imaging folder
 subfoldername='ROI';%must be a folder within the imaging folder
 stackdir = fullfile(pathname,foldername,subfoldername);
-outputdirv=('/Users/annika/Documents/projects/dsx_GABAergic_neurons/imaging/aDN_female_male_touch/Results');
-outputdirsim=('/Users/annika/Documents/projects/dsx_GABAergic_neurons/imaging/aDN_female_male_touch/Results');
-outputdiryak=('/Users/annika/Documents/projects/dsx_GABAergic_neurons/imaging/aDN_female_male_touch/Results');
+outputdirv=('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/Results');
+outputdirsim=('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/Results');
+outputdiryak=('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/Results');
 outputfilev=strcat(foldername,'_virgin.xlsx');
 outputimgv=strcat(foldername,'_virgin.eps');
 outputfiles=strcat(foldername,'_simulans.xlsx');
 outputimgs=strcat(foldername,'_simulans.eps');
-outputfiley=strcat(foldername,'_yakuba.xlsx');
-outputimgy=strcat(foldername,'_yakuba.eps');
+outputfiley=strcat(foldername,'_ball.xlsx');
+outputimgy=strcat(foldername,'_ball.eps');
 outputfilem=strcat(foldername,'_male.xlsx');
 outputimgm=strcat(foldername,'_male.eps');
 ee = 1;
 ii = 1;
 virgin = 0;
 sim = 0;
-yak =0;
+yak =0; % used here for ball touch
 male=0;
 
 
@@ -90,7 +91,7 @@ filenames(:) = {''};
         end
         virgins = strfind(filenames,'virgin');
         sims = strfind(filenames, 'sim');
-        yaks = strfind(filenames, 'yak');
+        yaks = strfind(filenames, 'ball');
        males = strfind(filenames, 'touch_male');
        
         nonsim = cellfun('isempty',sims);
