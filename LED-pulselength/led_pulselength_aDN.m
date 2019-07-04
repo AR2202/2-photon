@@ -14,13 +14,13 @@ startdir=pwd;
 pathname='/Volumes/LaCie/Projects/aDN/imaging/LC10-lexA_lexAop-CSChrimson_aDN_GCaMP6f/imaging_preprocessed';
 %pathname has to be the path to the folder were files to be processed are
 %located
-foldername='2019_05_20_2';%the name of the imaging folder
+foldername='2019_06_24';%the name of the imaging folder
 subfoldername='ROI';%must be a folder within the imaging folder
 stackdir = fullfile(pathname,foldername,subfoldername);
 outputdirv=('/Volumes/LaCie/Projects/aDN/imaging/LC10-lexA_lexAop-CSChrimson_aDN_GCaMP6f/Results');
 %male outputfilenames
-outputfile1p5s=strcat(foldername,'_Male_1p05s.xlsx');
-outputimg1p5s=strcat(foldername,'_Male_1p05s.eps');
+outputfile4p200ms=strcat(foldername,'_Male_4p200ms.xlsx');
+outputimg4p200ms=strcat(foldername,'_Male_4p200ms.eps');
 outputfile2p5s=strcat(foldername,'_Male_2p05s.xlsx');
 outputimg2p5s=strcat(foldername,'_Male_2p05s.eps');
 outputfile4p5s=strcat(foldername,'_Male_4p05s.xlsx');
@@ -34,8 +34,8 @@ outputimg4p1s=strcat(foldername,'_Male_4p01s.eps');
 outputfile4p2s=strcat(foldername,'_Male_4p02s.xlsx');
 outputimg4p2s=strcat(foldername,'_Male_4p02s.eps');
 %controls without lexA
-coutputfile1p5s=strcat(foldername,'_contr_male_1p05s.xlsx');
-coutputimg1p5s=strcat(foldername,'_contr_male_1p05s.eps');
+coutputfile1p5s=strcat(foldername,'_contr_male_4p200ms.xlsx');
+coutputimg4p200ms=strcat(foldername,'_contr_male_4p200ms.eps');
 coutputfile2p5s=strcat(foldername,'_contr_male_2p05s.xlsx');
 coutputimg2p5s=strcat(foldername,'_contr_male_2p05s.eps');
 coutputfile4p5s=strcat(foldername,'_contr_male_4p05s.xlsx');
@@ -49,7 +49,7 @@ coutputimg4p1s=strcat(foldername,'_contr_male_4p01s.eps');
 coutputfile4p2s=strcat(foldername,'_contr_male_4p02s.xlsx');
 coutputimg4p2s=strcat(foldername,'_contr_male_4p02s.eps');
 %female outputfilenames
-foutputfile1p5s=strcat(foldername,'_Female_1p05s.xlsx');
+foutputfile1p5s=strcat(foldername,'_Female_4p200ms.xlsx');
 foutputimg1p5s=strcat(foldername,'_Female_1p05s.eps');
 foutputfile2p5s=strcat(foldername,'_Female_2p05s.xlsx');
 foutputimg2p5s=strcat(foldername,'_Female_2p05s.eps');
@@ -64,7 +64,7 @@ foutputimg4p1s=strcat(foldername,'_Female_4p01s.eps');
 foutputfile4p2s=strcat(foldername,'_Female_4p02s.xlsx');
 foutputimg4p2s=strcat(foldername,'_Female_4p02s.eps');
 %controls without lexA
-cfoutputfile1p5s=strcat(foldername,'_contr_female_1p05s.xlsx');
+cfoutputfile1p5s=strcat(foldername,'_contr_female_4p200ms.xlsx');
 cfoutputimg1p5s=strcat(foldername,'_contr_female_1p05s.eps');
 cfoutputfile2p5s=strcat(foldername,'_contr_female_2p05s.xlsx');
 cfoutputimg2p5s=strcat(foldername,'_contr_female_2p05s.eps');
@@ -80,7 +80,7 @@ cfoutputfile4p2s=strcat(foldername,'_contr_female_4p02s.xlsx');
 cfoutputimg4p2s=strcat(foldername,'_contr_female_4p02s.eps');
 ee = 1;
 ii = 1;
-n1p5s = 0;
+n4p200ms = 0;
 n2p5s = 0;
 n4p5s =0;
 n1p20s =0;
@@ -88,16 +88,16 @@ n2p20s =0;
 n4p1s =0;
 n4p2s =0;
 
- n1p5so = 0;
- n1p5sms = 0;
- n1p5sl = 0;
- n1p5slc = 0;
- n1p5sfs =0;
- n1p5sdd = 0;
- n1p5sfl =0;
- n1p5sds =0;
- n1p5smd =0;
- n1p5sc =0;
+ n4p200mso = 0;
+ n4p200msms = 0;
+ n4p200msl = 0;
+ n4p200mslc = 0;
+ n4p200msfs =0;
+ n4p200msdd = 0;
+ n4p200msfl =0;
+ n4p200msds =0;
+ n4p200msmd =0;
+ n4p200msc =0;
  
  n2p5so = 0;
  n2p5sms = 0;
@@ -169,10 +169,10 @@ n4p1so = 0;
   
 
 
-pulsetimes1p5s=[40];
+pulsetimes4p200ms=[20,40,60,80];
 pulsetimes1p20s=[40];
 pulsetimes2p5s=[30,60];
-pulsetimes4p5s=[20,40,60,80];
+%pulsetimes4p200ms=[20,40,60,80];
 pulsetimes2p20s=[20,60];
 pulsetimes4p1s=[20,40,60,80];
 pulsetimes4p2s=[20,40,60,80];
@@ -236,7 +236,7 @@ filenames(:) = {''};
         end
         %finding the pulse specifications in the file name - must be
         %spelled as indicated
-        f1p5s = strfind(filenames,'1pulse_5s');
+        f4p200ms = strfind(filenames,'4pulse_200ms');
         f2p5s = strfind(filenames, '2pulse_5s');
         f4p5s = strfind(filenames, '4pulse_5s');
         f1p20s = strfind(filenames, '1pulse_20s');
@@ -245,7 +245,7 @@ filenames(:) = {''};
         f4p2s = strfind(filenames, '4pulse_2s');
         
         
-        non1p5s = cellfun('isempty',f1p5s);
+        non4p200ms = cellfun('isempty',f4p200ms);
         non2p5s = cellfun('isempty',f2p5s);
         non4p5s = cellfun('isempty',f4p5s);
         non1p20s = cellfun('isempty',f1p20s);
@@ -284,55 +284,55 @@ filenames(:) = {''};
         %disp(controls);
         experimentals = cellfun('isempty',controls);
         %disp(experimentals);
-       variablestoclear={'dff1p5s','name1p5s','dff1p5so','dff1p5so','dff1p5sms','name1p5sms','dff1p5sl','name1p5sl','dff1p5slc','name1p5slc','dff1p5sfs','name1p5sfs','dff1p5sdd','name1p5sdd','dff1p5sfl','name1p5sfl','dff1p5sds','name1p5sds','dff1p5smd','name1p5smd','dff1p5sc','name1p5sc','dff2p5s','name2p5s','dff2p5so','dff2p5so','dff2p5sms','name2p5sms','dff2p5sl','name2p5sl','dff2p5slc','name2p5slc','dff2p5sfs','name2p5sfs','dff2p5sdd','name2p5sdd','dff2p5sfl','name2p5sfl','dff2p5sds','name2p5sds','dff2p5smd','name2p5smd','dff2p5sc','name2p5sc','dff4p5s','name4p5s','dff4p5so','dff4p5so','dff4p5sms','name4p5sms','dff4p5sl','name4p5sl','dff4p5slc','name4p5slc','dff4p5sfs','name4p5sfs','dff4p5sdd','name4p5sdd','dff4p5sfl','name4p5sfl','dff4p5sds','name4p5sds','dff4p5smd','name4p5smd','dff4p5sc','name4p5sc','dff2p20s','name2p20s','dff2p20so','dff2p20so','dff2p20sms','name2p20sms','dff2p20sl','name2p20sl','dff2p20slc','name2p20slc','dff2p20sfs','name2p20sfs','dff2p20sdd','name2p20sdd','dff2p20sfl','name2p20sfl','dff2p20sds','name2p20sds','dff2p20smd','name2p20smd','dff2p20sc','name2p20sc','dff4p1s','name4p1s','dff4p1so','dff4p1so','dff4p1sms','name4p1sms','dff4p1sl','name4p1sl','dff4p1slc','name4p1slc','dff4p1sfs','name4p1sfs','dff4p1sdd','name4p1sdd','dff4p1sfl','name4p1sfl','dff4p1sds','name4p1sds','dff4p1smd','name4p1smd','dff4p1sc','name4p1sc'};
+       variablestoclear={'dff4p200ms','name4p200ms','dff4p200mso','dff4p200mso','dff4p200msms','name4p200msms','dff4p200msl','name4p200msl','dff4p200mslc','name4p200mslc','dff4p200msfs','name4p200msfs','dff4p200msdd','name4p200msdd','dff4p200msfl','name4p200msfl','dff4p200msds','name4p200msds','dff4p200msmd','name4p200msmd','dff4p200msc','name4p200msc','dff2p5s','name2p5s','dff2p5so','dff2p5so','dff2p5sms','name2p5sms','dff2p5sl','name2p5sl','dff2p5slc','name2p5slc','dff2p5sfs','name2p5sfs','dff2p5sdd','name2p5sdd','dff2p5sfl','name2p5sfl','dff2p5sds','name2p5sds','dff2p5smd','name2p5smd','dff2p5sc','name2p5sc','dff4p5s','name4p5s','dff4p5so','dff4p5so','dff4p5sms','name4p5sms','dff4p5sl','name4p5sl','dff4p5slc','name4p5slc','dff4p5sfs','name4p5sfs','dff4p5sdd','name4p5sdd','dff4p5sfl','name4p5sfl','dff4p5sds','name4p5sds','dff4p5smd','name4p5smd','dff4p5sc','name4p5sc','dff2p20s','name2p20s','dff2p20so','dff2p20so','dff2p20sms','name2p20sms','dff2p20sl','name2p20sl','dff2p20slc','name2p20slc','dff2p20sfs','name2p20sfs','dff2p20sdd','name2p20sdd','dff2p20sfl','name2p20sfl','dff2p20sds','name2p20sds','dff2p20smd','name2p20smd','dff2p20sc','name2p20sc','dff4p1s','name4p1s','dff4p1so','dff4p1so','dff4p1sms','name4p1sms','dff4p1sl','name4p1sl','dff4p1slc','name4p1slc','dff4p1sfs','name4p1sfs','dff4p1sdd','name4p1sdd','dff4p1sfl','name4p1sfl','dff4p1sds','name4p1sds','dff4p1smd','name4p1smd','dff4p1sc','name4p1sc','dff4p2s','name4p2s','dff4p2so','dff4p2so','dff4p2sms','name4p2sms','dff4p2sl','name4p2sl','dff4p2slc','name4p2slc','dff4p2sfs','name4p2sfs','dff4p2sdd','name4p2sdd','dff4p2sfl','name4p2sfl','dff4p2sds','name4p2sds','dff4p2smd','name4p2smd','dff4p2sc','name4p2sc'};
         for v = 1:length(filenames)
             if male(v) ==1
                 if experimentals(v) ==1
-            if non1p5s(v) == 0 %if the file has a 1pulse_5s pulse protocol
+            if non4p200ms(v) == 0 %if the file has a 1pulse_5s pulse protocol
                
-                n1p5s =n1p5s+1;
-                dff1p5s(:,n1p5s) =   dff(:,v); %make a new matrix to safe dff of all files with this pulse protocol
-                name1p5s(n1p5s)=filenames(v);
+                n4p200ms =n4p200ms+1;
+                dff4p200ms(:,n4p200ms) =   dff(:,v); %make a new matrix to safe dff of all files with this pulse protocol
+                name4p200ms(n4p200ms)=filenames(v);
                 if nonoverview(v) == 0
-                   n1p5so = n1p5so + 1;
-                   dff1p5so(:,n1p5so) = dff(:,v);
-                   name1p5so(n1p5so)=filenames(v);
+                   n4p200mso = n4p200mso + 1;
+                   dff4p200mso(:,n4p200mso) = dff(:,v);
+                   name4p200mso(n4p200mso)=filenames(v);
                 elseif nonmiddlesup(v) == 0
-                   n1p5sms = n1p5sms + 1;
-                   dff1p5sms(:,n1p5sms) = dff(:,v);
-                   name1p5sms(n1p5sms)=filenames(v);
+                   n4p200msms = n4p200msms + 1;
+                   dff4p200msms(:,n4p200msms) = dff(:,v);
+                   name4p200msms(n4p200msms)=filenames(v);
                 elseif nonlateral(v) == 0
-                   n1p5sl = n1p5sl + 1;
-                   dff1p5sl(:,n1p5sl) = dff(:,v);
-                   name1p5sl(n1p5sl)=filenames(v);
+                   n4p200msl = n4p200msl + 1;
+                   dff4p200msl(:,n4p200msl) = dff(:,v);
+                   name4p200msl(n4p200msl)=filenames(v);
                  elseif nonlatcell(v) == 0
-                   n1p5slc = n1p5slc + 1;
-                   dff1p5slc(:,n1p5slc) = dff(:,v);
-                   name1p5slc(n1p5slc)=filenames(v);
+                   n4p200mslc = n4p200mslc + 1;
+                   dff4p200mslc(:,n4p200mslc) = dff(:,v);
+                   name4p200mslc(n4p200mslc)=filenames(v);
                  elseif nonfrontalsup(v) == 0
-                   n1p5sfs = n1p5sfs + 1;
-                   dff1p5sfs(:,n1p5sfs) = dff(:,v);
-                   name1p5sfs(n1p5sfs)=filenames(v);
+                   n4p200msfs = n4p200msfs + 1;
+                   dff4p200msfs(:,n4p200msfs) = dff(:,v);
+                   name4p200msfs(n4p200msfs)=filenames(v);
                  elseif nondorsaldeep(v) == 0
-                   n1p5sdd = n1p5sdd + 1;
-                   dff1p5sdd(:,n1p5sdd) = dff(:,v);
-                   name1p5sdd(n1p5sdd)=filenames(v);
+                   n4p200msdd = n4p200msdd + 1;
+                   dff4p200msdd(:,n4p200msdd) = dff(:,v);
+                   name4p200msdd(n4p200msdd)=filenames(v);
                  elseif nonfrontallat(v) == 0
-                   n1p5sfl = n1p5sfl + 1;
-                   dff1p5sfl(:,n1p5sfl) = dff(:,v);
-                   name1p5sfl(n1p5sfl)=filenames(v);
+                   n4p200msfl = n4p200msfl + 1;
+                   dff4p200msfl(:,n4p200msfl) = dff(:,v);
+                   name4p200msfl(n4p200msfl)=filenames(v);
                   elseif nondorsalsup(v) == 0
-                   n1p5sds = n1p5sds + 1;
-                   dff1p5sds(:,n1p5sds) = dff(:,v);
-                   name1p5sds(n1p5sds)=filenames(v);
+                   n4p200msds = n4p200msds + 1;
+                   dff4p200msds(:,n4p200msds) = dff(:,v);
+                   name4p200msds(n4p200msds)=filenames(v);
                   elseif nonmiddledeep(v) == 0
-                   n1p5smd = n1p5smd + 1;
-                   dff1p5smd(:,n1p5smd) = dff(:,v);
-                   name1p5smd(n1p5smd)=filenames(v);
+                   n4p200msmd = n4p200msmd + 1;
+                   dff4p200msmd(:,n4p200msmd) = dff(:,v);
+                   name4p200msmd(n4p200msmd)=filenames(v);
                   elseif nonconnect(v) == 0
-                   n1p5sc = n1p5sc + 1;
-                   dff1p5sc(:,n1p5sc) = dff(:,v);
-                   name1p5sc(n1p5sc)=filenames(v);
+                   n4p200msc = n4p200msc + 1;
+                   dff4p200msc(:,n4p200msc) = dff(:,v);
+                   name4p200msc(n4p200msc)=filenames(v);
                     
                   end   
                
@@ -624,67 +624,67 @@ filenames(:) = {''};
         end
         
         warning('off','MATLAB:xlswrite:AddSheet')
-        if exist('dff1p5s') == 1
+        if exist('dff4p200ms') == 1
             %make the output table
-        T1p5s=table(dff1p5s);
+        T4p200ms=table(dff4p200ms);
        
-        T1p5snames=table(name1p5s);
-        mean1p5s=mean(dff1p5s,2);
-         Tmean1p5s=table(mean1p5s);
+        T4p200msnames=table(name4p200ms);
+        mean4p200ms=mean(dff4p200ms,2);
+         Tmean4p200ms=table(mean4p200ms);
         cd(outputdirv);% go to output directory
         %wirte the table to an excel spreadsheet; names are written to
         %second spreadsheet in the file
-        writetable(T1p5s,outputfile1p5s,'Sheet',1,'WriteVariableNames',false);
-        writetable(T1p5snames,outputfile1p5s,'Sheet',2,'WriteVariableNames',false);
-         writetable(Tmean1p5s,outputfile1p5s,'Sheet','mean','WriteVariableNames',false);
-        if exist('dff1p5so') ==1
-            T1p5so=table(dff1p5so);
-            writetable(T1p5so,outputfile1p5s,'Sheet','overview','WriteVariableNames',false); 
+        writetable(T4p200ms,outputfile4p200ms,'Sheet',1,'WriteVariableNames',false);
+        writetable(T4p200msnames,outputfile4p200ms,'Sheet',2,'WriteVariableNames',false);
+         writetable(Tmean4p200ms,outputfile4p200ms,'Sheet','mean','WriteVariableNames',false);
+        if exist('dff4p200mso') ==1
+            T4p200mso=table(dff4p200mso);
+            writetable(T4p200mso,outputfile4p200ms,'Sheet','overview','WriteVariableNames',false); 
         end
         
-         if exist('dff1p5sms') ==1
-            T1p5sms=table(dff1p5sms);
-            writetable(T1p5sms,outputfile1p5s,'Sheet','medial_superficial','WriteVariableNames',false); 
+         if exist('dff4p200msms') ==1
+            T4p200msms=table(dff4p200msms);
+            writetable(T4p200msms,outputfile4p200ms,'Sheet','medial_superficial','WriteVariableNames',false); 
          end
-          if exist('dff1p5sl') ==1
-            T1p5sl=table(dff1p5sl);
-            writetable(T1p5sl,outputfile1p5s,'Sheet','lateral_mid','WriteVariableNames',false); 
+          if exist('dff4p200msl') ==1
+            T4p200msl=table(dff4p200msl);
+            writetable(T4p200msl,outputfile4p200ms,'Sheet','lateral_mid','WriteVariableNames',false); 
           end
-         if exist('dff1p5slc') ==1
-            T1p5slc=table(dff1p5slc);
-            writetable(T1p5slc,outputfile1p5s,'Sheet','lateral_deep','WriteVariableNames',false); 
+         if exist('dff4p200mslc') ==1
+            T4p200mslc=table(dff4p200mslc);
+            writetable(T4p200mslc,outputfile4p200ms,'Sheet','lateral_deep','WriteVariableNames',false); 
          end
-         if exist('dff1p5sfs') ==1
-            T1p5sfs=table(dff1p5sfs);
-            writetable(T1p5sfs,outputfile1p5s,'Sheet','lateral_sup','WriteVariableNames',false); 
+         if exist('dff4p200msfs') ==1
+            T4p200msfs=table(dff4p200msfs);
+            writetable(T4p200msfs,outputfile4p200ms,'Sheet','lateral_sup','WriteVariableNames',false); 
         end
-         if exist('dff1p5sdd') ==1
-            T1p5sdd=table(dff1p5sdd);
-            writetable(T1p5sdd,outputfile1p5s,'Sheet','dorsal_deep','WriteVariableNames',false); 
+         if exist('dff4p200msdd') ==1
+            T4p200msdd=table(dff4p200msdd);
+            writetable(T4p200msdd,outputfile4p200ms,'Sheet','dorsal_deep','WriteVariableNames',false); 
          end
-         if exist('dff1p5sfl') ==1
-            T1p5sfl=table(dff1p5sfl);
-            writetable(T1p5sfl,outputfile1p5s,'Sheet','frontal_lateral','WriteVariableNames',false); 
+         if exist('dff4p200msfl') ==1
+            T4p200msfl=table(dff4p200msfl);
+            writetable(T4p200msfl,outputfile4p200ms,'Sheet','frontal_lateral','WriteVariableNames',false); 
          end
-         if exist('dff1p5sds') ==1
-            T1p5sds=table(dff1p5sds);
-            writetable(T1p5sds,outputfile1p5s,'Sheet','cellbodies','WriteVariableNames',false); 
+         if exist('dff4p200msds') ==1
+            T4p200msds=table(dff4p200msds);
+            writetable(T4p200msds,outputfile4p200ms,'Sheet','cellbodies','WriteVariableNames',false); 
          end
-         if exist('dff1p5smd') ==1
-            T1p5smd=table(dff1p5smd);
-            writetable(T1p5smd,outputfile1p5s,'Sheet','medial_deep','WriteVariableNames',false); 
+         if exist('dff4p200msmd') ==1
+            T4p200msmd=table(dff4p200msmd);
+            writetable(T4p200msmd,outputfile4p200ms,'Sheet','medial_deep','WriteVariableNames',false); 
          end
-         if exist('dff1p5sc') ==1
-            T1p5sc=table(dff1p5sc);
-            writetable(T1p5sc,outputfile1p5s,'Sheet','middle_connection','WriteVariableNames',false); 
+         if exist('dff4p200msc') ==1
+            T4p200msc=table(dff4p200msc);
+            writetable(T4p200msc,outputfile4p200ms,'Sheet','middle_connection','WriteVariableNames',false); 
         end
         
         %make output figure
-        fig1p5s=figure();
-        plot(dff1p5s);
-        %legend(name1p5s,'Location','southeast');
+        fig4p200ms=figure('Name',outputimg4p200ms);
+        plot(dff4p200ms);
+        %legend(name4p200ms,'Location','southeast');
         %save figure as eps in colours
-        saveas(fig1p5s,outputimg1p5s,'epsc');
+        saveas(fig4p200ms,outputimg4p200ms,'epsc');
         
         end
         if exist('dff2p5s')==1 
@@ -738,7 +738,7 @@ filenames(:) = {''};
             T2p5sc=table(dff2p5sc);
             writetable(T2p5sc,outputfile2p5s,'Sheet','middle_connection','WriteVariableNames',false); 
         end
-      fig2p5s=figure();
+      fig2p5s=figure('Name',outputimg2p5s);
         plot(dff2p5s);
         %legend(name2p5s,'Location','southeast');
         saveas(fig2p5s,outputimg2p5s,'epsc');
@@ -796,7 +796,7 @@ filenames(:) = {''};
             T4p5sc=table(dff4p5sc);
             writetable(T4p5sc,outputfile4p5s,'Sheet','middle_connection','WriteVariableNames',false); 
         end
-        fig4p5s=figure();
+        fig4p5s=figure('Name',outputimg4p5s);
         plot(dff4p5s);
         %legend(name4p5s,'Location','southeast');
         saveas(fig4p5s,outputimg4p5s,'epsc');
@@ -853,7 +853,7 @@ filenames(:) = {''};
             writetable(T1p20sc,outputfile1p20s,'Sheet','middle_connection','WriteVariableNames',false); 
         end
         
-        fig1p20s=figure();
+        fig1p20s=figure('Name',outputimg1p20s);
         plot(dff1p20s);
         %legend(name1p20s,'Location','southeast');
         saveas(fig1p20s,outputimg1p20s,'epsc');
@@ -908,7 +908,7 @@ filenames(:) = {''};
             T2p20sc=table(dff2p20sc);
             writetable(T2p20sc,outputfile2p20s,'Sheet','middle_connection','WriteVariableNames',false); 
         end
-        fig2p20s=figure();
+        fig2p20s=figure('Name',outputimg2p20s);
         plot(dff2p20s);
         %legend(name2p20s,'Location','southeast');
         saveas(fig2p20s,outputimg2p20s,'epsc');
@@ -963,7 +963,7 @@ filenames(:) = {''};
             T4p1sc=table(dff4p1sc);
             writetable(T4p1sc,outputfile4p1s,'Sheet','middle_connection','WriteVariableNames',false); 
         end
-        fig4p1s=figure();
+        fig4p1s=figure('Name',outputimg4p1s);
         plot(dff4p1s);
         %legend(name4p1s,'Location','southeast');
         saveas(fig4p1s,outputimg4p1s,'epsc');
@@ -1018,13 +1018,13 @@ filenames(:) = {''};
             T4p2sc=table(dff4p2sc);
             writetable(T4p2sc,outputfile4p2s,'Sheet','middle_connection','WriteVariableNames',false); 
         end
-        fig4p2s=figure();
+        fig4p2s=figure('Name',outputimg4p2s);
         plot(dff4p2s);
         %legend(name4p1s,'Location','southeast');
         saveas(fig4p2s,outputimg4p2s,'epsc');
         end
         
-n1p5s = 0;
+n4p200ms = 0;
 n2p5s = 0;
 n4p5s =0;
 n1p20s =0;
@@ -1032,16 +1032,16 @@ n2p20s =0;
 n4p1s =0;
 n4p2s =0;
 
- n1p5so = 0;
- n1p5sms = 0;
- n1p5sl = 0;
- n1p5slc = 0;
- n1p5sfs =0;
- n1p5sdd = 0;
- n1p5sfl =0;
- n1p5sds =0;
- n1p5smd =0;
- n1p5sc =0;
+ n4p200mso = 0;
+ n4p200msms = 0;
+ n4p200msl = 0;
+ n4p200mslc = 0;
+ n4p200msfs =0;
+ n4p200msdd = 0;
+ n4p200msfl =0;
+ n4p200msds =0;
+ n4p200msmd =0;
+ n4p200msc =0;
  
  n2p5so = 0;
  n2p5sms = 0;
@@ -1115,51 +1115,51 @@ n4p1so = 0;
         for v = 1:length(filenames)
             if male(v) ==0 %females
                 if experimentals(v) ==1
-            if non1p5s(v) == 0 %if the file has a 1pulse_5s pulse protocol
+            if non4p200ms(v) == 0 %if the file has a 1pulse_5s pulse protocol
                
-                n1p5s =n1p5s+1;
-                dff1p5s(:,n1p5s) =   dff(:,v); %make a new matrix to safe dff of all files with this pulse protocol
-                name1p5s(n1p5s)=filenames(v);
+                n4p200ms =n4p200ms+1;
+                dff4p200ms(:,n4p200ms) =   dff(:,v); %make a new matrix to safe dff of all files with this pulse protocol
+                name4p200ms(n4p200ms)=filenames(v);
                 if nonoverview(v) == 0
-                   n1p5so = n1p5so + 1;
-                   dff1p5so(:,n1p5so) = dff(:,v);
-                   name1p5so(n1p5so)=filenames(v);
+                   n4p200mso = n4p200mso + 1;
+                   dff4p200mso(:,n4p200mso) = dff(:,v);
+                   name4p200mso(n4p200mso)=filenames(v);
                 elseif nonmiddlesup(v) == 0
-                   n1p5sms = n1p5sms + 1;
-                   dff1p5sms(:,n1p5sms) = dff(:,v);
-                   name1p5sms(n1p5sms)=filenames(v);
+                   n4p200msms = n4p200msms + 1;
+                   dff4p200msms(:,n4p200msms) = dff(:,v);
+                   name4p200msms(n4p200msms)=filenames(v);
                 elseif nonlateral(v) == 0
-                   n1p5sl = n1p5sl + 1;
-                   dff1p5sl(:,n1p5sl) = dff(:,v);
-                   name1p5sl(n1p5sl)=filenames(v);
+                   n4p200msl = n4p200msl + 1;
+                   dff4p200msl(:,n4p200msl) = dff(:,v);
+                   name4p200msl(n4p200msl)=filenames(v);
                  elseif nonlatcell(v) == 0
-                   n1p5slc = n1p5slc + 1;
-                   dff1p5slc(:,n1p5slc) = dff(:,v);
-                   name1p5slc(n1p5slc)=filenames(v);
+                   n4p200mslc = n4p200mslc + 1;
+                   dff4p200mslc(:,n4p200mslc) = dff(:,v);
+                   name4p200mslc(n4p200mslc)=filenames(v);
                  elseif nonfrontalsup(v) == 0
-                   n1p5sfs = n1p5sfs + 1;
-                   dff1p5sfs(:,n1p5sfs) = dff(:,v);
-                   name1p5sfs(n1p5sfs)=filenames(v);
+                   n4p200msfs = n4p200msfs + 1;
+                   dff4p200msfs(:,n4p200msfs) = dff(:,v);
+                   name4p200msfs(n4p200msfs)=filenames(v);
                  elseif nondorsaldeep(v) == 0
-                   n1p5sdd = n1p5sdd + 1;
-                   dff1p5sdd(:,n1p5sdd) = dff(:,v);
-                   name1p5sdd(n1p5sdd)=filenames(v);
+                   n4p200msdd = n4p200msdd + 1;
+                   dff4p200msdd(:,n4p200msdd) = dff(:,v);
+                   name4p200msdd(n4p200msdd)=filenames(v);
                  elseif nonfrontallat(v) == 0
-                   n1p5sfl = n1p5sfl + 1;
-                   dff1p5sfl(:,n1p5sfl) = dff(:,v);
-                   name1p5sfl(n1p5sfl)=filenames(v);
+                   n4p200msfl = n4p200msfl + 1;
+                   dff4p200msfl(:,n4p200msfl) = dff(:,v);
+                   name4p200msfl(n4p200msfl)=filenames(v);
                   elseif nondorsalsup(v) == 0
-                   n1p5sds = n1p5sds + 1;
-                   dff1p5sds(:,n1p5sds) = dff(:,v);
-                   name1p5sds(n1p5sds)=filenames(v);
+                   n4p200msds = n4p200msds + 1;
+                   dff4p200msds(:,n4p200msds) = dff(:,v);
+                   name4p200msds(n4p200msds)=filenames(v);
                   elseif nonmiddledeep(v) == 0
-                   n1p5smd = n1p5smd + 1;
-                   dff1p5smd(:,n1p5smd) = dff(:,v);
-                   name1p5smd(n1p5smd)=filenames(v);
+                   n4p200msmd = n4p200msmd + 1;
+                   dff4p200msmd(:,n4p200msmd) = dff(:,v);
+                   name4p200msmd(n4p200msmd)=filenames(v);
                   elseif nonconnect(v) == 0
-                   n1p5sc = n1p5sc + 1;
-                   dff1p5sc(:,n1p5sc) = dff(:,v);
-                   name1p5sc(n1p5sc)=filenames(v);
+                   n4p200msc = n4p200msc + 1;
+                   dff4p200msc(:,n4p200msc) = dff(:,v);
+                   name4p200msc(n4p200msc)=filenames(v);
                     
                   end   
                
@@ -1451,67 +1451,67 @@ n4p1so = 0;
         end
         
         warning('off','MATLAB:xlswrite:AddSheet')
-        if exist('dff1p5s') == 1
+        if exist('dff4p200ms') == 1
             %make the output table
-        T1p5s=table(dff1p5s);
+        T4p200ms=table(dff4p200ms);
        
-        T1p5snames=table(name1p5s);
-        mean1p5s=mean(dff1p5s,2);
-         Tmean1p5s=table(mean1p5s);
+        T4p200msnames=table(name4p200ms);
+        mean4p200ms=mean(dff4p200ms,2);
+         Tmean4p200ms=table(mean4p200ms);
         cd(outputdirv);% go to output directory
         %wirte the table to an excel spreadsheet; names are written to
         %second spreadsheet in the file
-        writetable(T1p5s,foutputfile1p5s,'Sheet',1,'WriteVariableNames',false);
-        writetable(T1p5snames,foutputfile1p5s,'Sheet',2,'WriteVariableNames',false);
-         writetable(Tmean1p5s,foutputfile1p5s,'Sheet','mean','WriteVariableNames',false);
-        if exist('dff1p5so') ==1
-            T1p5so=table(dff1p5so);
-            writetable(T1p5so,foutputfile1p5s,'Sheet','overview','WriteVariableNames',false); 
+        writetable(T4p200ms,foutputfile4p200ms,'Sheet',1,'WriteVariableNames',false);
+        writetable(T4p200msnames,foutputfile4p200ms,'Sheet',2,'WriteVariableNames',false);
+         writetable(Tmean4p200ms,foutputfile4p200ms,'Sheet','mean','WriteVariableNames',false);
+        if exist('dff4p200mso') ==1
+            T4p200mso=table(dff4p200mso);
+            writetable(T4p200mso,foutputfile4p200ms,'Sheet','overview','WriteVariableNames',false); 
         end
         
-         if exist('dff1p5sms') ==1
-            T1p5sms=table(dff1p5sms);
-            writetable(T1p5sms,foutputfile1p5s,'Sheet','medial_superficial','WriteVariableNames',false); 
+         if exist('dff4p200msms') ==1
+            T4p200msms=table(dff4p200msms);
+            writetable(T4p200msms,foutputfile4p200ms,'Sheet','medial_superficial','WriteVariableNames',false); 
          end
-          if exist('dff1p5sl') ==1
-            T1p5sl=table(dff1p5sl);
-            writetable(T1p5sl,foutputfile1p5s,'Sheet','lateral_mid','WriteVariableNames',false); 
+          if exist('dff4p200msl') ==1
+            T4p200msl=table(dff4p200msl);
+            writetable(T4p200msl,foutputfile4p200ms,'Sheet','lateral_mid','WriteVariableNames',false); 
           end
-         if exist('dff1p5slc') ==1
-            T1p5slc=table(dff1p5slc);
-            writetable(T1p5slc,foutputfile1p5s,'Sheet','lateral_deep','WriteVariableNames',false); 
+         if exist('dff4p200mslc') ==1
+            T4p200mslc=table(dff4p200mslc);
+            writetable(T4p200mslc,foutputfile4p200ms,'Sheet','lateral_deep','WriteVariableNames',false); 
          end
-         if exist('dff1p5sfs') ==1
-            T1p5sfs=table(dff1p5sfs);
-            writetable(T1p5sfs,foutputfile1p5s,'Sheet','lateral_sup','WriteVariableNames',false); 
+         if exist('dff4p200msfs') ==1
+            T4p200msfs=table(dff4p200msfs);
+            writetable(T4p200msfs,foutputfile4p200ms,'Sheet','lateral_sup','WriteVariableNames',false); 
         end
-         if exist('dff1p5sdd') ==1
-            T1p5sdd=table(dff1p5sdd);
-            writetable(T1p5sdd,foutputfile1p5s,'Sheet','dorsal_deep','WriteVariableNames',false); 
+         if exist('dff4p200msdd') ==1
+            T4p200msdd=table(dff4p200msdd);
+            writetable(T4p200msdd,foutputfile4p200ms,'Sheet','dorsal_deep','WriteVariableNames',false); 
          end
-         if exist('dff1p5sfl') ==1
-            T1p5sfl=table(dff1p5sfl);
-            writetable(T1p5sfl,foutputfile1p5s,'Sheet','frontal_lateral','WriteVariableNames',false); 
+         if exist('dff4p200msfl') ==1
+            T4p200msfl=table(dff4p200msfl);
+            writetable(T4p200msfl,foutputfile4p200ms,'Sheet','frontal_lateral','WriteVariableNames',false); 
          end
-         if exist('dff1p5sds') ==1
-            T1p5sds=table(dff1p5sds);
-            writetable(T1p5sds,foutputfile1p5s,'Sheet','cellbodies','WriteVariableNames',false); 
+         if exist('dff4p200msds') ==1
+            T4p200msds=table(dff4p200msds);
+            writetable(T4p200msds,foutputfile4p200ms,'Sheet','cellbodies','WriteVariableNames',false); 
          end
-         if exist('dff1p5smd') ==1
-            T1p5smd=table(dff1p5smd);
-            writetable(T1p5smd,foutputfile1p5s,'Sheet','medial_deep','WriteVariableNames',false); 
+         if exist('dff4p200msmd') ==1
+            T4p200msmd=table(dff4p200msmd);
+            writetable(T4p200msmd,foutputfile4p200ms,'Sheet','medial_deep','WriteVariableNames',false); 
          end
-         if exist('dff1p5sc') ==1
-            T1p5sc=table(dff1p5sc);
-            writetable(T1p5sc,foutputfile1p5s,'Sheet','middle_connection','WriteVariableNames',false); 
+         if exist('dff4p200msc') ==1
+            T4p200msc=table(dff4p200msc);
+            writetable(T4p200msc,foutputfile4p200ms,'Sheet','middle_connection','WriteVariableNames',false); 
         end
         
         %make output figure
-        fig1p5s=figure();
-        plot(dff1p5s);
-        %legend(name1p5s,'Location','southeast');
+        fig4p200ms=figure('Name',foutputimg4p200ms);
+        plot(dff4p200ms);
+        %legend(name4p200ms,'Location','southeast');
         %save figure as eps in colours
-        saveas(fig1p5s,foutputimg1p5s,'epsc');
+        saveas(fig4p200ms,foutputimg4p200ms,'epsc');
         
         end
         if exist('dff2p5s')==1 
@@ -1565,7 +1565,7 @@ n4p1so = 0;
             T2p5sc=table(dff2p5sc);
             writetable(T2p5sc,foutputfile2p5s,'Sheet','middle_connection','WriteVariableNames',false); 
         end
-      fig2p5s=figure();
+      fig2p5s=figure('Name',foutputimg2p5s);
         plot(dff2p5s);
         %legend(name2p5s,'Location','southeast');
         saveas(fig2p5s,foutputimg2p5s,'epsc');
@@ -1623,7 +1623,7 @@ n4p1so = 0;
             T4p5sc=table(dff4p5sc);
             writetable(T4p5sc,foutputfile4p5s,'Sheet','middle_connection','WriteVariableNames',false); 
         end
-        fig4p5s=figure();
+        fig4p5s=figure('Name',foutputimg4p5s);
         plot(dff4p5s);
         %legend(name4p5s,'Location','southeast');
         saveas(fig4p5s,foutputimg4p5s,'epsc');
@@ -1680,7 +1680,7 @@ n4p1so = 0;
             writetable(T1p20sc,foutputfile1p20s,'Sheet','middle_connection','WriteVariableNames',false); 
         end
         
-        fig1p20s=figure();
+        fig1p20s=figure('Name',foutputimg1p20s);
         plot(dff1p20s);
         %legend(name1p20s,'Location','southeast');
         saveas(fig1p20s,foutputimg1p20s,'epsc');
@@ -1735,7 +1735,7 @@ n4p1so = 0;
             T2p20sc=table(dff2p20sc);
             writetable(T2p20sc,foutputfile2p20s,'Sheet','middle_connection','WriteVariableNames',false); 
         end
-        fig2p20s=figure();
+        fig2p20s=figure('Name',foutputimg2p20s);
         plot(dff2p20s);
         %legend(name2p20s,'Location','southeast');
         saveas(fig2p20s,foutputimg2p20s,'epsc');
@@ -1790,7 +1790,7 @@ n4p1so = 0;
             T4p1sc=table(dff4p1sc);
             writetable(T4p1sc,foutputfile4p1s,'Sheet','middle_connection','WriteVariableNames',false); 
         end
-        fig4p1s=figure();
+        fig4p1s=figure('Name',foutputimg4p1s);
         plot(dff4p1s);
         %legend(name4p1s,'Location','southeast');
         saveas(fig4p1s,foutputimg4p1s,'epsc');
@@ -1845,13 +1845,13 @@ n4p1so = 0;
             T4p2sc=table(dff4p2sc);
             writetable(T4p2sc,foutputfile4p2s,'Sheet','middle_connection','WriteVariableNames',false); 
         end
-        fig4p2s=figure();
+        fig4p2s=figure('Name',foutputimg4p2s);
         plot(dff4p2s);
         %legend(name4p1s,'Location','southeast');
         saveas(fig4p2s,foutputimg4p2s,'epsc');
         end
                 
-n1p5s = 0;
+n4p200ms = 0;
 n2p5s = 0;
 n4p5s =0;
 n1p20s =0;
@@ -1859,16 +1859,16 @@ n2p20s =0;
 n4p1s =0;
 n4p2s =0;
 
- n1p5so = 0;
- n1p5sms = 0;
- n1p5sl = 0;
- n1p5slc = 0;
- n1p5sfs =0;
- n1p5sdd = 0;
- n1p5sfl =0;
- n1p5sds =0;
- n1p5smd =0;
- n1p5sc =0;
+ n4p200mso = 0;
+ n4p200msms = 0;
+ n4p200msl = 0;
+ n4p200mslc = 0;
+ n4p200msfs =0;
+ n4p200msdd = 0;
+ n4p200msfl =0;
+ n4p200msds =0;
+ n4p200msmd =0;
+ n4p200msc =0;
  
  n2p5so = 0;
  n2p5sms = 0;
@@ -1942,51 +1942,51 @@ n4p1so = 0;
         for v = 1:length(filenames)
             if male ==1 %males
                 if experimentals(v) ==0 %controls
-            if non1p5s(v) == 0 %if the file has a 1pulse_5s pulse protocol
+            if non4p200ms(v) == 0 %if the file has a 1pulse_5s pulse protocol
                
-                n1p5s =n1p5s+1;
-                dff1p5s(:,n1p5s) =   dff(:,v); %make a new matrix to safe dff of all files with this pulse protocol
-                name1p5s(n1p5s)=filenames(v);
+                n4p200ms =n4p200ms+1;
+                dff4p200ms(:,n4p200ms) =   dff(:,v); %make a new matrix to safe dff of all files with this pulse protocol
+                name4p200ms(n4p200ms)=filenames(v);
                 if nonoverview(v) == 0
-                   n1p5so = n1p5so + 1;
-                   dff1p5so(:,n1p5so) = dff(:,v);
-                   name1p5so(n1p5so)=filenames(v);
+                   n4p200mso = n4p200mso + 1;
+                   dff4p200mso(:,n4p200mso) = dff(:,v);
+                   name4p200mso(n4p200mso)=filenames(v);
                 elseif nonmiddlesup(v) == 0
-                   n1p5sms = n1p5sms + 1;
-                   dff1p5sms(:,n1p5sms) = dff(:,v);
-                   name1p5sms(n1p5sms)=filenames(v);
+                   n4p200msms = n4p200msms + 1;
+                   dff4p200msms(:,n4p200msms) = dff(:,v);
+                   name4p200msms(n4p200msms)=filenames(v);
                 elseif nonlateral(v) == 0
-                   n1p5sl = n1p5sl + 1;
-                   dff1p5sl(:,n1p5sl) = dff(:,v);
-                   name1p5sl(n1p5sl)=filenames(v);
+                   n4p200msl = n4p200msl + 1;
+                   dff4p200msl(:,n4p200msl) = dff(:,v);
+                   name4p200msl(n4p200msl)=filenames(v);
                  elseif nonlatcell(v) == 0
-                   n1p5slc = n1p5slc + 1;
-                   dff1p5slc(:,n1p5slc) = dff(:,v);
-                   name1p5slc(n1p5slc)=filenames(v);
+                   n4p200mslc = n4p200mslc + 1;
+                   dff4p200mslc(:,n4p200mslc) = dff(:,v);
+                   name4p200mslc(n4p200mslc)=filenames(v);
                  elseif nonfrontalsup(v) == 0
-                   n1p5sfs = n1p5sfs + 1;
-                   dff1p5sfs(:,n1p5sfs) = dff(:,v);
-                   name1p5sfs(n1p5sfs)=filenames(v);
+                   n4p200msfs = n4p200msfs + 1;
+                   dff4p200msfs(:,n4p200msfs) = dff(:,v);
+                   name4p200msfs(n4p200msfs)=filenames(v);
                  elseif nondorsaldeep(v) == 0
-                   n1p5sdd = n1p5sdd + 1;
-                   dff1p5sdd(:,n1p5sdd) = dff(:,v);
-                   name1p5sdd(n1p5sdd)=filenames(v);
+                   n4p200msdd = n4p200msdd + 1;
+                   dff4p200msdd(:,n4p200msdd) = dff(:,v);
+                   name4p200msdd(n4p200msdd)=filenames(v);
                  elseif nonfrontallat(v) == 0
-                   n1p5sfl = n1p5sfl + 1;
-                   dff1p5sfl(:,n1p5sfl) = dff(:,v);
-                   name1p5sfl(n1p5sfl)=filenames(v);
+                   n4p200msfl = n4p200msfl + 1;
+                   dff4p200msfl(:,n4p200msfl) = dff(:,v);
+                   name4p200msfl(n4p200msfl)=filenames(v);
                   elseif nondorsalsup(v) == 0
-                   n1p5sds = n1p5sds + 1;
-                   dff1p5sds(:,n1p5sds) = dff(:,v);
-                   name1p5sds(n1p5sds)=filenames(v);
+                   n4p200msds = n4p200msds + 1;
+                   dff4p200msds(:,n4p200msds) = dff(:,v);
+                   name4p200msds(n4p200msds)=filenames(v);
                   elseif nonmiddledeep(v) == 0
-                   n1p5smd = n1p5smd + 1;
-                   dff1p5smd(:,n1p5smd) = dff(:,v);
-                   name1p5smd(n1p5smd)=filenames(v);
+                   n4p200msmd = n4p200msmd + 1;
+                   dff4p200msmd(:,n4p200msmd) = dff(:,v);
+                   name4p200msmd(n4p200msmd)=filenames(v);
                   elseif nonconnect(v) == 0
-                   n1p5sc = n1p5sc + 1;
-                   dff1p5sc(:,n1p5sc) = dff(:,v);
-                   name1p5sc(n1p5sc)=filenames(v);
+                   n4p200msc = n4p200msc + 1;
+                   dff4p200msc(:,n4p200msc) = dff(:,v);
+                   name4p200msc(n4p200msc)=filenames(v);
                     
                   end   
                
@@ -2278,67 +2278,67 @@ n4p1so = 0;
         end
         
         warning('off','MATLAB:xlswrite:AddSheet')
-        if exist('dff1p5s') == 1
+        if exist('dff4p200ms') == 1
             %make the output table
-        T1p5s=table(dff1p5s);
+        T4p200ms=table(dff4p200ms);
        
-        T1p5snames=table(name1p5s);
-        mean1p5s=mean(dff1p5s,2);
-         Tmean1p5s=table(mean1p5s);
+        T4p200msnames=table(name4p200ms);
+        mean4p200ms=mean(dff4p200ms,2);
+         Tmean4p200ms=table(mean4p200ms);
         cd(outputdirv);% go to output directory
         %wirte the table to an excel spreadsheet; names are written to
         %second spreadsheet in the file
-        writetable(T1p5s,coutputfile1p5s,'Sheet',1,'WriteVariableNames',false);
-        writetable(T1p5snames,coutputfile1p5s,'Sheet',2,'WriteVariableNames',false);
-         writetable(Tmean1p5s,coutputfile1p5s,'Sheet','mean','WriteVariableNames',false);
-        if exist('dff1p5so') ==1
-            T1p5so=table(dff1p5so);
-            writetable(T1p5so,coutputfile1p5s,'Sheet','overview','WriteVariableNames',false); 
+        writetable(T4p200ms,coutputfile4p200ms,'Sheet',1,'WriteVariableNames',false);
+        writetable(T4p200msnames,coutputfile4p200ms,'Sheet',2,'WriteVariableNames',false);
+         writetable(Tmean4p200ms,coutputfile4p200ms,'Sheet','mean','WriteVariableNames',false);
+        if exist('dff4p200mso') ==1
+            T4p200mso=table(dff4p200mso);
+            writetable(T4p200mso,coutputfile4p200ms,'Sheet','overview','WriteVariableNames',false); 
         end
         
-         if exist('dff1p5sms') ==1
-            T1p5sms=table(dff1p5sms);
-            writetable(T1p5sms,coutputfile1p5s,'Sheet','medial_superficial','WriteVariableNames',false); 
+         if exist('dff4p200msms') ==1
+            T4p200msms=table(dff4p200msms);
+            writetable(T4p200msms,coutputfile4p200ms,'Sheet','medial_superficial','WriteVariableNames',false); 
          end
-          if exist('dff1p5sl') ==1
-            T1p5sl=table(dff1p5sl);
-            writetable(T1p5sl,coutputfile1p5s,'Sheet','lateral_mid','WriteVariableNames',false); 
+          if exist('dff4p200msl') ==1
+            T4p200msl=table(dff4p200msl);
+            writetable(T4p200msl,coutputfile4p200ms,'Sheet','lateral_mid','WriteVariableNames',false); 
           end
-         if exist('dff1p5slc') ==1
-            T1p5slc=table(dff1p5slc);
-            writetable(T1p5slc,coutputfile1p5s,'Sheet','lateral_deep','WriteVariableNames',false); 
+         if exist('dff4p200mslc') ==1
+            T4p200mslc=table(dff4p200mslc);
+            writetable(T4p200mslc,coutputfile4p200ms,'Sheet','lateral_deep','WriteVariableNames',false); 
          end
-         if exist('dff1p5sfs') ==1
-            T1p5sfs=table(dff1p5sfs);
-            writetable(T1p5sfs,coutputfile1p5s,'Sheet','lateral_sup','WriteVariableNames',false); 
+         if exist('dff4p200msfs') ==1
+            T4p200msfs=table(dff4p200msfs);
+            writetable(T4p200msfs,coutputfile4p200ms,'Sheet','lateral_sup','WriteVariableNames',false); 
         end
-         if exist('dff1p5sdd') ==1
-            T1p5sdd=table(dff1p5sdd);
-            writetable(T1p5sdd,coutputfile1p5s,'Sheet','dorsal_deep','WriteVariableNames',false); 
+         if exist('dff4p200msdd') ==1
+            T4p200msdd=table(dff4p200msdd);
+            writetable(T4p200msdd,coutputfile4p200ms,'Sheet','dorsal_deep','WriteVariableNames',false); 
          end
-         if exist('dff1p5sfl') ==1
-            T1p5sfl=table(dff1p5sfl);
-            writetable(T1p5sfl,coutputfile1p5s,'Sheet','frontal_lateral','WriteVariableNames',false); 
+         if exist('dff4p200msfl') ==1
+            T4p200msfl=table(dff4p200msfl);
+            writetable(T4p200msfl,coutputfile4p200ms,'Sheet','frontal_lateral','WriteVariableNames',false); 
          end
-         if exist('dff1p5sds') ==1
-            T1p5sds=table(dff1p5sds);
-            writetable(T1p5sds,coutputfile1p5s,'Sheet','cellbodies','WriteVariableNames',false); 
+         if exist('dff4p200msds') ==1
+            T4p200msds=table(dff4p200msds);
+            writetable(T4p200msds,coutputfile4p200ms,'Sheet','cellbodies','WriteVariableNames',false); 
          end
-         if exist('dff1p5smd') ==1
-            T1p5smd=table(dff1p5smd);
-            writetable(T1p5smd,coutputfile1p5s,'Sheet','medial_deep','WriteVariableNames',false); 
+         if exist('dff4p200msmd') ==1
+            T4p200msmd=table(dff4p200msmd);
+            writetable(T4p200msmd,coutputfile4p200ms,'Sheet','medial_deep','WriteVariableNames',false); 
          end
-         if exist('dff1p5sc') ==1
-            T1p5sc=table(dff1p5sc);
-            writetable(T1p5sc,coutputfile1p5s,'Sheet','middle_connection','WriteVariableNames',false); 
+         if exist('dff4p200msc') ==1
+            T4p200msc=table(dff4p200msc);
+            writetable(T4p200msc,coutputfile4p200ms,'Sheet','middle_connection','WriteVariableNames',false); 
         end
         
         %make output figure
-        fig1p5s=figure();
-        plot(dff1p5s);
-        %legend(name1p5s,'Location','southeast');
+        fig4p200ms=figure('Name',coutputimg4p200ms);
+        plot(dff4p200ms);
+        %legend(name4p200ms,'Location','southeast');
         %save figure as eps in colours
-        saveas(fig1p5s,coutputimg1p5s,'epsc');
+        saveas(fig4p200ms,coutputimg4p200ms,'epsc');
         
         end
         if exist('dff2p5s')==1 
@@ -2392,7 +2392,7 @@ n4p1so = 0;
             T2p5sc=table(dff2p5sc);
             writetable(T2p5sc,coutputfile2p5s,'Sheet','middle_connection','WriteVariableNames',false); 
         end
-      fig2p5s=figure();
+      fig2p5s=figure('Name',coutputimg2p5s);
         plot(dff2p5s);
         %legend(name2p5s,'Location','southeast');
         saveas(fig2p5s,coutputimg2p5s,'epsc');
@@ -2450,7 +2450,7 @@ n4p1so = 0;
             T4p5sc=table(dff4p5sc);
             writetable(T4p5sc,coutputfile4p5s,'Sheet','middle_connection','WriteVariableNames',false); 
         end
-        fig4p5s=figure();
+        fig4p5s=figure('Name',coutputimg4p5s);
         plot(dff4p5s);
         %legend(name4p5s,'Location','southeast');
         saveas(fig4p5s,coutputimg4p5s,'epsc');
@@ -2507,7 +2507,7 @@ n4p1so = 0;
             writetable(T1p20sc,coutputfile1p20s,'Sheet','middle_connection','WriteVariableNames',false); 
         end
         
-        fig1p20s=figure();
+        fig1p20s=figure('Name',coutputimg1p20s);
         plot(dff1p20s);
         %legend(name1p20s,'Location','southeast');
         saveas(fig1p20s,coutputimg1p20s,'epsc');
@@ -2562,7 +2562,7 @@ n4p1so = 0;
             T2p20sc=table(dff2p20sc);
             writetable(T2p20sc,coutputfile2p20s,'Sheet','middle_connection','WriteVariableNames',false); 
         end
-        fig2p20s=figure();
+        fig2p20s=figure('Name',coutputimg2p20s);
         plot(dff2p20s);
         %legend(name2p20s,'Location','southeast');
         saveas(fig2p20s,coutputimg2p20s,'epsc');
@@ -2617,7 +2617,7 @@ n4p1so = 0;
             T4p1sc=table(dff4p1sc);
             writetable(T4p1sc,coutputfile4p1s,'Sheet','middle_connection','WriteVariableNames',false); 
         end
-        fig4p1s=figure();
+        fig4p1s=figure('Name',coutputimg4p1s);
         plot(dff4p1s);
         %legend(name4p1s,'Location','southeast');
         saveas(fig4p1s,coutputimg4p1s,'epsc');
@@ -2672,13 +2672,13 @@ n4p1so = 0;
             T4p2sc=table(dff4p2sc);
             writetable(T4p2sc,coutputfile4p2s,'Sheet','middle_connection','WriteVariableNames',false); 
         end
-        fig4p2s=figure();
+        fig4p2s=figure('Name',coutputimg4p2s);
         plot(dff4p2s);
         %legend(name4p1s,'Location','southeast');
         saveas(fig4p2s,coutputimg4p2s,'epsc');
         end
         
-n1p5s = 0;
+n4p200ms = 0;
 n2p5s = 0;
 n4p5s =0;
 n1p20s =0;
@@ -2686,16 +2686,16 @@ n2p20s =0;
 n4p1s =0;
 n4p2s =0;
 
- n1p5so = 0;
- n1p5sms = 0;
- n1p5sl = 0;
- n1p5slc = 0;
- n1p5sfs =0;
- n1p5sdd = 0;
- n1p5sfl =0;
- n1p5sds =0;
- n1p5smd =0;
- n1p5sc =0;
+ n4p200mso = 0;
+ n4p200msms = 0;
+ n4p200msl = 0;
+ n4p200mslc = 0;
+ n4p200msfs =0;
+ n4p200msdd = 0;
+ n4p200msfl =0;
+ n4p200msds =0;
+ n4p200msmd =0;
+ n4p200msc =0;
  
  n2p5so = 0;
  n2p5sms = 0;
@@ -2769,51 +2769,51 @@ n4p1so = 0;
         for v = 1:length(filenames)
             if male ==0 %females
                 if experimentals (v)==0 %controls
-            if non1p5s(v) == 0 %if the file has a 1pulse_5s pulse protocol
+            if non4p200ms(v) == 0 %if the file has a 1pulse_5s pulse protocol
                
-                n1p5s =n1p5s+1;
-                dff1p5s(:,n1p5s) =   dff(:,v); %make a new matrix to safe dff of all files with this pulse protocol
-                name1p5s(n1p5s)=filenames(v);
+                n4p200ms =n4p200ms+1;
+                dff4p200ms(:,n4p200ms) =   dff(:,v); %make a new matrix to safe dff of all files with this pulse protocol
+                name4p200ms(n4p200ms)=filenames(v);
                 if nonoverview(v) == 0
-                   n1p5so = n1p5so + 1;
-                   dff1p5so(:,n1p5so) = dff(:,v);
-                   name1p5so(n1p5so)=filenames(v);
+                   n4p200mso = n4p200mso + 1;
+                   dff4p200mso(:,n4p200mso) = dff(:,v);
+                   name4p200mso(n4p200mso)=filenames(v);
                 elseif nonmiddlesup(v) == 0
-                   n1p5sms = n1p5sms + 1;
-                   dff1p5sms(:,n1p5sms) = dff(:,v);
-                   name1p5sms(n1p5sms)=filenames(v);
+                   n4p200msms = n4p200msms + 1;
+                   dff4p200msms(:,n4p200msms) = dff(:,v);
+                   name4p200msms(n4p200msms)=filenames(v);
                 elseif nonlateral(v) == 0
-                   n1p5sl = n1p5sl + 1;
-                   dff1p5sl(:,n1p5sl) = dff(:,v);
-                   name1p5sl(n1p5sl)=filenames(v);
+                   n4p200msl = n4p200msl + 1;
+                   dff4p200msl(:,n4p200msl) = dff(:,v);
+                   name4p200msl(n4p200msl)=filenames(v);
                  elseif nonlatcell(v) == 0
-                   n1p5slc = n1p5slc + 1;
-                   dff1p5slc(:,n1p5slc) = dff(:,v);
-                   name1p5slc(n1p5slc)=filenames(v);
+                   n4p200mslc = n4p200mslc + 1;
+                   dff4p200mslc(:,n4p200mslc) = dff(:,v);
+                   name4p200mslc(n4p200mslc)=filenames(v);
                  elseif nonfrontalsup(v) == 0
-                   n1p5sfs = n1p5sfs + 1;
-                   dff1p5sfs(:,n1p5sfs) = dff(:,v);
-                   name1p5sfs(n1p5sfs)=filenames(v);
+                   n4p200msfs = n4p200msfs + 1;
+                   dff4p200msfs(:,n4p200msfs) = dff(:,v);
+                   name4p200msfs(n4p200msfs)=filenames(v);
                  elseif nondorsaldeep(v) == 0
-                   n1p5sdd = n1p5sdd + 1;
-                   dff1p5sdd(:,n1p5sdd) = dff(:,v);
-                   name1p5sdd(n1p5sdd)=filenames(v);
+                   n4p200msdd = n4p200msdd + 1;
+                   dff4p200msdd(:,n4p200msdd) = dff(:,v);
+                   name4p200msdd(n4p200msdd)=filenames(v);
                  elseif nonfrontallat(v) == 0
-                   n1p5sfl = n1p5sfl + 1;
-                   dff1p5sfl(:,n1p5sfl) = dff(:,v);
-                   name1p5sfl(n1p5sfl)=filenames(v);
+                   n4p200msfl = n4p200msfl + 1;
+                   dff4p200msfl(:,n4p200msfl) = dff(:,v);
+                   name4p200msfl(n4p200msfl)=filenames(v);
                   elseif nondorsalsup(v) == 0
-                   n1p5sds = n1p5sds + 1;
-                   dff1p5sds(:,n1p5sds) = dff(:,v);
-                   name1p5sds(n1p5sds)=filenames(v);
+                   n4p200msds = n4p200msds + 1;
+                   dff4p200msds(:,n4p200msds) = dff(:,v);
+                   name4p200msds(n4p200msds)=filenames(v);
                   elseif nonmiddledeep(v) == 0
-                   n1p5smd = n1p5smd + 1;
-                   dff1p5smd(:,n1p5smd) = dff(:,v);
-                   name1p5smd(n1p5smd)=filenames(v);
+                   n4p200msmd = n4p200msmd + 1;
+                   dff4p200msmd(:,n4p200msmd) = dff(:,v);
+                   name4p200msmd(n4p200msmd)=filenames(v);
                   elseif nonconnect(v) == 0
-                   n1p5sc = n1p5sc + 1;
-                   dff1p5sc(:,n1p5sc) = dff(:,v);
-                   name1p5sc(n1p5sc)=filenames(v);
+                   n4p200msc = n4p200msc + 1;
+                   dff4p200msc(:,n4p200msc) = dff(:,v);
+                   name4p200msc(n4p200msc)=filenames(v);
                     
                   end   
                
@@ -3105,67 +3105,67 @@ n4p1so = 0;
         end
         
         warning('off','MATLAB:xlswrite:AddSheet')
-        if exist('dff1p5s') == 1
+        if exist('dff4p200ms') == 1
             %make the output table
-        T1p5s=table(dff1p5s);
+        T4p200ms=table(dff4p200ms);
        
-        T1p5snames=table(name1p5s);
-        mean1p5s=mean(dff1p5s,2);
-         Tmean1p5s=table(mean1p5s);
+        T4p200msnames=table(name4p200ms);
+        mean4p200ms=mean(dff4p200ms,2);
+         Tmean4p200ms=table(mean4p200ms);
         cd(outputdirv);% go to output directory
         %wirte the table to an excel spreadsheet; names are written to
         %second spreadsheet in the file
-        writetable(T1p5s,cfoutputfile1p5s,'Sheet',1,'WriteVariableNames',false);
-        writetable(T1p5snames,cfoutputfile1p5s,'Sheet',2,'WriteVariableNames',false);
-         writetable(Tmean1p5s,cfoutputfile1p5s,'Sheet','mean','WriteVariableNames',false);
-        if exist('dff1p5so') ==1
-            T1p5so=table(dff1p5so);
-            writetable(T1p5so,cfoutputfile1p5s,'Sheet','overview','WriteVariableNames',false); 
+        writetable(T4p200ms,cfoutputfile4p200ms,'Sheet',1,'WriteVariableNames',false);
+        writetable(T4p200msnames,cfoutputfile4p200ms,'Sheet',2,'WriteVariableNames',false);
+         writetable(Tmean4p200ms,cfoutputfile4p200ms,'Sheet','mean','WriteVariableNames',false);
+        if exist('dff4p200mso') ==1
+            T4p200mso=table(dff4p200mso);
+            writetable(T4p200mso,cfoutputfile4p200ms,'Sheet','overview','WriteVariableNames',false); 
         end
         
-         if exist('dff1p5sms') ==1
-            T1p5sms=table(dff1p5sms);
-            writetable(T1p5sms,cfoutputfile1p5s,'Sheet','medial_superficial','WriteVariableNames',false); 
+         if exist('dff4p200msms') ==1
+            T4p200msms=table(dff4p200msms);
+            writetable(T4p200msms,cfoutputfile4p200ms,'Sheet','medial_superficial','WriteVariableNames',false); 
          end
-          if exist('dff1p5sl') ==1
-            T1p5sl=table(dff1p5sl);
-            writetable(T1p5sl,cfoutputfile1p5s,'Sheet','lateral_mid','WriteVariableNames',false); 
+          if exist('dff4p200msl') ==1
+            T4p200msl=table(dff4p200msl);
+            writetable(T4p200msl,cfoutputfile4p200ms,'Sheet','lateral_mid','WriteVariableNames',false); 
           end
-         if exist('dff1p5slc') ==1
-            T1p5slc=table(dff1p5slc);
-            writetable(T1p5slc,cfoutputfile1p5s,'Sheet','lateral_deep','WriteVariableNames',false); 
+         if exist('dff4p200mslc') ==1
+            T4p200mslc=table(dff4p200mslc);
+            writetable(T4p200mslc,cfoutputfile4p200ms,'Sheet','lateral_deep','WriteVariableNames',false); 
          end
-         if exist('dff1p5sfs') ==1
-            T1p5sfs=table(dff1p5sfs);
-            writetable(T1p5sfs,cfoutputfile1p5s,'Sheet','lateral_sup','WriteVariableNames',false); 
+         if exist('dff4p200msfs') ==1
+            T4p200msfs=table(dff4p200msfs);
+            writetable(T4p200msfs,cfoutputfile4p200ms,'Sheet','lateral_sup','WriteVariableNames',false); 
         end
-         if exist('dff1p5sdd') ==1
-            T1p5sdd=table(dff1p5sdd);
-            writetable(T1p5sdd,cfoutputfile1p5s,'Sheet','dorsal_deep','WriteVariableNames',false); 
+         if exist('dff4p200msdd') ==1
+            T4p200msdd=table(dff4p200msdd);
+            writetable(T4p200msdd,cfoutputfile4p200ms,'Sheet','dorsal_deep','WriteVariableNames',false); 
          end
-         if exist('dff1p5sfl') ==1
-            T1p5sfl=table(dff1p5sfl);
-            writetable(T1p5sfl,cfoutputfile1p5s,'Sheet','frontal_lateral','WriteVariableNames',false); 
+         if exist('dff4p200msfl') ==1
+            T4p200msfl=table(dff4p200msfl);
+            writetable(T4p200msfl,cfoutputfile4p200ms,'Sheet','frontal_lateral','WriteVariableNames',false); 
          end
-         if exist('dff1p5sds') ==1
-            T1p5sds=table(dff1p5sds);
-            writetable(T1p5sds,cfoutputfile1p5s,'Sheet','cellbodies','WriteVariableNames',false); 
+         if exist('dff4p200msds') ==1
+            T4p200msds=table(dff4p200msds);
+            writetable(T4p200msds,cfoutputfile4p200ms,'Sheet','cellbodies','WriteVariableNames',false); 
          end
-         if exist('dff1p5smd') ==1
-            T1p5smd=table(dff1p5smd);
-            writetable(T1p5smd,cfoutputfile1p5s,'Sheet','medial_deep','WriteVariableNames',false); 
+         if exist('dff4p200msmd') ==1
+            T4p200msmd=table(dff4p200msmd);
+            writetable(T4p200msmd,cfoutputfile4p200ms,'Sheet','medial_deep','WriteVariableNames',false); 
          end
-         if exist('dff1p5sc') ==1
-            T1p5sc=table(dff1p5sc);
-            writetable(T1p5sc,cfoutputfile1p5s,'Sheet','middle_connection','WriteVariableNames',false); 
+         if exist('dff4p200msc') ==1
+            T4p200msc=table(dff4p200msc);
+            writetable(T4p200msc,cfoutputfile4p200ms,'Sheet','middle_connection','WriteVariableNames',false); 
         end
         
         %make output figure
-        fig1p5s=figure();
-        plot(dff1p5s);
-        %legend(name1p5s,'Location','southeast');
+        fig4p200ms=figure('Name',cfoutputimg4p200ms);
+        plot(dff4p200ms);
+        %legend(name4p200ms,'Location','southeast');
         %save figure as eps in colours
-        saveas(fig1p5s,cfoutputimg1p5s,'epsc');
+        saveas(fig4p200ms,cfoutputimg4p200ms,'epsc');
         
         end
         if exist('dff2p5s')==1 
@@ -3219,7 +3219,7 @@ n4p1so = 0;
             T2p5sc=table(dff2p5sc);
             writetable(T2p5sc,cfoutputfile2p5s,'Sheet','middle_connection','WriteVariableNames',false); 
         end
-      fig2p5s=figure();
+      fig2p5s=figure('Name',cfoutputimg2p5s);
         plot(dff2p5s);
         %legend(name2p5s,'Location','southeast');
         saveas(fig2p5s,cfoutputimg2p5s,'epsc');
@@ -3277,7 +3277,7 @@ n4p1so = 0;
             T4p5sc=table(dff4p5sc);
             writetable(T4p5sc,cfoutputfile4p5s,'Sheet','middle_connection','WriteVariableNames',false); 
         end
-        fig4p5s=figure();
+        fig4p5s=figure('Name',cfoutputimg4p5s);
         plot(dff4p5s);
         %legend(name4p5s,'Location','southeast');
         saveas(fig4p5s,cfoutputimg4p5s,'epsc');
@@ -3334,7 +3334,7 @@ n4p1so = 0;
             writetable(T1p20sc,cfoutputfile1p20s,'Sheet','middle_connection','WriteVariableNames',false); 
         end
         
-        fig1p20s=figure();
+        fig1p20s=figure('Name',cfoutputimg1p20s);
         plot(dff1p20s);
         %legend(name1p20s,'Location','southeast');
         saveas(fig1p20s,cfoutputimg1p20s,'epsc');
@@ -3389,7 +3389,7 @@ n4p1so = 0;
             T2p20sc=table(dff2p20sc);
             writetable(T2p20sc,cfoutputfile2p20s,'Sheet','middle_connection','WriteVariableNames',false); 
         end
-        fig2p20s=figure();
+        fig2p20s=figure('Name',cfoutputimg2p20s);
         plot(dff2p20s);
         %legend(name2p20s,'Location','southeast');
         saveas(fig2p20s,cfoutputimg2p20s,'epsc');
@@ -3444,7 +3444,7 @@ n4p1so = 0;
             T4p1sc=table(dff4p1sc);
             writetable(T4p1sc,cfoutputfile4p1s,'Sheet','middle_connection','WriteVariableNames',false); 
         end
-        fig4p1s=figure();
+        fig4p1s=figure('Name',cfoutputimg4p1s);
         plot(dff4p1s);
         %legend(name4p1s,'Location','southeast');
         saveas(fig4p1s,cfoutputimg4p1s,'epsc');
@@ -3499,7 +3499,7 @@ n4p1so = 0;
             T4p2sc=table(dff4p2sc);
             writetable(T4p2sc,cfoutputfile4p2s,'Sheet','middle_connection','WriteVariableNames',false); 
         end
-        fig4p2s=figure();
+        fig4p2s=figure('Name',cfoutputimg4p2s);
         plot(dff4p2s);
         %legend(name4p1s,'Location','southeast');
         saveas(fig4p2s,cfoutputimg4p2s,'epsc');
