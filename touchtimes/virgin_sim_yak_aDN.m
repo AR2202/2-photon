@@ -14,8 +14,7 @@ startdir=pwd;
 pathname='/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/imaging_preprocessed';
 %pathname has to be the path to the folder were files to be processed are
 %located
-foldername='2019_06_13'
-0';%the name of the imaging folder
+foldername='2019_06_28';%the name of the imaging folder
 subfoldername='ROI';%must be a folder within the imaging folder
 stackdir = fullfile(pathname,foldername,subfoldername);
 outputdirv=('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/Results');
