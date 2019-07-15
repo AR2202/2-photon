@@ -35,15 +35,7 @@ ii = 1;
 
 
  
-%These are the strings that must appear in the names and specify which type
-%of experiment it is. For example: 1p05s stands for 1 pulse of 5s
-%namestrings=['1p05s.xlsx';'2p05s.xlsx';'4p05s.xlsx';'1p20s.xlsx';'2p20s.xlsx';'4p01s.xlsx';'1p01s.xlsx'];
-%for nn = 1:size(namestrings,1)%loop through all namestrings
-    %identify the correct pulsetimes from the name of the file
- %   pulsetimes=eval(strcat('pulsetimes',strrep(namestrings(nn,:),'.xlsx','')));
-    %identify the pulseduration from the name of the file
-  %  pulsedurstring=strrep(strcat('pulsedur',regexprep(namestrings(nn,:),'(\w)p','')),'.xlsx','');
-   % pulsedur=eval(pulsedurstring);
+
  
 cd(touchdir)
 %find files with the namestring in it
