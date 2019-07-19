@@ -14,9 +14,9 @@ numberframes=600;% number of frames
 duration_acquisition = numberframes/framerate; 
 
 startdir=pwd;
-pathname='/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/touchtimes_GCaMP6s_l_r_reduced';
+pathname='/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/touchtimes_GCaMP7_l_r_reduced';
 
-touchdir = ('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/touchtimes_GCaMP6s_l_r_reduced');
+touchdir = ('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/touchtimes_GCaMP7_l_r_reduced');
 % The folder where the touchtimes files are located
 resultsdir = ('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/Results');
 % The folder where the results of single experiments are located

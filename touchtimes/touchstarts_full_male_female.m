@@ -20,12 +20,12 @@
 %use of reduced touchtimes option requires the name of touch directory to
 %contain the string 'reduced'
 
-touchdir = ('/Users/annika/Documents/projects/dsx_GABAergic_neurons/imaging/aDN_female_male_touch/touchtimes_l_r_reduced');
+touchdir = ('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/touchtimes_GCaMP6s_l_r_reduced');
 % The folder where the touchtimes files are located
-resultsdir = ('/Users/annika/Documents/projects/dsx_GABAergic_neurons/imaging/aDN_female_male_touch/Results');
+resultsdir = ('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/Results');
 % The folder where the results of single experiments are located
-outputdirmean=('/Users/annika/Documents/projects/dsx_GABAergic_neurons/imaging/aDN_female_male_touch/Results_mean');
-outputdirsingles=('/Users/annika/Documents/projects/dsx_GABAergic_neurons/imaging/aDN_female_male_touch/Results_single_exp');
+outputdirmean=('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/Results');
+outputdirsingles=('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/Results_single_exp');
 %The folder where the mean data should be written to
 
 %This part of the script reads in the data
@@ -95,24 +95,48 @@ combinedtable_male = combinedtable( contains(string(combinedtable.t_foundfilenam
 
 combinedtable_male_contra = combinedtable_contra( contains(string(combinedtable_contra.t_foundfilename),'_male_fly'), : ); 
 %extract the different species from the table
+
+%for ipsilateral touchts
 simtable_m = combinedtable_male( contains(string(combinedtable_male.t_foundin),'simulans'), : ); 
 yaktable_m = combinedtable_male( contains(string(combinedtable_male.t_foundin),'yakuba'), : ); 
 virtable_m = combinedtable_male( contains(string(combinedtable_male.t_foundin),'vir'), : ); 
 maletable_m = combinedtable_male( contains(string(combinedtable_male.t_foundin),'male'), : ); 
+oenegftable_m = combinedtable_male( contains(string(combinedtable_male.t_foundin),'oenegf'), : ); 
+oenegmtable_m = combinedtable_male( contains(string(combinedtable_male.t_foundin),'oenegm'), : ); 
+balltable_m = combinedtable_male( contains(string(combinedtable_male.t_foundin),'ball'), : ); 
+%contralateral touches
 simtable_m_contra = combinedtable_male_contra( contains(string(combinedtable_male_contra.t_foundin),'simulans'), : ); 
 yaktable_m_contra = combinedtable_male_contra( contains(string(combinedtable_male_contra.t_foundin),'yakuba'), : ); 
 virtable_m_contra = combinedtable_male_contra( contains(string(combinedtable_male_contra.t_foundin),'vir'), : ); 
 maletable_m_contra = combinedtable_male_contra( contains(string(combinedtable_male_contra.t_foundin),'male'), : ); 
+oenegftable_m_contra = combinedtable_male_contra( contains(string(combinedtable_male_contra.t_foundin),'oenegf'), : ); 
+oenegmtable_m_contra = combinedtable_male_contra( contains(string(combinedtable_male_contra.t_foundin),'oenegm'), : ); 
+balltable_m_contra = combinedtable_male_contra( contains(string(combinedtable_male_contra.t_foundin),'ball'), : ); 
 
+%convert the tables to cell arrays
+%ipsi
 simdata_m=table2cell(simtable_m);
 yakdata_m=table2cell(yaktable_m);
 virdata_m=table2cell(virtable_m);
 maledata_m=table2cell(maletable_m);
-simdata_m_contra=table2cell(simtable_m);
-yakdata_m_contra=table2cell(yaktable_m);
-virdata_m_contra=table2cell(virtable_m);
-maledata_m_contra=table2cell(maletable_m);
-%mean of virgin
+oenegfdata_m=table2cell(oenegftable_m);
+oenegmdata_m=table2cell(oenegmtable_m);
+balldata_m=table2cell(balltable_m);
+%contra
+
+simdata_m_contra=table2cell(simtable_m_contra);
+yakdata_m_contra=table2cell(yaktable_m_contra);
+virdata_m_contra=table2cell(virtable_m_contra);
+maledata_m_contra=table2cell(maletable_m_contra);
+oenegfdata_m_contra=table2cell(oenegftable_m_contra);
+oenegmdata_m_contra=table2cell(oenegmtable_m_contra);
+balldata_m_contra=table2cell(balltable_m_contra);
+
+
+
+
+
+%mean of male touching a virgin
  
 vir_eventpeaks_mean_m=mean(cell2mat(virtable_m.eventpeaks_mean));
 vir_eventpeaks_SEM=std(cell2mat(virtable_m.eventpeaks_mean))/sqrt(size(cell2mat(virtable_m.eventpeaks_mean),1));
@@ -128,12 +152,13 @@ vir_mean_event_m_contra=mean(cell_mean_event_m_contra,2);
 vir_SEM_event_m_contra=std(cell_mean_event_m_contra,0,2)/sqrt(size(cell_mean_event_m_contra,2));
 
 
-%mean of male
+%mean of male touching a male
 
  
  
 male_eventpeaks_mean_m=mean(cell2mat(maletable_m.eventpeaks_mean));
 male_eventpeaks_SEM_m=std(cell2mat(maletable_m.eventpeaks_mean))/sqrt(size(cell2mat(maletable_m.eventpeaks_mean),1));
+
 
 cell_mean_event_m=cell2mat(transpose(maletable_m.mean_event(~cellfun(@isempty, maletable_m.mean_event))));
 
@@ -145,6 +170,64 @@ cell_mean_event_m_contra=cell2mat(transpose(maletable_m_contra.mean_event_contra
 male_mean_event_m_contra=mean(cell_mean_event_m_contra,2);
 male_SEM_event_m_contra=std(cell_mean_event_m_contra,0,2)/sqrt(size(cell_mean_event_m_contra,2));
 
+
+%mean of male touching a oenocyteless male
+
+ 
+ 
+oenegm_eventpeaks_mean_m=mean(cell2mat(oenegmtable_m.eventpeaks_mean));
+oenegm_eventpeaks_SEM_m=std(cell2mat(oenegmtable_m.eventpeaks_mean))/sqrt(size(cell2mat(oenegmtable_m.eventpeaks_mean),1));
+
+
+cell_mean_event_m=cell2mat(transpose(oenegmtable_m.mean_event(~cellfun(@isempty, oenegmtable_m.mean_event))));
+
+oenegm_mean_event_m=mean(cell_mean_event_m,2);
+oenegm_SEM_event_m=std(cell_mean_event_m,0,2)/sqrt(size(cell_mean_event_m,2));
+
+cell_mean_event_m_contra=cell2mat(transpose(oenegmtable_m_contra.mean_event_contra(~cellfun(@isempty, oenegmtable_m_contra.mean_event_contra))));
+
+oenegm_mean_event_m_contra=mean(cell_mean_event_m_contra,2);
+oenegm_SEM_event_m_contra=std(cell_mean_event_m_contra,0,2)/sqrt(size(cell_mean_event_m_contra,2));
+
+
+%mean of male touching a oenocyteless female
+
+ 
+ 
+oenegf_eventpeaks_mean_m=mean(cell2mat(oenegftable_m.eventpeaks_mean));
+oenegf_eventpeaks_SEM_m=std(cell2mat(oenegftable_m.eventpeaks_mean))/sqrt(size(cell2mat(oenegftable_m.eventpeaks_mean),1));
+
+
+cell_mean_event_m=cell2mat(transpose(oenegftable_m.mean_event(~cellfun(@isempty, oenegftable_m.mean_event))));
+
+oenegf_mean_event_m=mean(cell_mean_event_m,2);
+oenegf_SEM_event_m=std(cell_mean_event_m,0,2)/sqrt(size(cell_mean_event_m,2));
+
+cell_mean_event_m_contra=cell2mat(transpose(oenegftable_m_contra.mean_event_contra(~cellfun(@isempty, oenegftable_m_contra.mean_event_contra))));
+
+oenegf_mean_event_m_contra=mean(cell_mean_event_m_contra,2);
+oenegf_SEM_event_m_contra=std(cell_mean_event_m_contra,0,2)/sqrt(size(cell_mean_event_m_contra,2));
+
+
+%mean of male touching a ball
+
+ 
+ 
+ball_eventpeaks_mean_m=mean(cell2mat(balltable_m.eventpeaks_mean));
+ball_eventpeaks_SEM_m=std(cell2mat(balltable_m.eventpeaks_mean))/sqrt(size(cell2mat(balltable_m.eventpeaks_mean),1));
+cell_mean_event_m=cell2mat(transpose(balltable_m.mean_event(~cellfun(@isempty, balltable_m.mean_event))));
+
+ball_mean_event_m=mean(cell_mean_event_m,2);
+ball_SEM_event_m=std(cell_mean_event_m,0,2)/sqrt(size(cell_mean_event_m,2));
+
+cell_mean_event_m_contra=cell2mat(transpose(balltable_m_contra.mean_event_contra(~cellfun(@isempty, balltable_m_contra.mean_event_contra))));
+
+ball_mean_event_m_contra=mean(cell_mean_event_m_contra,2);
+ball_SEM_event_m_contra=std(cell_mean_event_m_contra,0,2)/sqrt(size(cell_mean_event_m_contra,2));
+
+
+
+
 %find the female experimental flies
 
 combinedtable_female = combinedtable( contains(string(combinedtable.t_foundfilename),'_female_fly'), : ); 
@@ -154,20 +237,39 @@ simtable_f = combinedtable_female( contains(string(combinedtable_female.t_foundi
 yaktable_f = combinedtable_female( contains(string(combinedtable_female.t_foundin),'yakuba'), : ); 
 virtable_f = combinedtable_female( contains(string(combinedtable_female.t_foundin),'vir'), : ); 
 maletable_f = combinedtable_female( contains(string(combinedtable_female.t_foundin),'male'), : ); 
+oenegftable_f = combinedtable_female( contains(string(combinedtable_female.t_foundin),'oenegf'), : ); 
+oenegmtable_f = combinedtable_female( contains(string(combinedtable_female.t_foundin),'oenegm'), : ); 
+balltable_f = combinedtable_female( contains(string(combinedtable_female.t_foundin),'ball'), : ); 
+%contralateral touches
 simtable_f_contra = combinedtable_female_contra( contains(string(combinedtable_female_contra.t_foundin),'simulans'), : ); 
 yaktable_f_contra = combinedtable_female_contra( contains(string(combinedtable_female_contra.t_foundin),'yakuba'), : ); 
 virtable_f_contra = combinedtable_female_contra( contains(string(combinedtable_female_contra.t_foundin),'vir'), : ); 
 maletable_f_contra = combinedtable_female_contra( contains(string(combinedtable_female_contra.t_foundin),'male'), : ); 
+oenegftable_f_contra = combinedtable_female_contra( contains(string(combinedtable_female_contra.t_foundin),'oenegf'), : ); 
+oenegmtable_f_contra = combinedtable_female_contra( contains(string(combinedtable_female_contra.t_foundin),'oenegm'), : ); 
+balltable_f_contra = combinedtable_female_contra( contains(string(combinedtable_female_contra.t_foundin),'ball'), : ); 
 
+%convert the tables to cell arrays
+%ipsi
 
 simdata_f=table2cell(simtable_f);
 yakdata_f=table2cell(yaktable_f);
 virdata_f=table2cell(virtable_f);
 maledata_f=table2cell(maletable_f);
-imdata_f_contra=table2cell(simtable_f_contra);
+oenegfdata_f=table2cell(oenegftable_f);
+oenegmdata_f=table2cell(oenegmtable_f);
+balldata_f=table2cell(balltable_f);
+
+%contra
+
+simdata_f_contra=table2cell(simtable_f_contra);
 yakdata_f_contra=table2cell(yaktable_f_contra);
 virdata_f_contra=table2cell(virtable_f_contra);
 maledata_f_contra=table2cell(maletable_f_contra);
+oenegfdata_f_contra=table2cell(oenegftable_f_contra);
+oenegmdata_f_contra=table2cell(oenegmtable_f_contra);
+balldata_f_contra=table2cell(balltable_f_contra);
+
  %mean of virgin
  
 vir_eventpeaks_mean_f=mean(cell2mat(virtable_f.eventpeaks_mean));
@@ -199,6 +301,63 @@ cell_mean_event_f_contra=cell2mat(transpose(maletable_f_contra.mean_event_contra
 male_mean_event_f_contra=mean(cell_mean_event_f_contra,2);
 male_SEM_event_f_contra=std(cell_mean_event_f_contra,0,2)/sqrt(size(cell_mean_event_f_contra,2));
 
+
+
+%mean of female touching a oenocyteless male
+
+ 
+ 
+oenegm_eventpeaks_mean_f=mean(cell2mat(oenegmtable_f.eventpeaks_mean));
+oenegm_eventpeaks_SEM_f=std(cell2mat(oenegmtable_f.eventpeaks_mean))/sqrt(size(cell2mat(oenegmtable_f.eventpeaks_mean),1));
+
+
+cell_mean_event_f=cell2mat(transpose(oenegmtable_f.mean_event(~cellfun(@isempty, oenegmtable_f.mean_event))));
+
+oenegm_mean_event_f=mean(cell_mean_event_f,2);
+oenegm_SEM_event_f=std(cell_mean_event_f,0,2)/sqrt(size(cell_mean_event_f,2));
+
+cell_mean_event_f_contra=cell2mat(transpose(oenegmtable_f_contra.mean_event_contra(~cellfun(@isempty, oenegmtable_f_contra.mean_event_contra))));
+
+oenegm_mean_event_f_contra=mean(cell_mean_event_f_contra,2);
+oenegm_SEM_event_f_contra=std(cell_mean_event_f_contra,0,2)/sqrt(size(cell_mean_event_f_contra,2));
+
+
+%mean of female touching a oenocyteless female
+
+ 
+ 
+oenegf_eventpeaks_mean_f=mean(cell2mat(oenegftable_f.eventpeaks_mean));
+oenegf_eventpeaks_SEM_f=std(cell2mat(oenegftable_f.eventpeaks_mean))/sqrt(size(cell2mat(oenegftable_f.eventpeaks_mean),1));
+
+
+cell_mean_event_f=cell2mat(transpose(oenegftable_f.mean_event(~cellfun(@isempty, oenegftable_f.mean_event))));
+
+oenegf_mean_event_f=mean(cell_mean_event_f,2);
+oenegf_SEM_event_f=std(cell_mean_event_f,0,2)/sqrt(size(cell_mean_event_f,2));
+
+cell_mean_event_f_contra=cell2mat(transpose(oenegftable_f_contra.mean_event_contra(~cellfun(@isempty, oenegftable_f_contra.mean_event_contra))));
+
+oenegf_mean_event_f_contra=mean(cell_mean_event_f_contra,2);
+oenegf_SEM_event_f_contra=std(cell_mean_event_f_contra,0,2)/sqrt(size(cell_mean_event_f_contra,2));
+
+
+%mean of female touching a ball
+
+ 
+ 
+ball_eventpeaks_mean_f=mean(cell2mat(balltable_f.eventpeaks_mean));
+ball_eventpeaks_SEM_f=std(cell2mat(balltable_f.eventpeaks_mean))/sqrt(size(cell2mat(balltable_f.eventpeaks_mean),1));
+cell_mean_event_f=cell2mat(transpose(balltable_f.mean_event(~cellfun(@isempty, balltable_f.mean_event))));
+
+ball_mean_event_f=mean(cell_mean_event_f,2);
+ball_SEM_event_f=std(cell_mean_event_f,0,2)/sqrt(size(cell_mean_event_f,2));
+
+cell_mean_event_f_contra=cell2mat(transpose(balltable_f_contra.mean_event_contra(~cellfun(@isempty, balltable_f_contra.mean_event_contra))));
+
+ball_mean_event_f_contra=mean(cell_mean_event_f_contra,2);
+ball_SEM_event_f_contra=std(cell_mean_event_f_contra,0,2)/sqrt(size(cell_mean_event_f_contra,2));
+
+
 %plot the mean event of virgin
 
 %--for male experimental flies
@@ -214,7 +373,7 @@ fignew=figure('Name','virgin_mean_event_males_ipsi');
 %requires package boundedline
 plot_vir_event_m=boundedline(x_events{1,1},vir_mean_event_m,vir_SEM_event_m,'m');
 cd(outputdirmean);
- saveas(fignew,'virgin_mean_event_male_ipsi','epsc');
+ saveas(fignew,'virgin_mean_event_males_ipsi','epsc');
  
  fignew=figure('Name','virgin_mean_event_males_contra');
 %requires package boundedline
@@ -307,7 +466,69 @@ cd(outputdirmean);
 %plot_male_event=boundedline(x_events{1,1},male_mean_event,male_SEM_event,'m');
  %cd(outputdirmean);
  %saveas(fignew,'male_mean_event','epsc');
+
+%oenocyteless male
+
+fignew=figure('Name','oenocyteless_male_mean_event_males_ipsi');
+%requires package boundedline
+plot_oenegm_event_m=boundedline(x_events{1,1},oenegm_mean_event_m,oenegm_SEM_event_m,'m');
+
+cd(outputdirmean);
+ saveas(fignew,'oenocyteless_male_mean_event_male_ipsi','epsc');
  
+ fignew=figure('Name','oenocyteless_male_mean_event_males_contra');
+%requires package boundedline
+plot_oenegm_event_m_contra=boundedline(x_events_contra{1,1},oenegm_mean_event_m_contra,oenegm_SEM_event_m_contra,'m');
+
+cd(outputdirmean);
+ saveas(fignew,'oenocyteless_male_mean_event_male_contra','epsc'); 
+ 
+ 
+fignew=figure('Name','oenocyteless_male_mean_event_females_ipsi');
+%requires package boundedline
+plot_oenegm_event_f=boundedline(x_events{1,1},oenegm_mean_event_f,oenegm_SEM_event_f,'m');
+
+cd(outputdirmean);
+ saveas(fignew,'oenocyteless_male_mean_event_female_ipsi','epsc');
+ 
+ fignew=figure('Name','oenocyteless_male_mean_event_females_contra');
+%requires package boundedline
+plot_oenegm_event_f_contra=boundedline(x_events_contra{1,1},oenegm_mean_event_f_contra,oenegm_SEM_event_f_contra,'m');
+
+cd(outputdirmean);
+ saveas(fignew,'oenocyteless_male_mean_event_female_contra','epsc'); 
+ 
+%oenocyteless female
+
+fignew=figure('Name','oenocyteless_female_mean_event_males_ipsi');
+%requires package boundedline
+plot_oenegf_event_m=boundedline(x_events{1,1},oenegf_mean_event_m,oenegf_SEM_event_m,'m');
+
+cd(outputdirmean);
+ saveas(fignew,'oenocyteless_female_mean_event_male_ipsi','epsc');
+ 
+ fignew=figure('Name','oenocyteless_female_mean_event_males_contra');
+%requires package boundedline
+plot_oenegf_event_m_contra=boundedline(x_events_contra{1,1},oenegf_mean_event_m_contra,oenegf_SEM_event_m_contra,'m');
+
+cd(outputdirmean);
+ saveas(fignew,'oenocyteless_female_mean_event_male_contra','epsc'); 
+ 
+ 
+fignew=figure('Name','oenocyteless_female_mean_event_females_ipsi');
+%requires package boundedline
+plot_oenegf_event_f=boundedline(x_events{1,1},oenegf_mean_event_f,oenegf_SEM_event_f,'m');
+
+cd(outputdirmean);
+ saveas(fignew,'oenocyteless_female_mean_event_female_ipsi','epsc');
+ 
+ fignew=figure('Name','oenocyteless_female_mean_event_females_contra');
+%requires package boundedline
+plot_oenegf_event_f_contra=boundedline(x_events_contra{1,1},oenegf_mean_event_f_contra,oenegf_SEM_event_f_contra,'m');
+
+cd(outputdirmean);
+ saveas(fignew,'oenocyteless_female_mean_event_female_contra','epsc'); 
+  
  
  
 %  %mean of simulans
@@ -376,6 +597,8 @@ basetime=3;
 %time of the event after start of touch
 eventtime=15;
 intervaltime=3;
+%this parameter specifies whether simultaneous touches on both sides should
+%be excluded
 excludedoubles=0;
 %shift the matrix to the right by one 
 %framerate of imaging to be entered here
@@ -498,18 +721,18 @@ end
                        end
                        function [foundinfiles,fffounds,iindex]=findfounds2(resultsarray,numbarray,rresultfilenames)
                        [fffounds,iindex]=cellfun(@(resultsfiles) findfounds(resultsfiles,numbarray), resultsarray,'UniformOutput', false);
-                      
+                      foundinfiles={};
                        for i=1:length(resultsarray)
                        if isempty(fffounds{i})==1
-                          foundinfiles{i}=[];
+                          foundinfiles{i}={};
                        else
                            
                             foundinfiles{i}=rresultfilenames{i};
                        end
                        end
                        fffounds=fffounds(~cellfun('isempty',fffounds));
-                        foundinfiles=foundinfiles(~cellfun('isempty',foundinfiles));
-                        iindex=iindex(~cellfun('isempty',iindex));
+                       foundinfiles=foundinfiles(~cellfun('isempty',foundinfiles));
+                       iindex=iindex(~cellfun('isempty',iindex));
                       
                      
                        

@@ -14,7 +14,7 @@ startdir=pwd;
 pathname='/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/imaging_preprocessed';
 %pathname has to be the path to the folder were files to be processed are
 %located
-foldername='2019_07_08';%the name of the imaging folder
+foldername='2019_07_09';%the name of the imaging folder
 subfoldername='ROI';%must be a folder within the imaging folder
 stackdir = fullfile(pathname,foldername,subfoldername);
 outputdirv=('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/Results');
@@ -31,7 +31,7 @@ outputimgm=strcat(foldername,'_male.eps');
 ee = 1;
 ii = 1;
 virgin = 0;
-sim = 0; %used here for oe- male
+sim = 0; %used here for oe- female
 yak =0; % used here for ball touch
 male=0;
 
