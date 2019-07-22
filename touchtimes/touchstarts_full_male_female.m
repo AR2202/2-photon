@@ -369,15 +369,20 @@ ball_SEM_event_f_contra=std(cell_mean_event_f_contra,0,2)/sqrt(size(cell_mean_ev
 %fignew2=figure('Name','virgin_first_touch_males');
 %requires package boundedline
 %plot_first_touch_event_m=boundedline(x_events{2,1},vir_mean_first_m,vir_SEM_first_m,'m');
+%remove empty xvalues
+xevents_nonempty=x_events( ~cellfun(@(cell) isempty (cell),x_events));
+xevents_nonempty_contra=x_events_contra( ~cellfun(@(cell) isempty (cell),x_events_contra));
+
+
 fignew=figure('Name','virgin_mean_event_males_ipsi');
 %requires package boundedline
-plot_vir_event_m=boundedline(x_events{1,1},vir_mean_event_m,vir_SEM_event_m,'m');
+plot_vir_event_m=boundedline(xevents_nonempty{1,1},vir_mean_event_m,vir_SEM_event_m,'m');
 cd(outputdirmean);
  saveas(fignew,'virgin_mean_event_males_ipsi','epsc');
  
  fignew=figure('Name','virgin_mean_event_males_contra');
 %requires package boundedline
-plot_vir_event_m_contra=boundedline(x_events_contra{1,1},vir_mean_event_m_contra,vir_SEM_event_m_contra,'m');
+plot_vir_event_m_contra=boundedline(xevents_nonempty_contra{1,1},vir_mean_event_m_contra,vir_SEM_event_m_contra,'m');
 cd(outputdirmean);
  saveas(fignew,'virgin_mean_event_male_contra','epsc');
  %saveas(fignew2,'virgin_first_touches_male','epsc');
@@ -389,17 +394,17 @@ cd(outputdirmean);
 %plot the mean event of virgin
 %fignew2=figure('Name','virgin_first_touch_females');
 %requires package boundedline
-%plot_first_touch_event_F=boundedline(x_events{2,1},vir_mean_first_f,vir_SEM_first_f,'m');
+%plot_first_touch_event_F=boundedline(xevents_nonempty{2,1},vir_mean_first_f,vir_SEM_first_f,'m');
 fignew=figure('Name','virgin_mean_event_females_ipsi');
 %requires package boundedline
-plot_vir_event_f=boundedline(x_events{1,1},vir_mean_event_f,vir_SEM_event_f,'m');
+plot_vir_event_f=boundedline(xevents_nonempty{1,1},vir_mean_event_f,vir_SEM_event_f,'m');
 
 cd(outputdirmean);
  saveas(fignew,'virgin_mean_event_female_ipsi','epsc');
  
  fignew=figure('Name','virgin_mean_event_females_contra');
 %requires package boundedline
-plot_vir_event_f_contra=boundedline(x_events_contra{1,1},vir_mean_event_f_contra,vir_SEM_event_f_contra,'m');
+plot_vir_event_f_contra=boundedline(xevents_nonempty_contra{1,1},vir_mean_event_f_contra,vir_SEM_event_f_contra,'m');
 
 cd(outputdirmean);
  saveas(fignew,'virgin_mean_event_female_contra','epsc');
@@ -417,16 +422,16 @@ cd(outputdirmean);
 %plot the mean event of male
 %fignew2=figure('Name','male_first_touch_males');
 %requires package boundedline
-%plot_first_touch_event_m=boundedline(x_events{2,1},male_mean_first_m,male_SEM_first_m,'m');
+%plot_first_touch_event_m=boundedline(xevents_nonempty{2,1},male_mean_first_m,male_SEM_first_m,'m');
 fignew=figure('Name','male_mean_event_males_ipsi');
 %requires package boundedline
-plot_male_event_m=boundedline(x_events{1,1},male_mean_event_m,male_SEM_event_m,'m');
+plot_male_event_m=boundedline(xevents_nonempty{1,1},male_mean_event_m,male_SEM_event_m,'m');
 cd(outputdirmean);
  saveas(fignew,'male_mean_event_male_ipsi','epsc');
  
  fignew=figure('Name','male_mean_event_males_contra');
 %requires package boundedline
-plot_male_event_m_contra=boundedline(x_events_contra{1,1},male_mean_event_m_contra,male_SEM_event_m_contra,'m');
+plot_male_event_m_contra=boundedline(xevents_nonempty_contra{1,1},male_mean_event_m_contra,male_SEM_event_m_contra,'m');
 cd(outputdirmean);
  saveas(fignew,'male_mean_event_male_contra','epsc');
  %saveas(fignew2,'male_first_touches_male','epsc');
@@ -438,17 +443,17 @@ cd(outputdirmean);
 %plot the mean event of male
 %fignew2=figure('Name','male_first_touch_females');
 %requires package boundedline
-%plot_first_touch_event_F=boundedline(x_events{2,1},male_mean_first_f,male_SEM_first_f,'m');
+%plot_first_touch_event_F=boundedline(xevents_nonempty{2,1},male_mean_first_f,male_SEM_first_f,'m');
 fignew=figure('Name','male_mean_event_females_ipsi');
 %requires package boundedline
-plot_male_event_f=boundedline(x_events{1,1},male_mean_event_f,male_SEM_event_f,'m');
+plot_male_event_f=boundedline(xevents_nonempty{1,1},male_mean_event_f,male_SEM_event_f,'m');
 
 cd(outputdirmean);
  saveas(fignew,'male_mean_event_female_ipsi','epsc');
  
  fignew=figure('Name','male_mean_event_females_contra');
 %requires package boundedline
-plot_male_event_f_contra=boundedline(x_events_contra{1,1},male_mean_event_f_contra,male_SEM_event_f_contra,'m');
+plot_male_event_f_contra=boundedline(xevents_nonempty_contra{1,1},male_mean_event_f_contra,male_SEM_event_f_contra,'m');
 
 cd(outputdirmean);
  saveas(fignew,'male_mean_event_female_contra','epsc');
@@ -463,7 +468,7 @@ cd(outputdirmean);
 %plot the mean event of male
 %fignew=figure('Name','male_mean_event');
 %requires package boundedline
-%plot_male_event=boundedline(x_events{1,1},male_mean_event,male_SEM_event,'m');
+%plot_male_event=boundedline(xevents_nonempty{1,1},male_mean_event,male_SEM_event,'m');
  %cd(outputdirmean);
  %saveas(fignew,'male_mean_event','epsc');
 
@@ -471,14 +476,14 @@ cd(outputdirmean);
 
 fignew=figure('Name','oenocyteless_male_mean_event_males_ipsi');
 %requires package boundedline
-plot_oenegm_event_m=boundedline(x_events{1,1},oenegm_mean_event_m,oenegm_SEM_event_m,'m');
+plot_oenegm_event_m=boundedline(xevents_nonempty{1,1},oenegm_mean_event_m,oenegm_SEM_event_m,'m');
 
 cd(outputdirmean);
  saveas(fignew,'oenocyteless_male_mean_event_male_ipsi','epsc');
  
  fignew=figure('Name','oenocyteless_male_mean_event_males_contra');
 %requires package boundedline
-plot_oenegm_event_m_contra=boundedline(x_events_contra{1,1},oenegm_mean_event_m_contra,oenegm_SEM_event_m_contra,'m');
+plot_oenegm_event_m_contra=boundedline(xevents_nonempty_contra{1,1},oenegm_mean_event_m_contra,oenegm_SEM_event_m_contra,'m');
 
 cd(outputdirmean);
  saveas(fignew,'oenocyteless_male_mean_event_male_contra','epsc'); 
@@ -486,14 +491,14 @@ cd(outputdirmean);
  
 fignew=figure('Name','oenocyteless_male_mean_event_females_ipsi');
 %requires package boundedline
-plot_oenegm_event_f=boundedline(x_events{1,1},oenegm_mean_event_f,oenegm_SEM_event_f,'m');
+plot_oenegm_event_f=boundedline(xevents_nonempty{1,1},oenegm_mean_event_f,oenegm_SEM_event_f,'m');
 
 cd(outputdirmean);
  saveas(fignew,'oenocyteless_male_mean_event_female_ipsi','epsc');
  
  fignew=figure('Name','oenocyteless_male_mean_event_females_contra');
 %requires package boundedline
-plot_oenegm_event_f_contra=boundedline(x_events_contra{1,1},oenegm_mean_event_f_contra,oenegm_SEM_event_f_contra,'m');
+plot_oenegm_event_f_contra=boundedline(xevents_nonempty_contra{1,1},oenegm_mean_event_f_contra,oenegm_SEM_event_f_contra,'m');
 
 cd(outputdirmean);
  saveas(fignew,'oenocyteless_male_mean_event_female_contra','epsc'); 
@@ -502,14 +507,14 @@ cd(outputdirmean);
 
 fignew=figure('Name','oenocyteless_female_mean_event_males_ipsi');
 %requires package boundedline
-plot_oenegf_event_m=boundedline(x_events{1,1},oenegf_mean_event_m,oenegf_SEM_event_m,'m');
+plot_oenegf_event_m=boundedline(xevents_nonempty{1,1},oenegf_mean_event_m,oenegf_SEM_event_m,'m');
 
 cd(outputdirmean);
  saveas(fignew,'oenocyteless_female_mean_event_male_ipsi','epsc');
  
  fignew=figure('Name','oenocyteless_female_mean_event_males_contra');
 %requires package boundedline
-plot_oenegf_event_m_contra=boundedline(x_events_contra{1,1},oenegf_mean_event_m_contra,oenegf_SEM_event_m_contra,'m');
+plot_oenegf_event_m_contra=boundedline(xevents_nonempty_contra{1,1},oenegf_mean_event_m_contra,oenegf_SEM_event_m_contra,'m');
 
 cd(outputdirmean);
  saveas(fignew,'oenocyteless_female_mean_event_male_contra','epsc'); 
@@ -517,14 +522,14 @@ cd(outputdirmean);
  
 fignew=figure('Name','oenocyteless_female_mean_event_females_ipsi');
 %requires package boundedline
-plot_oenegf_event_f=boundedline(x_events{1,1},oenegf_mean_event_f,oenegf_SEM_event_f,'m');
+plot_oenegf_event_f=boundedline(xevents_nonempty{1,1},oenegf_mean_event_f,oenegf_SEM_event_f,'m');
 
 cd(outputdirmean);
  saveas(fignew,'oenocyteless_female_mean_event_female_ipsi','epsc');
  
  fignew=figure('Name','oenocyteless_female_mean_event_females_contra');
 %requires package boundedline
-plot_oenegf_event_f_contra=boundedline(x_events_contra{1,1},oenegf_mean_event_f_contra,oenegf_SEM_event_f_contra,'m');
+plot_oenegf_event_f_contra=boundedline(xevents_nonempty_contra{1,1},oenegf_mean_event_f_contra,oenegf_SEM_event_f_contra,'m');
 
 cd(outputdirmean);
  saveas(fignew,'oenocyteless_female_mean_event_female_contra','epsc'); 
@@ -544,10 +549,10 @@ cd(outputdirmean);
 % %plot the mean event of Simulans
 % fignew2=figure('Name','simulans_first_touch');
 % %requires package boundedline
-% plot_first_touch_event=boundedline(x_events{2,1},sim_mean_first,sim_SEM_first,'m');
+% plot_first_touch_event=boundedline(xevents_nonempty{2,1},sim_mean_first,sim_SEM_first,'m');
 % fignew=figure('Name','simulans_mean_event');
 % %requires package boundedline
-% plot_sim_event=boundedline(x_events{2,1},sim_mean_event,sim_SEM_event,'m');
+% plot_sim_event=boundedline(xevents_nonempty{2,1},sim_mean_event,sim_SEM_event,'m');
 %  
 %  cd(outputdirmean);
 %  saveas(fignew,'simulans_mean_event','epsc');
@@ -563,7 +568,7 @@ cd(outputdirmean);
 % %plot the mean event of yakuba
 % %fignew=figure('Name','yakuba_mean_event');
 % %requires package boundedline
-% %plot_yak_event=boundedline(x_events{1,1},yak_mean_event,yak_SEM_event,'m');
+% %plot_yak_event=boundedline(xevents_nonempty{1,1},yak_mean_event,yak_SEM_event,'m');
 % %mean of virgin
 % %cd(outputdirmean);
 %  %saveas(fignew,'yakuba_mean_event','epsc');
@@ -575,7 +580,7 @@ cd(outputdirmean);
 
 function [touchstartframes,eventsmat,eventpeaks,eventpeaks_mean,eventpeaks_SEM,mean_event,SEM_event,touchtimes,fluo,x_events] = find_touch_events(data)
 %function [eventpeaks_mean,eventpeaks_SEM,mean_event,SEM_event,touchtimes,fluo] = find_touch_events(data)
-if contains(string(data{3}),'_right_')
+if contains(string(data{3}),'(r)')
     disp('imaged right side');
     touchtimes=data{5};
     touch_other_side=data{1};
@@ -587,7 +592,7 @@ end
 
 
 fluo=data{2};
-outputfig=string(data{3});
+outputfig=(data{3});
 %framerate of imaging to be entered here
 framerate=5.92;
 %number of frames in the imaging file
@@ -685,7 +690,7 @@ eventpeaks_SEM=std(eventpeaks_dff,0,1)/sqrt(size(eventpeaks_dff,1));
 %of the touch
 x_events=transpose(x(1:length(mean_event))-basetime);
 %plot the mean event
-figure('Name',outputfig);
+figure('Name',outputfig{1}{1});
 %requires package boundedline
 %plot_mean_event=boundedline(x_events,mean_event,'m');
 
@@ -721,7 +726,7 @@ end
                        end
                        function [foundinfiles,fffounds,iindex]=findfounds2(resultsarray,numbarray,rresultfilenames)
                        [fffounds,iindex]=cellfun(@(resultsfiles) findfounds(resultsfiles,numbarray), resultsarray,'UniformOutput', false);
-                      foundinfiles={};
+                      %foundinfiles={};
                        for i=1:length(resultsarray)
                        if isempty(fffounds{i})==1
                           foundinfiles{i}={};
@@ -739,7 +744,7 @@ end
                        end
                        function[singleresult]=resultfinder(nameoffile,indexoffile)
                        
-                       expresults =table2array(readtable(nameoffile,'Sheet','Sheet1','ReadVariableNames',0));
+                       expresults =table2array(readtable(char(nameoffile),'Sheet','Sheet1','ReadVariableNames',0));
                         singleresult=expresults(:,indexoffile);
  
                        end
