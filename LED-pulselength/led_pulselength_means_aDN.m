@@ -17,20 +17,21 @@ numberframes=600;% number of frames
 duration_acquisition = numberframes/framerate; 
 
 startdir=pwd;
-pathname='/Volumes/LaCie/Projects/aDN/imaging/LC10-lexA_lexAop-CSChrimson_aDN_GCaMP6f/Results';
+pathname='/Volumes/LaCie/Projects/aDN/imaging/LC10-lexA_lexAop-CSChrimson_aDN_GCaMP6f_LED_adjusted/Results_after_adjust';
 %pathname has to be the path to the folder were files to be processed are
 %located
 
-stackdir = ('/Volumes/LaCie/Projects/aDN/imaging/ppk23-lexA_aDN-GCaMP6f/Results');
+stackdir = ('/Volumes/LaCie/Projects/aDN/imaging/LC10-lexA_lexAop-CSChrimson_aDN_GCaMP6f_LED_adjusted/Results_after_adjust');
 % The folder where the results of single experiments are located
-outputdirmean=('/Volumes/LaCie/Projects/aDN/imaging/ppk23-lexA_aDN-GCaMP6f/Results');
+outputdirmean=('/Volumes/LaCie/Projects/aDN/imaging/LC10-lexA_lexAop-CSChrimson_aDN_GCaMP6f_LED_adjusted/Results_after_adjust');
 %The folder where the mean data should be written to
-matfilename = 'ppk23_Female';
+matfilename = 'LC10_male_';
 x = (1:numberframes)';% this is a column vector of the frame numbers
 x= (x-1)/framerate;%calculate the timepoints of the frames from the frame number
 
 
-
+lateral_exists=0;
+medial_exists=0;
 ee = 1;
 ii = 1;
 
@@ -38,7 +39,7 @@ ii = 1;
 pulsetimes4p05s=[20,40,60,80];
 pulsetimes1p20s=[40];
 pulsetimes2p05s=[30,60];
-pulsetimes4p200ms=[20,40,60,80];
+pulsetimes200ms=[20,40,60,80];
 pulsetimes2p20s=[20,60];
 pulsetimes4p01s=[20,40,60,80];
 pulsetimes4p02s=[20,40,60,80];
@@ -47,7 +48,7 @@ pulsedur05s=5;
 pulsedur20s=20;
 pulsedur01s=1;
 pulsedur02s=2;
-
+pulsedur200ms=0.2;
 
 
  
@@ -65,7 +66,7 @@ for nn = 1:size(namestrings,1)%loop through all namestrings
 cd(stackdir)
 %find files with the namestring in it
 %this is just for females
-files{ii}{ee} = dir(strcat('*Female_',namestrings(nn,:)));
+files{ii}{ee} = dir(strcat('*Male_',namestrings(nn,:)));
 files{ii}{ee} = {files{ii}{ee}.name};
  
 filenames = cell((length(files{ii}{ee})),1);
@@ -97,12 +98,17 @@ if ismember('medial_superficial',sheets)== 1
 end
 
             if ismember('lateral_deep',sheets)== 1
+                try
                 lat_cellbodies = table2array(readtable(filename,'Sheet','lateral_deep','ReadVariableNames',0));
                  
                  if exist('lat_cellbodiess') ==1
                     lat_cellbodiess = horzcat(lat_cellbodiess,lat_cellbodies);
                 else
                     lat_cellbodiess=lat_cellbodies;
+                 end
+                catch ME
+                    errormessage = ME.message;
+                    disp(errormessage);
                 end
             end
 
@@ -141,6 +147,7 @@ end
         saveas(fignew,outputfig,'epsc');
         end
         if exist('middle_sups', 'var') == 1
+            medial_exists=1;
            middle_sup_mean=mean(middle_sups,2);
             middle_sup_n=size(middle_sups,2);
             middle_sup_SEM=std(middle_sups,0,2)/sqrt(middle_sup_n);
@@ -201,6 +208,7 @@ end
             saveas(fignew,outputfig,'epsc');
         end
         if exist('lat_cellbodiess', 'var') == 1
+            lateral_exists=1;
            lat_cellbodies_mean=mean(lat_cellbodiess,2);
             lat_cellbodies_n=size(lat_cellbodiess,2);
             lat_cellbodies_SEM=std(lat_cellbodiess,0,2)/sqrt(lat_cellbodies_n);
@@ -340,7 +348,16 @@ end
             end
             saveas(fignew,outputfig,'epsc');
         end
-        save(outmatfile,'x','lat_cellbodies_mean','lat_cellbodies_SEM','lat_cellbodies_n','middle_sup_mean','middle_sup_SEM','middle_sup_n' );
+        if lateral_exists
+            if medial_exists
+                save(outmatfile,'x','lat_cellbodies_mean','lat_cellbodies_SEM','lat_cellbodies_n','middle_sup_mean','middle_sup_SEM','middle_sup_n' );
+            else
+                save(outmatfile,'x','lat_cellbodies_mean','lat_cellbodies_SEM','lat_cellbodies_n' );
+            end
+        elseif medial_exists
+            save(outmatfile,'x','middle_sup_mean','middle_sup_SEM','middle_sup_n' );
+        else
+        end
         clearvars middle_connections middle_deeps frontal_deeps dorsal_sups frontal_laterals dorsal_deeps lat_cellbodiess laterals frontal_sups middle_sups overviews 
 end
         

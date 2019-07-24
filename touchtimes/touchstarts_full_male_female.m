@@ -24,9 +24,12 @@ touchdir = ('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/touchtimes_GCaMP6s_l_
 % The folder where the touchtimes files are located
 resultsdir = ('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/Results');
 % The folder where the results of single experiments are located
-outputdirmean=('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/Results');
+outputdirmean=('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/Results_medial');
 outputdirsingles=('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/Results_single_exp');
 %The folder where the mean data should be written to
+filterstring = 'medial_superficial'; % a string by which exps should be filtered
+%this can be a specific part of the neuron imaged form
+
 
 %This part of the script reads in the data
 
@@ -87,9 +90,11 @@ t_foundin=transpose(foundin);
 
 %This part of the script averages over the experiments of each species type
 
-combinedtable=table(eventpeaks_mean, mean_event, t_foundfilename,t_foundin,eventsmat);
-combinedtable_contra=table(eventpeaks_mean_contra, mean_event_contra, t_foundfilename,t_foundin,eventsmat_contra);
+combinedtable_unfiltered=table(eventpeaks_mean, mean_event, t_foundfilename,t_foundin,eventsmat);
+combinedtable_contra_unfiltered=table(eventpeaks_mean_contra, mean_event_contra, t_foundfilename,t_foundin,eventsmat_contra);
 %find the male experimental flies
+combinedtable = combinedtable_unfiltered( contains(string(combinedtable_unfiltered.t_foundfilename),filterstring), : ); 
+combinedtable_contra = combinedtable_contra_unfiltered( contains(string(combinedtable_contra_unfiltered.t_foundfilename),filterstring), : ); 
 
 combinedtable_male = combinedtable( contains(string(combinedtable.t_foundfilename),'_male_fly'), : ); 
 
@@ -101,8 +106,8 @@ simtable_m = combinedtable_male( contains(string(combinedtable_male.t_foundin),'
 yaktable_m = combinedtable_male( contains(string(combinedtable_male.t_foundin),'yakuba'), : ); 
 virtable_m = combinedtable_male( contains(string(combinedtable_male.t_foundin),'vir'), : ); 
 maletable_m = combinedtable_male( contains(string(combinedtable_male.t_foundin),'male'), : ); 
-oenegftable_m = combinedtable_male( contains(string(combinedtable_male.t_foundin),'oenegf'), : ); 
-oenegmtable_m = combinedtable_male( contains(string(combinedtable_male.t_foundin),'oenegm'), : ); 
+oenegftable_m = combinedtable_male( contains(string(combinedtable_male.t_foundin),'oenocytelessF'), : ); 
+oenegmtable_m = combinedtable_male( contains(string(combinedtable_male.t_foundin),'oenocytelessM'), : ); 
 balltable_m = combinedtable_male( contains(string(combinedtable_male.t_foundin),'ball'), : ); 
 %contralateral touches
 simtable_m_contra = combinedtable_male_contra( contains(string(combinedtable_male_contra.t_foundin),'simulans'), : ); 
@@ -237,16 +242,16 @@ simtable_f = combinedtable_female( contains(string(combinedtable_female.t_foundi
 yaktable_f = combinedtable_female( contains(string(combinedtable_female.t_foundin),'yakuba'), : ); 
 virtable_f = combinedtable_female( contains(string(combinedtable_female.t_foundin),'vir'), : ); 
 maletable_f = combinedtable_female( contains(string(combinedtable_female.t_foundin),'male'), : ); 
-oenegftable_f = combinedtable_female( contains(string(combinedtable_female.t_foundin),'oenegf'), : ); 
-oenegmtable_f = combinedtable_female( contains(string(combinedtable_female.t_foundin),'oenegm'), : ); 
+oenegftable_f = combinedtable_female( contains(string(combinedtable_female.t_foundin),'oenocytelessF'), : ); 
+oenegmtable_f = combinedtable_female( contains(string(combinedtable_female.t_foundin),'oenocytelessM'), : ); 
 balltable_f = combinedtable_female( contains(string(combinedtable_female.t_foundin),'ball'), : ); 
 %contralateral touches
 simtable_f_contra = combinedtable_female_contra( contains(string(combinedtable_female_contra.t_foundin),'simulans'), : ); 
 yaktable_f_contra = combinedtable_female_contra( contains(string(combinedtable_female_contra.t_foundin),'yakuba'), : ); 
 virtable_f_contra = combinedtable_female_contra( contains(string(combinedtable_female_contra.t_foundin),'vir'), : ); 
 maletable_f_contra = combinedtable_female_contra( contains(string(combinedtable_female_contra.t_foundin),'male'), : ); 
-oenegftable_f_contra = combinedtable_female_contra( contains(string(combinedtable_female_contra.t_foundin),'oenegf'), : ); 
-oenegmtable_f_contra = combinedtable_female_contra( contains(string(combinedtable_female_contra.t_foundin),'oenegm'), : ); 
+oenegftable_f_contra = combinedtable_female_contra( contains(string(combinedtable_female_contra.t_foundin),'oenocytelessF'), : ); 
+oenegmtable_f_contra = combinedtable_female_contra( contains(string(combinedtable_female_contra.t_foundin),'oenocytelessM'), : ); 
 balltable_f_contra = combinedtable_female_contra( contains(string(combinedtable_female_contra.t_foundin),'ball'), : ); 
 
 %convert the tables to cell arrays
@@ -358,6 +363,140 @@ ball_mean_event_f_contra=mean(cell_mean_event_f_contra,2);
 ball_SEM_event_f_contra=std(cell_mean_event_f_contra,0,2)/sqrt(size(cell_mean_event_f_contra,2));
 
 
+
+
+%find the mated female experimental flies
+
+combinedtable_mfemale = combinedtable( contains(string(combinedtable.t_foundfilename),'_matedF_fly'), : ); 
+combinedtable_mfemale_contra = combinedtable_contra( contains(string(combinedtable_contra.t_foundfilename),'_matedF_fly'), : ); 
+
+simtable_mf = combinedtable_mfemale( contains(string(combinedtable_mfemale.t_foundin),'simulans'), : ); 
+yaktable_mf = combinedtable_mfemale( contains(string(combinedtable_mfemale.t_foundin),'yakuba'), : ); 
+virtable_mf = combinedtable_mfemale( contains(string(combinedtable_mfemale.t_foundin),'vir'), : ); 
+maletable_mf = combinedtable_mfemale( contains(string(combinedtable_mfemale.t_foundin),'male'), : ); 
+oenegftable_mf = combinedtable_mfemale( contains(string(combinedtable_mfemale.t_foundin),'oenegf'), : ); 
+oenegmtable_mf = combinedtable_mfemale( contains(string(combinedtable_mfemale.t_foundin),'oenegm'), : ); 
+balltable_mf = combinedtable_mfemale( contains(string(combinedtable_mfemale.t_foundin),'ball'), : ); 
+%contralateral touches
+simtable_mf_contra = combinedtable_mfemale_contra( contains(string(combinedtable_mfemale_contra.t_foundin),'simulans'), : ); 
+yaktable_mf_contra = combinedtable_mfemale_contra( contains(string(combinedtable_mfemale_contra.t_foundin),'yakuba'), : ); 
+virtable_mf_contra = combinedtable_mfemale_contra( contains(string(combinedtable_mfemale_contra.t_foundin),'vir'), : ); 
+maletable_mf_contra = combinedtable_mfemale_contra( contains(string(combinedtable_mfemale_contra.t_foundin),'male'), : ); 
+oenegftable_mf_contra = combinedtable_mfemale_contra( contains(string(combinedtable_mfemale_contra.t_foundin),'oenocytelessF'), : ); 
+oenegmtable_mf_contra = combinedtable_mfemale_contra( contains(string(combinedtable_mfemale_contra.t_foundin),'oenocytelessM'), : ); 
+balltable_mf_contra = combinedtable_mfemale_contra( contains(string(combinedtable_mfemale_contra.t_foundin),'ball'), : ); 
+
+%convert the tables to cell arrays
+%ipsi
+
+simdata_mf=table2cell(simtable_mf);
+yakdata_mf=table2cell(yaktable_mf);
+virdata_mf=table2cell(virtable_mf);
+maledata_mf=table2cell(maletable_mf);
+oenegfdata_mf=table2cell(oenegftable_mf);
+oenegmdata_mf=table2cell(oenegmtable_mf);
+balldata_mf=table2cell(balltable_mf);
+
+%contra
+
+simdata_mf_contra=table2cell(simtable_mf_contra);
+yakdata_mf_contra=table2cell(yaktable_mf_contra);
+virdata_mf_contra=table2cell(virtable_mf_contra);
+maledata_mf_contra=table2cell(maletable_mf_contra);
+oenegfdata_mf_contra=table2cell(oenegftable_mf_contra);
+oenegmdata_mf_contra=table2cell(oenegmtable_mf_contra);
+balldata_mf_contra=table2cell(balltable_mf_contra);
+
+ %mean of virgin
+ 
+vir_eventpeaks_mean_mf=mean(cell2mat(virtable_mf.eventpeaks_mean));
+vir_eventpeaks_SEM_mf=std(cell2mat(virtable_mf.eventpeaks_mean))/sqrt(size(cell2mat(virtable_mf.eventpeaks_mean),1));
+
+cell_mean_event_mf=cell2mat(transpose(virtable_mf.mean_event(~cellfun(@isempty, virtable_mf.mean_event))));
+
+vir_mean_event_mf=mean(cell_mean_event_mf,2);
+vir_SEM_event_mf=std(cell_mean_event_mf,0,2)/sqrt(size(cell_mean_event_mf,2));
+
+cell_mean_event_mf_contra=cell2mat(transpose(virtable_mf_contra.mean_event_contra(~cellfun(@isempty, virtable_mf_contra.mean_event_contra))));
+
+vir_mean_event_mf_contra=mean(cell_mean_event_mf_contra,2);
+vir_SEM_event_mf_contra=std(cell_mean_event_mf_contra,0,2)/sqrt(size(cell_mean_event_mf_contra,2));
+
+%mean of mated female touching a male
+
+ 
+ 
+male_eventpeaks_mean_mf=mean(cell2mat(maletable_mf.eventpeaks_mean));
+male_eventpeaks_SEM_mf=std(cell2mat(maletable_mf.eventpeaks_mean))/sqrt(size(cell2mat(maletable_mf.eventpeaks_mean),1));
+
+cell_mean_event_mf=cell2mat(transpose(maletable_mf.mean_event(~cellfun(@isempty, maletable_mf.mean_event))));
+
+male_mean_event_mf=mean(cell_mean_event_mf,2);
+male_SEM_event_mf=std(cell_mean_event_mf,0,2)/sqrt(size(cell_mean_event_mf,2));
+cell_mean_event_mf_contra=cell2mat(transpose(maletable_mf_contra.mean_event_contra(~cellfun(@isempty, maletable_mf_contra.mean_event_contra))));
+
+male_mean_event_mf_contra=mean(cell_mean_event_mf_contra,2);
+male_SEM_event_mf_contra=std(cell_mean_event_mf_contra,0,2)/sqrt(size(cell_mean_event_mf_contra,2));
+
+
+
+%mean of mated female touching a oenocyteless male
+
+ 
+ 
+oenegm_eventpeaks_mean_mf=mean(cell2mat(oenegmtable_mf.eventpeaks_mean));
+oenegm_eventpeaks_SEM_mf=std(cell2mat(oenegmtable_mf.eventpeaks_mean))/sqrt(size(cell2mat(oenegmtable_mf.eventpeaks_mean),1));
+
+
+cell_mean_event_mf=cell2mat(transpose(oenegmtable_mf.mean_event(~cellfun(@isempty, oenegmtable_mf.mean_event))));
+
+oenegm_mean_event_mf=mean(cell_mean_event_mf,2);
+oenegm_SEM_event_mf=std(cell_mean_event_mf,0,2)/sqrt(size(cell_mean_event_mf,2));
+
+cell_mean_event_mf_contra=cell2mat(transpose(oenegmtable_mf_contra.mean_event_contra(~cellfun(@isempty, oenegmtable_mf_contra.mean_event_contra))));
+
+oenegm_mean_event_mf_contra=mean(cell_mean_event_mf_contra,2);
+oenegm_SEM_event_mf_contra=std(cell_mean_event_mf_contra,0,2)/sqrt(size(cell_mean_event_mf_contra,2));
+
+
+%mean of mated female touching a oenocyteless female
+
+ 
+ 
+oenegf_eventpeaks_mean_mf=mean(cell2mat(oenegftable_mf.eventpeaks_mean));
+oenegf_eventpeaks_SEM_mf=std(cell2mat(oenegftable_mf.eventpeaks_mean))/sqrt(size(cell2mat(oenegftable_mf.eventpeaks_mean),1));
+
+
+cell_mean_event_mf=cell2mat(transpose(oenegftable_mf.mean_event(~cellfun(@isempty, oenegftable_mf.mean_event))));
+
+oenegf_mean_event_mf=mean(cell_mean_event_f,2);
+oenegf_SEM_event_mf=std(cell_mean_event_mf,0,2)/sqrt(size(cell_mean_event_mf,2));
+
+cell_mean_event_mf_contra=cell2mat(transpose(oenegftable_mf_contra.mean_event_contra(~cellfun(@isempty, oenegftable_mf_contra.mean_event_contra))));
+
+oenegf_mean_event_mf_contra=mean(cell_mean_event_mf_contra,2);
+oenegf_SEM_event_mf_contra=std(cell_mean_event_mf_contra,0,2)/sqrt(size(cell_mean_event_mf_contra,2));
+
+
+%mean of mated female touching a ball
+
+ 
+ 
+ball_eventpeaks_mean_mf=mean(cell2mat(balltable_mf.eventpeaks_mean));
+ball_eventpeaks_SEM_mf=std(cell2mat(balltable_mf.eventpeaks_mean))/sqrt(size(cell2mat(balltable_mf.eventpeaks_mean),1));
+cell_mean_event_mf=cell2mat(transpose(balltable_mf.mean_event(~cellfun(@isempty, balltable_mf.mean_event))));
+
+ball_mean_event_mf=mean(cell_mean_event_mf,2);
+ball_SEM_event_mf=std(cell_mean_event_mf,0,2)/sqrt(size(cell_mean_event_mf,2));
+
+cell_mean_event_mf_contra=cell2mat(transpose(balltable_mf_contra.mean_event_contra(~cellfun(@isempty, balltable_mf_contra.mean_event_contra))));
+
+ball_mean_event_mf_contra=mean(cell_mean_event_mf_contra,2);
+ball_SEM_event_mf_contra=std(cell_mean_event_mf_contra,0,2)/sqrt(size(cell_mean_event_mf_contra,2));
+
+
+
+
 %plot the mean event of virgin
 
 %--for male experimental flies
@@ -373,18 +512,26 @@ ball_SEM_event_f_contra=std(cell_mean_event_f_contra,0,2)/sqrt(size(cell_mean_ev
 xevents_nonempty=x_events( ~cellfun(@(cell) isempty (cell),x_events));
 xevents_nonempty_contra=x_events_contra( ~cellfun(@(cell) isempty (cell),x_events_contra));
 
-
-fignew=figure('Name','virgin_mean_event_males_ipsi');
-%requires package boundedline
-plot_vir_event_m=boundedline(xevents_nonempty{1,1},vir_mean_event_m,vir_SEM_event_m,'m');
-cd(outputdirmean);
- saveas(fignew,'virgin_mean_event_males_ipsi','epsc');
- 
- fignew=figure('Name','virgin_mean_event_males_contra');
-%requires package boundedline
-plot_vir_event_m_contra=boundedline(xevents_nonempty_contra{1,1},vir_mean_event_m_contra,vir_SEM_event_m_contra,'m');
-cd(outputdirmean);
- saveas(fignew,'virgin_mean_event_male_contra','epsc');
+try
+    fignew=figure('Name','virgin_mean_event_males_ipsi');
+    %requires package boundedline
+    plot_vir_event_m=boundedline(xevents_nonempty{1,1},vir_mean_event_m,vir_SEM_event_m,'m');
+    cd(outputdirmean);
+    saveas(fignew,'virgin_mean_event_males_ipsi','epsc');
+catch ME
+    errorMessage = ME.message;
+    disp(errorMessage);
+end
+try
+        fignew=figure('Name','virgin_mean_event_males_contra');
+        %requires package boundedline
+        plot_vir_event_m_contra=boundedline(xevents_nonempty_contra{1,1},vir_mean_event_m_contra,vir_SEM_event_m_contra,'m');
+        cd(outputdirmean);
+        saveas(fignew,'virgin_mean_event_male_contra','epsc');
+ catch ME
+        errorMessage = ME.message;
+        disp(errorMessage);
+end   
  %saveas(fignew2,'virgin_first_touches_male','epsc');
 %--for female experimental flies
 %mean_first_touch_event_f=cell2mat(transpose(virtable_f.first_touch_events(~cellfun(@isempty, virtable_f.first_touch_events))));
@@ -395,19 +542,53 @@ cd(outputdirmean);
 %fignew2=figure('Name','virgin_first_touch_females');
 %requires package boundedline
 %plot_first_touch_event_F=boundedline(xevents_nonempty{2,1},vir_mean_first_f,vir_SEM_first_f,'m');
-fignew=figure('Name','virgin_mean_event_females_ipsi');
-%requires package boundedline
-plot_vir_event_f=boundedline(xevents_nonempty{1,1},vir_mean_event_f,vir_SEM_event_f,'m');
-
-cd(outputdirmean);
- saveas(fignew,'virgin_mean_event_female_ipsi','epsc');
- 
- fignew=figure('Name','virgin_mean_event_females_contra');
-%requires package boundedline
-plot_vir_event_f_contra=boundedline(xevents_nonempty_contra{1,1},vir_mean_event_f_contra,vir_SEM_event_f_contra,'m');
-
-cd(outputdirmean);
- saveas(fignew,'virgin_mean_event_female_contra','epsc');
+try
+    fignew=figure('Name','virgin_mean_event_females_ipsi');
+    %requires package boundedline
+    plot_vir_event_f=boundedline(xevents_nonempty{1,1},vir_mean_event_f,vir_SEM_event_f,'m');
+    
+    cd(outputdirmean);
+    saveas(fignew,'virgin_mean_event_female_ipsi','epsc');
+catch ME
+    errorMessage = ME.message;
+    disp(errorMessage);
+end
+    try
+        fignew=figure('Name','virgin_mean_event_females_contra');
+        %requires package boundedline
+        plot_vir_event_f_contra=boundedline(xevents_nonempty_contra{1,1},vir_mean_event_f_contra,vir_SEM_event_f_contra,'m');
+        
+        cd(outputdirmean);
+        saveas(fignew,'virgin_mean_event_female_contra','epsc');
+    catch ME
+        errorMessage = ME.message;
+        disp(errorMessage);
+        
+    end
+    
+try
+    fignew=figure('Name','virgin_mean_event_mated_females_ipsi');
+    %requires package boundedline
+    plot_vir_event_mf=boundedline(xevents_nonempty{1,1},vir_mean_event_mf,vir_SEM_event_mf,'m');
+    
+    cd(outputdirmean);
+    saveas(fignew,'virgin_mean_event_mated_female_ipsi','epsc');
+catch ME
+    errorMessage = ME.message;
+    disp(errorMessage);
+end
+    try
+        fignew=figure('Name','virgin_mean_event_mated_females_contra');
+        %requires package boundedline
+        plot_vir_event_mf_contra=boundedline(xevents_nonempty_contra{1,1},vir_mean_event_mf_contra,vir_SEM_event_mf_contra,'m');
+        
+        cd(outputdirmean);
+        saveas(fignew,'virgin_mean_event_mated_female_contra','epsc');
+    catch ME
+        errorMessage = ME.message;
+        disp(errorMessage);
+        
+    end
 % saveas(fignew2,'virgin_first_touches_female','epsc');
  
  
@@ -423,17 +604,26 @@ cd(outputdirmean);
 %fignew2=figure('Name','male_first_touch_males');
 %requires package boundedline
 %plot_first_touch_event_m=boundedline(xevents_nonempty{2,1},male_mean_first_m,male_SEM_first_m,'m');
-fignew=figure('Name','male_mean_event_males_ipsi');
-%requires package boundedline
-plot_male_event_m=boundedline(xevents_nonempty{1,1},male_mean_event_m,male_SEM_event_m,'m');
-cd(outputdirmean);
- saveas(fignew,'male_mean_event_male_ipsi','epsc');
- 
- fignew=figure('Name','male_mean_event_males_contra');
-%requires package boundedline
-plot_male_event_m_contra=boundedline(xevents_nonempty_contra{1,1},male_mean_event_m_contra,male_SEM_event_m_contra,'m');
-cd(outputdirmean);
- saveas(fignew,'male_mean_event_male_contra','epsc');
+try
+    fignew=figure('Name','male_mean_event_males_ipsi');
+    %requires package boundedline
+    plot_male_event_m=boundedline(xevents_nonempty{1,1},male_mean_event_m,male_SEM_event_m,'m');
+    cd(outputdirmean);
+    saveas(fignew,'male_mean_event_male_ipsi','epsc');
+catch ME
+    errorMessage = ME.message;
+    disp(errorMessage);
+end
+    try
+        fignew=figure('Name','male_mean_event_males_contra');
+        %requires package boundedline
+        plot_male_event_m_contra=boundedline(xevents_nonempty_contra{1,1},male_mean_event_m_contra,male_SEM_event_m_contra,'m');
+        cd(outputdirmean);
+        saveas(fignew,'male_mean_event_male_contra','epsc');
+    catch ME
+        errorMessage = ME.message;
+        disp(errorMessage);
+    end
  %saveas(fignew2,'male_first_touches_male','epsc');
 %--for female experimental flies
 %mean_first_touch_event_f=cell2mat(transpose(maletable_f.first_touch_events(~cellfun(@isempty, maletable_f.first_touch_events))));
@@ -444,19 +634,56 @@ cd(outputdirmean);
 %fignew2=figure('Name','male_first_touch_females');
 %requires package boundedline
 %plot_first_touch_event_F=boundedline(xevents_nonempty{2,1},male_mean_first_f,male_SEM_first_f,'m');
-fignew=figure('Name','male_mean_event_females_ipsi');
-%requires package boundedline
-plot_male_event_f=boundedline(xevents_nonempty{1,1},male_mean_event_f,male_SEM_event_f,'m');
+try
+    fignew=figure('Name','male_mean_event_females_ipsi');
+    %requires package boundedline
+    plot_male_event_f=boundedline(xevents_nonempty{1,1},male_mean_event_f,male_SEM_event_f,'m');
+    
+    cd(outputdirmean);
+    saveas(fignew,'male_mean_event_female_ipsi','epsc');
+    
+   
+catch ME
+    errorMessage = ME.message;
+    disp(errorMessage);
+end
+try
+    fignew=figure('Name','male_mean_event_females_contra');
+    %requires package boundedline
+    plot_male_event_f_contra=boundedline(xevents_nonempty_contra{1,1},male_mean_event_f_contra,male_SEM_event_f_contra,'m');
+    
+    cd(outputdirmean);
+    saveas(fignew,'male_mean_event_female_contra','epsc');
+catch ME
+    errorMessage = ME.message;
+    disp(errorMessage);
+end
 
-cd(outputdirmean);
- saveas(fignew,'male_mean_event_female_ipsi','epsc');
- 
- fignew=figure('Name','male_mean_event_females_contra');
-%requires package boundedline
-plot_male_event_f_contra=boundedline(xevents_nonempty_contra{1,1},male_mean_event_f_contra,male_SEM_event_f_contra,'m');
 
-cd(outputdirmean);
- saveas(fignew,'male_mean_event_female_contra','epsc');
+try
+    fignew=figure('Name','male_mean_event_mated_females_ipsi');
+    %requires package boundedline
+    plot_male_event_mf=boundedline(xevents_nonempty{1,1},male_mean_event_mf,male_SEM_event_mf,'m');
+    
+    cd(outputdirmean);
+    saveas(fignew,'male_mean_event_mated_female_ipsi','epsc');
+    
+    
+catch ME
+    errorMessage = ME.message;
+    disp(errorMessage);
+end
+try
+    fignew=figure('Name','male_mean_event_mated_females_contra');
+    %requires package boundedline
+    plot_male_event_mf_contra=boundedline(xevents_nonempty_contra{1,1},male_mean_event_mf_contra,male_SEM_event_mf_contra,'m');
+    
+    cd(outputdirmean);
+    saveas(fignew,'male_mean_event_mated_female_contra','epsc');
+catch ME
+    errorMessage = ME.message;
+    disp(errorMessage);
+end
  %saveas(fignew2,'male_first_touches_female','epsc');
  
 % male_eventpeaks_mean=mean(cell2mat(maletable.eventpeaks_mean));
@@ -473,69 +700,147 @@ cd(outputdirmean);
  %saveas(fignew,'male_mean_event','epsc');
 
 %oenocyteless male
+try
+    fignew=figure('Name','oenocyteless_male_mean_event_males_ipsi');
+    %requires package boundedline
+    plot_oenegm_event_m=boundedline(xevents_nonempty{1,1},oenegm_mean_event_m,oenegm_SEM_event_m,'m');
+    
+    cd(outputdirmean);
+    saveas(fignew,'oenocyteless_male_mean_event_male_ipsi','epsc');
+catch ME
+    errorMessage = ME.message;
+    disp(errorMessage);
+end 
+try
+    fignew=figure('Name','oenocyteless_male_mean_event_males_contra');
+    %requires package boundedline
+    plot_oenegm_event_m_contra=boundedline(xevents_nonempty_contra{1,1},oenegm_mean_event_m_contra,oenegm_SEM_event_m_contra,'m');
+    
+    cd(outputdirmean);
+    saveas(fignew,'oenocyteless_male_mean_event_male_contra','epsc');
+catch ME
+    errorMessage = ME.message;
+    disp(errorMessage);
+end
+try
+    fignew=figure('Name','oenocyteless_male_mean_event_females_ipsi');
+    %requires package boundedline
+    plot_oenegm_event_f=boundedline(xevents_nonempty{1,1},oenegm_mean_event_f,oenegm_SEM_event_f,'m');
+    
+    cd(outputdirmean);
+    saveas(fignew,'oenocyteless_male_mean_event_female_ipsi','epsc');
+catch ME
+    errorMessage = ME.message;
+    disp(errorMessage);
+end
+try
+    fignew=figure('Name','oenocyteless_male_mean_event_females_contra');
+    %requires package boundedline
+    plot_oenegm_event_f_contra=boundedline(xevents_nonempty_contra{1,1},oenegm_mean_event_f_contra,oenegm_SEM_event_f_contra,'m');
+    
+    cd(outputdirmean);
+    saveas(fignew,'oenocyteless_male_mean_event_female_contra','epsc');
+catch ME
+    errorMessage = ME.message;
+    disp(errorMessage);
+end
 
-fignew=figure('Name','oenocyteless_male_mean_event_males_ipsi');
-%requires package boundedline
-plot_oenegm_event_m=boundedline(xevents_nonempty{1,1},oenegm_mean_event_m,oenegm_SEM_event_m,'m');
 
-cd(outputdirmean);
- saveas(fignew,'oenocyteless_male_mean_event_male_ipsi','epsc');
- 
- fignew=figure('Name','oenocyteless_male_mean_event_males_contra');
-%requires package boundedline
-plot_oenegm_event_m_contra=boundedline(xevents_nonempty_contra{1,1},oenegm_mean_event_m_contra,oenegm_SEM_event_m_contra,'m');
-
-cd(outputdirmean);
- saveas(fignew,'oenocyteless_male_mean_event_male_contra','epsc'); 
- 
- 
-fignew=figure('Name','oenocyteless_male_mean_event_females_ipsi');
-%requires package boundedline
-plot_oenegm_event_f=boundedline(xevents_nonempty{1,1},oenegm_mean_event_f,oenegm_SEM_event_f,'m');
-
-cd(outputdirmean);
- saveas(fignew,'oenocyteless_male_mean_event_female_ipsi','epsc');
- 
- fignew=figure('Name','oenocyteless_male_mean_event_females_contra');
-%requires package boundedline
-plot_oenegm_event_f_contra=boundedline(xevents_nonempty_contra{1,1},oenegm_mean_event_f_contra,oenegm_SEM_event_f_contra,'m');
-
-cd(outputdirmean);
- saveas(fignew,'oenocyteless_male_mean_event_female_contra','epsc'); 
- 
+try
+    fignew=figure('Name','oenocyteless_male_mean_event_mated_females_ipsi');
+    %requires package boundedline
+    plot_oenegm_event_mf=boundedline(xevents_nonempty{1,1},oenegm_mean_event_mf,oenegm_SEM_event_mf,'m');
+    
+    cd(outputdirmean);
+    saveas(fignew,'oenocyteless_male_mean_event_mated_female_ipsi','epsc');
+catch ME
+    errorMessage = ME.message;
+    disp(errorMessage);
+end
+try
+    fignew=figure('Name','oenocyteless_male_mean_event_mated_females_contra');
+    %requires package boundedline
+    plot_oenegm_event_mf_contra=boundedline(xevents_nonempty_contra{1,1},oenegm_mean_event_mf_contra,oenegm_SEM_event_mf_contra,'m');
+    
+    cd(outputdirmean);
+    saveas(fignew,'oenocyteless_male_mean_event_mated_female_contra','epsc');
+catch ME
+    errorMessage = ME.message;
+    disp(errorMessage);
+end
 %oenocyteless female
+try
+    fignew=figure('Name','oenocyteless_female_mean_event_males_ipsi');
+    %requires package boundedline
+    plot_oenegf_event_m=boundedline(xevents_nonempty{1,1},oenegf_mean_event_m,oenegf_SEM_event_m,'m');
+    
+    cd(outputdirmean);
+    saveas(fignew,'oenocyteless_female_mean_event_male_ipsi','epsc');
+catch ME
+    errorMessage = ME.message;
+    disp(errorMessage);
+end
+try
+    fignew=figure('Name','oenocyteless_female_mean_event_males_contra');
+    %requires package boundedline
+    plot_oenegf_event_m_contra=boundedline(xevents_nonempty_contra{1,1},oenegf_mean_event_m_contra,oenegf_SEM_event_m_contra,'m');
+    
+    cd(outputdirmean);
+    saveas(fignew,'oenocyteless_female_mean_event_male_contra','epsc');
+catch ME
+    errorMessage = ME.message;
+    disp(errorMessage);
+end
+try
+    fignew=figure('Name','oenocyteless_female_mean_event_females_ipsi');
+    %requires package boundedline
+    plot_oenegf_event_f=boundedline(xevents_nonempty{1,1},oenegf_mean_event_f,oenegf_SEM_event_f,'m');
+    
+    cd(outputdirmean);
+    saveas(fignew,'oenocyteless_female_mean_event_female_ipsi','epsc');
+catch ME
+    errorMessage = ME.message;
+    disp(errorMessage);
+end
+try
+    fignew=figure('Name','oenocyteless_female_mean_event_females_contra');
+    %requires package boundedline
+    plot_oenegf_event_f_contra=boundedline(xevents_nonempty_contra{1,1},oenegf_mean_event_f_contra,oenegf_SEM_event_f_contra,'m');
+    
+    cd(outputdirmean);
+    saveas(fignew,'oenocyteless_female_mean_event_female_contra','epsc');
+catch ME
+    errorMessage = ME.message;
+    disp(errorMessage);
+end
 
-fignew=figure('Name','oenocyteless_female_mean_event_males_ipsi');
-%requires package boundedline
-plot_oenegf_event_m=boundedline(xevents_nonempty{1,1},oenegf_mean_event_m,oenegf_SEM_event_m,'m');
+ 
 
-cd(outputdirmean);
- saveas(fignew,'oenocyteless_female_mean_event_male_ipsi','epsc');
- 
- fignew=figure('Name','oenocyteless_female_mean_event_males_contra');
-%requires package boundedline
-plot_oenegf_event_m_contra=boundedline(xevents_nonempty_contra{1,1},oenegf_mean_event_m_contra,oenegf_SEM_event_m_contra,'m');
 
-cd(outputdirmean);
- saveas(fignew,'oenocyteless_female_mean_event_male_contra','epsc'); 
- 
- 
-fignew=figure('Name','oenocyteless_female_mean_event_females_ipsi');
-%requires package boundedline
-plot_oenegf_event_f=boundedline(xevents_nonempty{1,1},oenegf_mean_event_f,oenegf_SEM_event_f,'m');
 
-cd(outputdirmean);
- saveas(fignew,'oenocyteless_female_mean_event_female_ipsi','epsc');
- 
- fignew=figure('Name','oenocyteless_female_mean_event_females_contra');
-%requires package boundedline
-plot_oenegf_event_f_contra=boundedline(xevents_nonempty_contra{1,1},oenegf_mean_event_f_contra,oenegf_SEM_event_f_contra,'m');
 
-cd(outputdirmean);
- saveas(fignew,'oenocyteless_female_mean_event_female_contra','epsc'); 
-  
- 
- 
+try
+    fignew=figure('Name','oenocyteless_female_mean_event_mated_females_ipsi');
+    %requires package boundedline
+    plot_oenegf_event_mf=boundedline(xevents_nonempty{1,1},oenegf_mean_event_mf,oenegf_SEM_event_mf,'m');
+    
+    cd(outputdirmean);
+    saveas(fignew,'oenocyteless_female_mean_event_mated_female_ipsi','epsc');
+catch ME
+    errorMessage = ME.message;
+    disp(errorMessage);
+end
+try
+    fignew=figure('Name','oenocyteless_female_mean_event_mated_females_contra');
+    %requires package boundedline
+    plot_oenegf_event_mf_contra=boundedline(xevents_nonempty_contra{1,1},oenegf_mean_event_mf_contra,oenegf_SEM_event_mf_contra,'m');
+    
+    cd(outputdirmean);
+    saveas(fignew,'oenocyteless_female_mean_event_mated_female_contra','epsc');
+catch ME
+    errorMessage = ME.message;
+    disp(errorMessage);
+end
 %  %mean of simulans
 % sim_eventpeaks_mean=mean(cell2mat(simtable.eventpeaks_mean));
 % sim_eventpeaks_SEM=std(cell2mat(simtable.eventpeaks_mean))/sqrt(size(cell2mat(simtable.eventpeaks_mean),1));

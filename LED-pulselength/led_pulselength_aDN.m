@@ -11,13 +11,13 @@ duration_acquisition = numberframes/framerate;
 baseline_start = 6;%updated Feb 2018
 baseline_end = 30;%updated Feb 2018
 startdir=pwd;
-pathname='/Volumes/LaCie/Projects/aDN/imaging/LC10-lexA_lexAop-CSChrimson_aDN_GCaMP6f/imaging_preprocessed';
+pathname='/Volumes/LaCie/Projects/aDN/imaging/LC10-lexA_lexAop-CSChrimson_aDN_GCaMP6f_LED_adjusted/imaging_preprocessed';
 %pathname has to be the path to the folder were files to be processed are
 %located
-foldername='2019_06_24';%the name of the imaging folder
-subfoldername='ROI';%must be a folder within the imaging folder
+foldername='2019_07_23';%the name of the imaging folder
+subfoldername='ROI_after_adjust';%must be a folder within the imaging folder
 stackdir = fullfile(pathname,foldername,subfoldername);
-outputdirv=('/Volumes/LaCie/Projects/aDN/imaging/LC10-lexA_lexAop-CSChrimson_aDN_GCaMP6f/Results');
+outputdirv=('/Volumes/LaCie/Projects/aDN/imaging/LC10-lexA_lexAop-CSChrimson_aDN_GCaMP6f_LED_adjusted/Results_after_adjust');
 %male outputfilenames
 outputfile4p200ms=strcat(foldername,'_Male_4p200ms.xlsx');
 outputimg4p200ms=strcat(foldername,'_Male_4p200ms.eps');
