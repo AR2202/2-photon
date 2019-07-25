@@ -901,12 +901,12 @@ outputfig=(data{3});
 %framerate of imaging to be entered here
 framerate=5.92;
 %number of frames in the imaging file
-numframes=600;
+numframes=500;
 %time for calculating the baseline before each touch
 basetime=3;
 %time of the event after start of touch
 eventtime=15;
-intervaltime=3;
+intervaltime=5;
 %this parameter specifies whether simultaneous touches on both sides should
 %be excluded
 excludedoubles=0;
