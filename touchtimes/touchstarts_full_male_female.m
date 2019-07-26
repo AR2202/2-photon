@@ -498,6 +498,9 @@ ball_SEM_event_mf_contra=std(cell_mean_event_mf_contra,0,2)/sqrt(size(cell_mean_
 
 
 %plot the mean event of virgin
+%------------------------------
+%------------------------------
+
 
 %--for male experimental flies
 %mean_first_touch_event_m=cell2mat(transpose(virtable_m.first_touch_events(~cellfun(@isempty, virtable_m.first_touch_events))));
@@ -518,6 +521,7 @@ try
     plot_vir_event_m=boundedline(xevents_nonempty{1,1},vir_mean_event_m,vir_SEM_event_m,'m');
     cd(outputdirmean);
     saveas(fignew,'virgin_mean_event_males_ipsi','epsc');
+    save('mean_male_touching_female_ipsi.mat','vir_mean_event_m','vir_SEM_event_m');
 catch ME
     errorMessage = ME.message;
     disp(errorMessage);
@@ -528,6 +532,8 @@ try
         plot_vir_event_m_contra=boundedline(xevents_nonempty_contra{1,1},vir_mean_event_m_contra,vir_SEM_event_m_contra,'m');
         cd(outputdirmean);
         saveas(fignew,'virgin_mean_event_male_contra','epsc');
+        save('mean_male_touching_female_contra.mat','vir_mean_event_m_contra','vir_SEM_event_m_contra');
+
  catch ME
         errorMessage = ME.message;
         disp(errorMessage);
@@ -549,6 +555,8 @@ try
     
     cd(outputdirmean);
     saveas(fignew,'virgin_mean_event_female_ipsi','epsc');
+    save('mean_female_touching_female_ipsi.mat','vir_mean_event_f','vir_SEM_event_f');
+
 catch ME
     errorMessage = ME.message;
     disp(errorMessage);
@@ -560,6 +568,8 @@ end
         
         cd(outputdirmean);
         saveas(fignew,'virgin_mean_event_female_contra','epsc');
+        save('mean_female_touching_female_contra.mat','vir_mean_event_f_contra','vir_SEM_event_f_contra');
+
     catch ME
         errorMessage = ME.message;
         disp(errorMessage);
@@ -573,6 +583,8 @@ try
     
     cd(outputdirmean);
     saveas(fignew,'virgin_mean_event_mated_female_ipsi','epsc');
+    save('mean_mated_female_touching_female_ipsi.mat','vir_mean_event_mf','vir_SEM_event_mf');
+
 catch ME
     errorMessage = ME.message;
     disp(errorMessage);
@@ -584,6 +596,8 @@ end
         
         cd(outputdirmean);
         saveas(fignew,'virgin_mean_event_mated_female_contra','epsc');
+        save('mean_mated_female_touching_female_contra.mat','vir_mean_event_mf_contra','vir_SEM_event_mf_contra');
+
     catch ME
         errorMessage = ME.message;
         disp(errorMessage);
@@ -594,6 +608,8 @@ end
  
 
 %plot the mean event of male
+%------------------------------
+%-------------------------------
 
 %--for male experimental flies
 %mean_first_touch_event_m=cell2mat(transpose(maletable_m.first_touch_events(~cellfun(@isempty, maletable_m.first_touch_events))));
@@ -610,6 +626,8 @@ try
     plot_male_event_m=boundedline(xevents_nonempty{1,1},male_mean_event_m,male_SEM_event_m,'m');
     cd(outputdirmean);
     saveas(fignew,'male_mean_event_male_ipsi','epsc');
+    save('mean_male_touching_male_ipsi.mat','male_mean_event_m','male_SEM_event_m');
+
 catch ME
     errorMessage = ME.message;
     disp(errorMessage);
@@ -620,6 +638,8 @@ end
         plot_male_event_m_contra=boundedline(xevents_nonempty_contra{1,1},male_mean_event_m_contra,male_SEM_event_m_contra,'m');
         cd(outputdirmean);
         saveas(fignew,'male_mean_event_male_contra','epsc');
+         save('mean_male_touching_male_contra.mat','male_mean_event_m_contra','male_SEM_event_m_contra');
+
     catch ME
         errorMessage = ME.message;
         disp(errorMessage);
@@ -641,7 +661,8 @@ try
     
     cd(outputdirmean);
     saveas(fignew,'male_mean_event_female_ipsi','epsc');
-    
+     save('mean_female_touching_male_ipsi.mat','male_mean_event_f','male_SEM_event_f');
+
    
 catch ME
     errorMessage = ME.message;
@@ -654,6 +675,8 @@ try
     
     cd(outputdirmean);
     saveas(fignew,'male_mean_event_female_contra','epsc');
+    save('mean_female_touching_male_contra.mat','male_mean_event_f_contra','male_SEM_event_f_contra');
+
 catch ME
     errorMessage = ME.message;
     disp(errorMessage);
@@ -667,7 +690,8 @@ try
     
     cd(outputdirmean);
     saveas(fignew,'male_mean_event_mated_female_ipsi','epsc');
-    
+    save('mean_mated_female_touching_male_ipsi.mat','male_mean_event_mf','male_SEM_event_mf');
+
     
 catch ME
     errorMessage = ME.message;
@@ -680,6 +704,8 @@ try
     
     cd(outputdirmean);
     saveas(fignew,'male_mean_event_mated_female_contra','epsc');
+    save('mean_mated_female_touching_male_contra.mat','male_mean_event_mf_contra','male_SEM_event_mf_contra');
+
 catch ME
     errorMessage = ME.message;
     disp(errorMessage);
@@ -700,6 +726,9 @@ end
  %saveas(fignew,'male_mean_event','epsc');
 
 %oenocyteless male
+%------------------
+%-------------------
+
 try
     fignew=figure('Name','oenocyteless_male_mean_event_males_ipsi');
     %requires package boundedline
@@ -707,6 +736,8 @@ try
     
     cd(outputdirmean);
     saveas(fignew,'oenocyteless_male_mean_event_male_ipsi','epsc');
+    save('mean_male_touching_oenocyteless_male_ipsi.mat','oenegm_mean_event_m','oenegm_SEM_event_m');
+
 catch ME
     errorMessage = ME.message;
     disp(errorMessage);
@@ -718,6 +749,8 @@ try
     
     cd(outputdirmean);
     saveas(fignew,'oenocyteless_male_mean_event_male_contra','epsc');
+    save('mean_male_touching_oenocyteless_male_contra.mat','oenegm_mean_event_m_contra','oenegm_SEM_event_m_contra');
+
 catch ME
     errorMessage = ME.message;
     disp(errorMessage);
@@ -729,6 +762,8 @@ try
     
     cd(outputdirmean);
     saveas(fignew,'oenocyteless_male_mean_event_female_ipsi','epsc');
+    save('mean_female_touching_oenocyteless_male_ipsi.mat','oenegm_mean_event_f','oenegm_SEM_event_f');
+
 catch ME
     errorMessage = ME.message;
     disp(errorMessage);
@@ -740,6 +775,8 @@ try
     
     cd(outputdirmean);
     saveas(fignew,'oenocyteless_male_mean_event_female_contra','epsc');
+     save('mean_female_touching_oenocyteless_male_contra.mat','oenegm_mean_event_f_contra','oenegm_SEM_event_f_contra');
+
 catch ME
     errorMessage = ME.message;
     disp(errorMessage);
@@ -753,6 +790,8 @@ try
     
     cd(outputdirmean);
     saveas(fignew,'oenocyteless_male_mean_event_mated_female_ipsi','epsc');
+     save('mean_mated_female_touching_oenocyteless_male_ipsi.mat','oenegm_mean_event_mf','oenegm_SEM_event_mf');
+
 catch ME
     errorMessage = ME.message;
     disp(errorMessage);
@@ -764,11 +803,22 @@ try
     
     cd(outputdirmean);
     saveas(fignew,'oenocyteless_male_mean_event_mated_female_contra','epsc');
+     save('mean_mated_female_touching_oenocyteless_male_contra.mat','oenegm_mean_event_mf_contra','oenegm_SEM_event_mf_contra');
+
 catch ME
     errorMessage = ME.message;
     disp(errorMessage);
 end
+
+
+
+
 %oenocyteless female
+%---------------------
+%------------------------
+
+
+
 try
     fignew=figure('Name','oenocyteless_female_mean_event_males_ipsi');
     %requires package boundedline
@@ -776,6 +826,8 @@ try
     
     cd(outputdirmean);
     saveas(fignew,'oenocyteless_female_mean_event_male_ipsi','epsc');
+     save('mean_male_touching_oenocyteless_female_ipsi.mat','oenegf_mean_event_m','oenegf_SEM_event_m');
+
 catch ME
     errorMessage = ME.message;
     disp(errorMessage);
@@ -787,6 +839,8 @@ try
     
     cd(outputdirmean);
     saveas(fignew,'oenocyteless_female_mean_event_male_contra','epsc');
+    save('mean_male_touching_oenocyteless_female_contra.mat','oenegf_mean_event_m_contra','oenegf_SEM_event_m_contra');
+
 catch ME
     errorMessage = ME.message;
     disp(errorMessage);
@@ -798,6 +852,8 @@ try
     
     cd(outputdirmean);
     saveas(fignew,'oenocyteless_female_mean_event_female_ipsi','epsc');
+    save('mean_female_touching_oenocyteless_female_ipsi.mat','oenegf_mean_event_f','oenegf_SEM_event_f');
+
 catch ME
     errorMessage = ME.message;
     disp(errorMessage);
@@ -809,6 +865,8 @@ try
     
     cd(outputdirmean);
     saveas(fignew,'oenocyteless_female_mean_event_female_contra','epsc');
+    save('mean_female_touching_oenocyteless_female_contra.mat','oenegf_mean_event_f_contra','oenegf_SEM_event_f_contra');
+
 catch ME
     errorMessage = ME.message;
     disp(errorMessage);
@@ -826,6 +884,8 @@ try
     
     cd(outputdirmean);
     saveas(fignew,'oenocyteless_female_mean_event_mated_female_ipsi','epsc');
+    save('mean_mated_female_touching_oenocyteless_female_ipsi.mat','oenegf_mean_event_mf','oenegf_SEM_event_mf');
+
 catch ME
     errorMessage = ME.message;
     disp(errorMessage);
@@ -837,6 +897,107 @@ try
     
     cd(outputdirmean);
     saveas(fignew,'oenocyteless_female_mean_event_mated_female_contra','epsc');
+    save('mean_mated_female_touching_oenocyteless_female_contra.mat','oenegf_mean_event_mf_contra','oenegf_SEM_event_mf_contra');
+
+catch ME
+    errorMessage = ME.message;
+    disp(errorMessage);
+end
+%plot touching ball
+%-------------------
+%---------------------
+
+
+
+
+try
+    fignew=figure('Name','ball_mean_event_males_ipsi');
+    %requires package boundedline
+    plot_ball_event_m=boundedline(xevents_nonempty{1,1},ball_mean_event_m,ball_SEM_event_m,'m');
+    
+    cd(outputdirmean);
+    saveas(fignew,'ball_mean_event_male_ipsi','epsc');
+     save('mean_male_touching_ball_ipsi.mat','ball_mean_event_m','ball_SEM_event_m');
+
+catch ME
+    errorMessage = ME.message;
+    disp(errorMessage);
+end
+try
+    fignew=figure('Name','ball_mean_event_males_contra');
+    %requires package boundedline
+    plot_ball_event_m_contra=boundedline(xevents_nonempty_contra{1,1},ball_mean_event_m_contra,ball_SEM_event_m_contra,'m');
+    
+    cd(outputdirmean);
+    saveas(fignew,'ball_mean_event_male_contra','epsc');
+    save('mean_male_touching_ball_contra.mat','ball_mean_event_m_contra','ball_SEM_event_m_contra');
+
+catch ME
+    errorMessage = ME.message;
+    disp(errorMessage);
+end
+try
+    fignew=figure('Name','ball_mean_event_females_ipsi');
+    %requires package boundedline
+    plot_ball_event_f=boundedline(xevents_nonempty{1,1},oenegf_mean_event_f,oenegf_SEM_event_f,'m');
+    
+    cd(outputdirmean);
+    saveas(fignew,'ball_mean_event_female_ipsi','epsc');
+    save('mean_female_touching_ball_ipsi.mat','ball_mean_event_f','ball_SEM_event_f');
+
+catch ME
+    errorMessage = ME.message;
+    disp(errorMessage);
+end
+try
+    fignew=figure('Name','ball_mean_event_females_contra');
+    %requires package boundedline
+    plot_ball_event_f_contra=boundedline(xevents_nonempty_contra{1,1},ball_mean_event_f_contra,ball_SEM_event_f_contra,'m');
+    
+    cd(outputdirmean);
+    saveas(fignew,'ball_mean_event_female_contra','epsc');
+    save('mean_female_touching_ball_contra.mat','ball_mean_event_f_contra','ball_SEM_event_f_contra');
+
+catch ME
+    errorMessage = ME.message;
+    disp(errorMessage);
+end
+
+ 
+
+
+
+
+try
+    fignew=figure('Name','ball_mean_event_mated_females_ipsi');
+    %requires package boundedline
+    plot_ball_event_mf=boundedline(xevents_nonempty{1,1},ball_mean_event_mf,ball_SEM_event_mf,'m');
+    
+    cd(outputdirmean);
+    saveas(fignew,'ball_mean_event_mated_female_ipsi','epsc');
+    save('mean_mated_female_touching_ball_ipsi.mat','oenegf_mean_event_mf','ball_SEM_event_mf');
+
+catch ME
+    errorMessage = ME.message;
+    disp(errorMessage);
+end
+try
+    fignew=figure('Name','ball_mean_event_mated_females_contra');
+    %requires package boundedline
+    plot_ball_event_mf_contra=boundedline(xevents_nonempty_contra{1,1},ball_mean_event_mf_contra,ball_SEM_event_mf_contra,'m');
+    
+    cd(outputdirmean);
+    saveas(fignew,'ball_mean_event_mated_female_contra','epsc');
+    save('mean_mated_female_touching_ball_contra.mat','ball_mean_event_mf_contra','ball_SEM_event_mf_contra');
+
+catch ME
+    errorMessage = ME.message;
+    disp(errorMessage);
+end
+%save x values for plotting later
+try
+    cd(outputdirmean);
+    save('x_events.mat','xevents_nonempty');
 catch ME
     errorMessage = ME.message;
     disp(errorMessage);
