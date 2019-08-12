@@ -11,7 +11,7 @@
 %recognition:
 %'_male_fly': for experimental male
 %'_female_fly': for experimental female
-%'male': for a male target
+%'touch_male': for a male target
 %'vir': for a virgin female target
 
 %reduced touchtimes are supported: only the start and the end of each touch
@@ -105,7 +105,7 @@ combinedtable_male_contra = combinedtable_contra( contains(string(combinedtable_
 simtable_m = combinedtable_male( contains(string(combinedtable_male.t_foundin),'simulans'), : ); 
 yaktable_m = combinedtable_male( contains(string(combinedtable_male.t_foundin),'yakuba'), : ); 
 virtable_m = combinedtable_male( contains(string(combinedtable_male.t_foundin),'vir'), : ); 
-maletable_m = combinedtable_male( contains(string(combinedtable_male.t_foundin),'male'), : ); 
+maletable_m = combinedtable_male( contains(string(combinedtable_male.t_foundin),'touch_male'), : ); 
 oenegftable_m = combinedtable_male( contains(string(combinedtable_male.t_foundin),'oenocytelessF'), : ); 
 oenegmtable_m = combinedtable_male( contains(string(combinedtable_male.t_foundin),'oenocytelessM'), : ); 
 balltable_m = combinedtable_male( contains(string(combinedtable_male.t_foundin),'ball'), : ); 
@@ -113,7 +113,7 @@ balltable_m = combinedtable_male( contains(string(combinedtable_male.t_foundin),
 simtable_m_contra = combinedtable_male_contra( contains(string(combinedtable_male_contra.t_foundin),'simulans'), : ); 
 yaktable_m_contra = combinedtable_male_contra( contains(string(combinedtable_male_contra.t_foundin),'yakuba'), : ); 
 virtable_m_contra = combinedtable_male_contra( contains(string(combinedtable_male_contra.t_foundin),'vir'), : ); 
-maletable_m_contra = combinedtable_male_contra( contains(string(combinedtable_male_contra.t_foundin),'male'), : ); 
+maletable_m_contra = combinedtable_male_contra( contains(string(combinedtable_male_contra.t_foundin),'touch_male'), : ); 
 oenegftable_m_contra = combinedtable_male_contra( contains(string(combinedtable_male_contra.t_foundin),'oenegf'), : ); 
 oenegmtable_m_contra = combinedtable_male_contra( contains(string(combinedtable_male_contra.t_foundin),'oenegm'), : ); 
 balltable_m_contra = combinedtable_male_contra( contains(string(combinedtable_male_contra.t_foundin),'ball'), : ); 
@@ -241,7 +241,7 @@ combinedtable_female_contra = combinedtable_contra( contains(string(combinedtabl
 simtable_f = combinedtable_female( contains(string(combinedtable_female.t_foundin),'simulans'), : ); 
 yaktable_f = combinedtable_female( contains(string(combinedtable_female.t_foundin),'yakuba'), : ); 
 virtable_f = combinedtable_female( contains(string(combinedtable_female.t_foundin),'vir'), : ); 
-maletable_f = combinedtable_female( contains(string(combinedtable_female.t_foundin),'male'), : ); 
+maletable_f = combinedtable_female( contains(string(combinedtable_female.t_foundin),'touch_male'), : ); 
 oenegftable_f = combinedtable_female( contains(string(combinedtable_female.t_foundin),'oenocytelessF'), : ); 
 oenegmtable_f = combinedtable_female( contains(string(combinedtable_female.t_foundin),'oenocytelessM'), : ); 
 balltable_f = combinedtable_female( contains(string(combinedtable_female.t_foundin),'ball'), : ); 
@@ -249,7 +249,7 @@ balltable_f = combinedtable_female( contains(string(combinedtable_female.t_found
 simtable_f_contra = combinedtable_female_contra( contains(string(combinedtable_female_contra.t_foundin),'simulans'), : ); 
 yaktable_f_contra = combinedtable_female_contra( contains(string(combinedtable_female_contra.t_foundin),'yakuba'), : ); 
 virtable_f_contra = combinedtable_female_contra( contains(string(combinedtable_female_contra.t_foundin),'vir'), : ); 
-maletable_f_contra = combinedtable_female_contra( contains(string(combinedtable_female_contra.t_foundin),'male'), : ); 
+maletable_f_contra = combinedtable_female_contra( contains(string(combinedtable_female_contra.t_foundin),'touch_male'), : ); 
 oenegftable_f_contra = combinedtable_female_contra( contains(string(combinedtable_female_contra.t_foundin),'oenocytelessF'), : ); 
 oenegmtable_f_contra = combinedtable_female_contra( contains(string(combinedtable_female_contra.t_foundin),'oenocytelessM'), : ); 
 balltable_f_contra = combinedtable_female_contra( contains(string(combinedtable_female_contra.t_foundin),'ball'), : ); 
@@ -939,7 +939,7 @@ end
 try
     fignew=figure('Name','ball_mean_event_females_ipsi');
     %requires package boundedline
-    plot_ball_event_f=boundedline(xevents_nonempty{1,1},oenegf_mean_event_f,oenegf_SEM_event_f,'m');
+    plot_ball_event_f=boundedline(xevents_nonempty{1,1},ball_mean_event_f,ball_SEM_event_f,'m');
     
     cd(outputdirmean);
     saveas(fignew,'ball_mean_event_female_ipsi','epsc');
