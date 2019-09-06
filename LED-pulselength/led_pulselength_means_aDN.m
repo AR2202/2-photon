@@ -17,21 +17,23 @@ numberframes=600;% number of frames
 duration_acquisition = numberframes/framerate; 
 
 startdir=pwd;
-pathname='/Volumes/LaCie/Projects/aDN/imaging/LC10-lexA_lexAop-CSChrimson_aDN_GCaMP6f_LED_adjusted/Results_after_adjust';
+pathname='/Volumes/LaCie/Projects/aDN/imaging/R25D01_MB296B/Results';
 %pathname has to be the path to the folder were files to be processed are
 %located
 
-stackdir = ('/Volumes/LaCie/Projects/aDN/imaging/LC10-lexA_lexAop-CSChrimson_aDN_GCaMP6f_LED_adjusted/Results_after_adjust');
+stackdir = ('/Volumes/LaCie/Projects/aDN/imaging/R25D01_MB296B/Results');
 % The folder where the results of single experiments are located
-outputdirmean=('/Volumes/LaCie/Projects/aDN/imaging/LC10-lexA_lexAop-CSChrimson_aDN_GCaMP6f_LED_adjusted/Results_after_adjust');
+outputdirmean=('/Volumes/LaCie/Projects/aDN/imaging/R25D01_MB296B/Results');
 %The folder where the mean data should be written to
-matfilename = 'LC10_male_';
+matfilename = 'R25D01_MB296B_female_';
 x = (1:numberframes)';% this is a column vector of the frame numbers
-x= (x-1)/framerate;%calculate the timepoints of the frames from the frame number
+x= x/framerate;%calculate the timepoints of the frames from the frame number Changed to x from x-1 due to alignment
 
 
 lateral_exists=0;
 medial_exists=0;
+lat_exists=0;%for the positive control, where name contains 'lateral' but not 'lateral deep'
+med_exists=0;%for the positive control, where name contains 'medial' but not 'medial superficial'
 ee = 1;
 ii = 1;
 
@@ -66,7 +68,7 @@ for nn = 1:size(namestrings,1)%loop through all namestrings
 cd(stackdir)
 %find files with the namestring in it
 %this is just for females
-files{ii}{ee} = dir(strcat('*Male_',namestrings(nn,:)));
+files{ii}{ee} = dir(strcat('*Female_',namestrings(nn,:)));
 files{ii}{ee} = {files{ii}{ee}.name};
  
 filenames = cell((length(files{ii}{ee})),1);
@@ -89,35 +91,70 @@ filenames(:) = {''};
 %                 end
 %             end
 if ismember('medial_superficial',sheets)== 1
-    middle_sup = table2array(readtable(filename,'Sheet','medial_superficial','ReadVariableNames',0));
-    if exist('middle_sups') ==1
-        middle_sups = horzcat(middle_sups,middle_sup);
-    else
-        middle_sups=middle_sup;
+    try
+        middle_sup = table2array(readtable(filename,'Sheet','medial_superficial','ReadVariableNames',0));
+        if exist('middle_sups') ==1
+            middle_sups = horzcat(middle_sups,middle_sup);
+        else
+            middle_sups=middle_sup;
+        end
+    catch ME
+        errormessage = ME.message;
+        disp(errormessage);
     end
 end
 
-            if ismember('lateral_deep',sheets)== 1
-                try
-                lat_cellbodies = table2array(readtable(filename,'Sheet','lateral_deep','ReadVariableNames',0));
-                 
-                 if exist('lat_cellbodiess') ==1
-                    lat_cellbodiess = horzcat(lat_cellbodiess,lat_cellbodies);
-                else
-                    lat_cellbodiess=lat_cellbodies;
-                 end
-                catch ME
-                    errormessage = ME.message;
-                    disp(errormessage);
-                end
-            end
+if ismember('lateral_deep',sheets)== 1
+    try
+        lat_cellbodies = table2array(readtable(filename,'Sheet','lateral_deep','ReadVariableNames',0));
+        
+        if exist('lat_cellbodiess') ==1
+            lat_cellbodiess = horzcat(lat_cellbodiess,lat_cellbodies);
+        else
+            lat_cellbodiess=lat_cellbodies;
+        end
+    catch ME
+        errormessage = ME.message;
+        disp(errormessage);
+    end
+end
 
-            
-       
 
-         
-            filenames(gg,1) = cellstr(filename);
-            
+if ismember('medial_deep',sheets)== 1
+    try
+        middle_deep = table2array(readtable(filename,'Sheet','medial_deep','ReadVariableNames',0));
+        if exist('middle_deeps') ==1
+            middle_deeps = horzcat(middle_deepss,middle_deep);
+        else
+            middle_deeps=middle_deep;
+        end
+    catch ME
+        errormessage = ME.message;
+        disp(errormessage);
+    end
+end
+
+if ismember('frontal_lateral',sheets)== 1
+    try
+        frontal_lateral = table2array(readtable(filename,'Sheet','frontal_lateral','ReadVariableNames',0));
+        
+        if exist('frontal_laterals') ==1
+            frontal_laterals = horzcat(frontal_laterals,frontal_lateral);
+        else
+            frontal_laterals=frontal_lateral;
+        end
+    catch ME
+        errormessage = ME.message;
+        disp(errormessage);
+    end
+end
+
+
+
+
+
+filenames(gg,1) = cellstr(filename);
+
         end
         
         outfile=strcat('mean',namestrings(nn,:));%generate the name for the output excel file
@@ -140,15 +177,15 @@ end
             for numpatch = 1:size(pulsetimes,2)%loop through the number of pulses
                 %for each pulse, generate a shaded area in the plot
                 %indicating the pulse duration
-             hpatch(numpatch)=patch([pulsetimes(numpatch) pulsetimes(numpatch)+pulsedur pulsetimes(numpatch)+pulsedur pulsetimes(numpatch)] , [min(ylim)*[1 1] max(ylim)*[1 1]],'c','EdgeColor','none');
-            %send the shaded area to the back of the graph
-             uistack(hpatch(numpatch), 'bottom');
-             end
-        saveas(fignew,outputfig,'epsc');
+                hpatch(numpatch)=patch([pulsetimes(numpatch) pulsetimes(numpatch)+pulsedur pulsetimes(numpatch)+pulsedur pulsetimes(numpatch)] , [min(ylim)*[1 1] max(ylim)*[1 1]],'c','EdgeColor','none');
+                %send the shaded area to the back of the graph
+                uistack(hpatch(numpatch), 'bottom');
+            end
+            saveas(fignew,outputfig,'epsc');
         end
         if exist('middle_sups', 'var') == 1
             medial_exists=1;
-           middle_sup_mean=mean(middle_sups,2);
+            middle_sup_mean=mean(middle_sups,2);
             middle_sup_n=size(middle_sups,2);
             middle_sup_SEM=std(middle_sups,0,2)/sqrt(middle_sup_n);
             Tmiddle_sup=table(middle_sup_mean,middle_sup_SEM);
@@ -161,14 +198,14 @@ end
             fignew=figure('Name',outputfig);
             h=boundedline(x,middle_sup_mean,middle_sup_SEM,'m');
             for numpatch = 1:size(pulsetimes,2)
-             hpatch(numpatch)=patch([pulsetimes(numpatch) pulsetimes(numpatch)+pulsedur pulsetimes(numpatch)+pulsedur pulsetimes(numpatch)] , [min(ylim)*[1 1] max(ylim)*[1 1]],'c','EdgeColor','none');
-            
-             uistack(hpatch(numpatch), 'bottom');
+                hpatch(numpatch)=patch([pulsetimes(numpatch) pulsetimes(numpatch)+pulsedur pulsetimes(numpatch)+pulsedur pulsetimes(numpatch)] , [min(ylim)*[1 1] max(ylim)*[1 1]],'c','EdgeColor','none');
+                
+                uistack(hpatch(numpatch), 'bottom');
             end
             saveas(fignew,outputfig,'epsc');
         end
         if exist('frontal_sups', 'var') == 1
-           frontal_sup_mean=mean(frontal_sups,2);
+            frontal_sup_mean=mean(frontal_sups,2);
             frontal_sup_n=size(frontal_sups,2);
             frontal_sup_SEM=std(frontal_sups,0,2)/sqrt(frontal_sup_n);
             Tfrontal_sup=table(frontal_sup_mean,frontal_sup_SEM);
@@ -181,170 +218,172 @@ end
             fignew=figure('Name',outputfig);
             h=boundedline(x,frontal_sup_mean,frontal_sup_SEM,'m');
             for numpatch = 1:size(pulsetimes,2)
-             hpatch(numpatch)=patch([pulsetimes(numpatch) pulsetimes(numpatch)+pulsedur pulsetimes(numpatch)+pulsedur pulsetimes(numpatch)] , [min(ylim)*[1 1] max(ylim)*[1 1]],'c','EdgeColor','none');
-            
-             uistack(hpatch(numpatch), 'bottom');
+                hpatch(numpatch)=patch([pulsetimes(numpatch) pulsetimes(numpatch)+pulsedur pulsetimes(numpatch)+pulsedur pulsetimes(numpatch)] , [min(ylim)*[1 1] max(ylim)*[1 1]],'c','EdgeColor','none');
+                
+                uistack(hpatch(numpatch), 'bottom');
             end
             saveas(fignew,outputfig,'epsc');
         end
         if exist('laterals', 'var') == 1
-           lateral_mean=mean(laterals,2);
+            lateral_mean=mean(laterals,2);
             lateral_n=size(laterals,2);
             lateral_SEM=std(laterals,0,2)/sqrt(lateral_n);
             Tlateral=table(lateral_mean,lateral_SEM);
             Tnlateral=table(lateral_n);
             writetable(Tlateral,outfile,'Sheet','lateral_mid','WriteVariableNames',true);
             writetable(Tnlateral,outfile,'Sheet','lateral_mid','Range','C1','WriteVariableNames',true);
-        %make figure
+            %make figure
             newStr = strrep(namestrings(nn,:),'.xlsx','.eps');
             outputfig=strcat('lateral_mid',newStr);
             fignew=figure('Name',outputfig);
             h=boundedline(x,lateral_mean,lateral_SEM,'m');
             for numpatch = 1:size(pulsetimes,2)
-             hpatch(numpatch)=patch([pulsetimes(numpatch) pulsetimes(numpatch)+pulsedur pulsetimes(numpatch)+pulsedur pulsetimes(numpatch)] , [min(ylim)*[1 1] max(ylim)*[1 1]],'c','EdgeColor','none');
-            
-             uistack(hpatch(numpatch), 'bottom');
+                hpatch(numpatch)=patch([pulsetimes(numpatch) pulsetimes(numpatch)+pulsedur pulsetimes(numpatch)+pulsedur pulsetimes(numpatch)] , [min(ylim)*[1 1] max(ylim)*[1 1]],'c','EdgeColor','none');
+                
+                uistack(hpatch(numpatch), 'bottom');
             end
             saveas(fignew,outputfig,'epsc');
         end
         if exist('lat_cellbodiess', 'var') == 1
             lateral_exists=1;
-           lat_cellbodies_mean=mean(lat_cellbodiess,2);
+            lat_cellbodies_mean=mean(lat_cellbodiess,2);
             lat_cellbodies_n=size(lat_cellbodiess,2);
             lat_cellbodies_SEM=std(lat_cellbodiess,0,2)/sqrt(lat_cellbodies_n);
             Tlat_cellbodies=table(lat_cellbodies_mean,lat_cellbodies_SEM);
             Tnlat_cellbodies=table(lat_cellbodies_n);
             writetable(Tlat_cellbodies,outfile,'Sheet','lateral_deep','WriteVariableNames',true);
             writetable(Tnlat_cellbodies,outfile,'Sheet','lateral_deep','Range','C1','WriteVariableNames',true);
-        %make figure
+            %make figure
             newStr = strrep(namestrings(nn,:),'.xlsx','.eps');
             outputfig=strcat('lateral_deep',newStr);
             fignew=figure('Name',outputfig);
             h=boundedline(x,lat_cellbodies_mean,lat_cellbodies_SEM,'m');
             for numpatch = 1:size(pulsetimes,2)
-             hpatch(numpatch)=patch([pulsetimes(numpatch) pulsetimes(numpatch)+pulsedur pulsetimes(numpatch)+pulsedur pulsetimes(numpatch)] , [min(ylim)*[1 1] max(ylim)*[1 1]],'c','EdgeColor','none');
-            
-             uistack(hpatch(numpatch), 'bottom');
+                hpatch(numpatch)=patch([pulsetimes(numpatch) pulsetimes(numpatch)+pulsedur pulsetimes(numpatch)+pulsedur pulsetimes(numpatch)] , [min(ylim)*[1 1] max(ylim)*[1 1]],'c','EdgeColor','none');
+                
+                uistack(hpatch(numpatch), 'bottom');
             end
             saveas(fignew,outputfig,'epsc');
         end
         if exist('dorsal_deeps', 'var') == 1
-           dorsal_deep_mean=mean(dorsal_deeps,2);
+            dorsal_deep_mean=mean(dorsal_deeps,2);
             dorsal_deep_n=size(dorsal_deeps,2);
             dorsal_deep_SEM=std(dorsal_deeps,0,2)/sqrt(dorsal_deep_n);
             Tdorsal_deep=table(dorsal_deep_mean,dorsal_deep_SEM);
             Tndorsal_deep=table(dorsal_deep_n);
             writetable(Tdorsal_deep,outfile,'Sheet','dorsal_deep','WriteVariableNames',true);
             writetable(Tndorsal_deep,outfile,'Sheet','dorsal_deep','Range','C1','WriteVariableNames',true);
-        %make figure
+            %make figure
             newStr = strrep(namestrings(nn,:),'.xlsx','.eps');
             outputfig=strcat('dorsal_deep',newStr);
             fignew=figure('Name',outputfig);
             h=boundedline(x,dorsal_deep_mean,dorsal_deep_SEM,'m');
             for numpatch = 1:size(pulsetimes,2)
-             hpatch(numpatch)=patch([pulsetimes(numpatch) pulsetimes(numpatch)+pulsedur pulsetimes(numpatch)+pulsedur pulsetimes(numpatch)] , [min(ylim)*[1 1] max(ylim)*[1 1]],'c','EdgeColor','none');
-            
-             uistack(hpatch(numpatch), 'bottom');
+                hpatch(numpatch)=patch([pulsetimes(numpatch) pulsetimes(numpatch)+pulsedur pulsetimes(numpatch)+pulsedur pulsetimes(numpatch)] , [min(ylim)*[1 1] max(ylim)*[1 1]],'c','EdgeColor','none');
+                
+                uistack(hpatch(numpatch), 'bottom');
             end
             saveas(fignew,outputfig,'epsc');
         end
         if exist('frontal_laterals', 'var') == 1
-           frontal_lateral_mean=mean(frontal_laterals,2);
+            lat_exists=1;
+            frontal_lateral_mean=mean(frontal_laterals,2);
             frontal_lateral_n=size(frontal_laterals,2);
             frontal_lateral_SEM=std(frontal_laterals,0,2)/sqrt(frontal_lateral_n);
             Tfrontal_lateral=table(frontal_lateral_mean,frontal_lateral_SEM);
             Tnfrontal_lateral=table(frontal_lateral_n);
             writetable(Tfrontal_lateral,outfile,'Sheet','frontal_lateral','WriteVariableNames',true);
             writetable(Tnfrontal_lateral,outfile,'Sheet','frontal_lateral','Range','C1','WriteVariableNames',true);
-        %make figure
+            %make figure
             newStr = strrep(namestrings(nn,:),'.xlsx','.eps');
             outputfig=strcat('frontal_lateral',newStr);
             fignew=figure('Name',outputfig);
             h=boundedline(x,frontal_lateral_mean,frontal_lateral_SEM,'m');
             for numpatch = 1:size(pulsetimes,2)
-             hpatch(numpatch)=patch([pulsetimes(numpatch) pulsetimes(numpatch)+pulsedur pulsetimes(numpatch)+pulsedur pulsetimes(numpatch)] , [min(ylim)*[1 1] max(ylim)*[1 1]],'c','EdgeColor','none');
-            
-             uistack(hpatch(numpatch), 'bottom');
+                hpatch(numpatch)=patch([pulsetimes(numpatch) pulsetimes(numpatch)+pulsedur pulsetimes(numpatch)+pulsedur pulsetimes(numpatch)] , [min(ylim)*[1 1] max(ylim)*[1 1]],'c','EdgeColor','none');
+                
+                uistack(hpatch(numpatch), 'bottom');
             end
             saveas(fignew,outputfig,'epsc');
         end
         if exist('dorsal_sups', 'var') == 1
-           dorsal_sup_mean=mean(dorsal_sups,2);
+            dorsal_sup_mean=mean(dorsal_sups,2);
             dorsal_sup_n=size(dorsal_sups,2);
             dorsal_sup_SEM=std(dorsal_sups,0,2)/sqrt(dorsal_sup_n);
             Tdorsal_sup=table(dorsal_sup_mean,dorsal_sup_SEM);
             Tndorsal_sup=table(dorsal_sup_n);
             writetable(Tdorsal_sup,outfile,'Sheet','cellbodies','WriteVariableNames',true);
             writetable(Tndorsal_sup,outfile,'Sheet','cellbodies','Range','C1','WriteVariableNames',true);
-        %make figure
+            %make figure
             newStr = strrep(namestrings(nn,:),'.xlsx','.eps');
             outputfig=strcat('cellbodies',newStr);
             fignew=figure('Name',outputfig);
             h=boundedline(x,dorsal_sup_mean,dorsal_sup_SEM,'m');
             for numpatch = 1:size(pulsetimes,2)
-             hpatch(numpatch)=patch([pulsetimes(numpatch) pulsetimes(numpatch)+pulsedur pulsetimes(numpatch)+pulsedur pulsetimes(numpatch)] , [min(ylim)*[1 1] max(ylim)*[1 1]],'c','EdgeColor','none');
-            
-             uistack(hpatch(numpatch), 'bottom');
+                hpatch(numpatch)=patch([pulsetimes(numpatch) pulsetimes(numpatch)+pulsedur pulsetimes(numpatch)+pulsedur pulsetimes(numpatch)] , [min(ylim)*[1 1] max(ylim)*[1 1]],'c','EdgeColor','none');
+                
+                uistack(hpatch(numpatch), 'bottom');
             end
             saveas(fignew,outputfig,'epsc');
         end
         if exist('frontal_deeps', 'var') == 1
-           frontal_deep_mean=mean(frontal_deeps,2);
+            frontal_deep_mean=mean(frontal_deeps,2);
             frontal_deep_n=size(frontal_deeps,2);
             frontal_deep_SEM=std(frontal_deeps,0,2)/sqrt(frontal_deep_n);
             Tfrontal_deep=table(frontal_deep_mean,frontal_deep_SEM);
             Tnfrontal_deep=table(frontal_deep_n);
             writetable(Tfrontal_deep,outfile,'Sheet','frontal_deep','WriteVariableNames',true);
             writetable(Tnfrontal_deep,outfile,'Sheet','frontal_deep','Range','C1','WriteVariableNames',true);
-        %make figure
+            %make figure
             newStr = strrep(namestrings(nn,:),'.xlsx','.eps');
             outputfig=strcat('frontal_deep',newStr);
             fignew=figure('Name',outputfig);
             h=boundedline(x,frontal_deep_mean,frontal_deep_SEM,'m');
             for numpatch = 1:size(pulsetimes,2)
-             hpatch(numpatch)=patch([pulsetimes(numpatch) pulsetimes(numpatch)+pulsedur pulsetimes(numpatch)+pulsedur pulsetimes(numpatch)] , [min(ylim)*[1 1] max(ylim)*[1 1]],'c','EdgeColor','none');
-            
-             uistack(hpatch(numpatch), 'bottom');
+                hpatch(numpatch)=patch([pulsetimes(numpatch) pulsetimes(numpatch)+pulsedur pulsetimes(numpatch)+pulsedur pulsetimes(numpatch)] , [min(ylim)*[1 1] max(ylim)*[1 1]],'c','EdgeColor','none');
+                
+                uistack(hpatch(numpatch), 'bottom');
             end
             saveas(fignew,outputfig,'epsc');
         end
         if exist('middle_deeps', 'var') == 1
-           middle_deep_mean=mean(middle_deeps,2);
+            med_exists=1;
+            middle_deep_mean=mean(middle_deeps,2);
             middle_deep_n=size(middle_deeps,2);
             middle_deep_SEM=std(middle_deeps,0,2)/sqrt(middle_deep_n);
             Tmiddle_deep=table(middle_deep_mean,middle_deep_SEM);
             Tnmiddle_deep=table(middle_deep_n);
             writetable(Tmiddle_deep,outfile,'Sheet','medial_deep','WriteVariableNames',true);
             writetable(Tnmiddle_deep,outfile,'Sheet','medial_deep','Range','C1','WriteVariableNames',true);
-        %make figure
+            %make figure
             newStr = strrep(namestrings(nn,:),'.xlsx','.eps');
             outputfig=strcat('medial_deep',newStr);
             fignew=figure('Name',outputfig);
             h=boundedline(x,middle_deep_mean,middle_deep_SEM,'m');
             for numpatch = 1:size(pulsetimes,2)
-             hpatch(numpatch)=patch([pulsetimes(numpatch) pulsetimes(numpatch)+pulsedur pulsetimes(numpatch)+pulsedur pulsetimes(numpatch)] , [min(ylim)*[1 1] max(ylim)*[1 1]],'c','EdgeColor','none');
-            
-             uistack(hpatch(numpatch), 'bottom');
+                hpatch(numpatch)=patch([pulsetimes(numpatch) pulsetimes(numpatch)+pulsedur pulsetimes(numpatch)+pulsedur pulsetimes(numpatch)] , [min(ylim)*[1 1] max(ylim)*[1 1]],'c','EdgeColor','none');
+                
+                uistack(hpatch(numpatch), 'bottom');
             end
             saveas(fignew,outputfig,'epsc');
         end
         if exist('middle_connections', 'var') == 1
-           middle_connection_mean=mean(middle_connections,2);
+            middle_connection_mean=mean(middle_connections,2);
             middle_connection_n=size(middle_connections,2);
             middle_connection_SEM=std(middle_connections,0,2)/sqrt(middle_connection_n);
             Tmiddle_connection=table(middle_connection_mean,middle_connection_SEM);
             Tnmiddle_connection=table(middle_connection_n);
             writetable(Tmiddle_connection,outfile,'Sheet','middle_connection','WriteVariableNames',true);
             writetable(Tnmiddle_connection,outfile,'Sheet','middle_connection','Range','C1','WriteVariableNames',true);
-        %make figure
+            %make figure
             newStr = strrep(namestrings(nn,:),'.xlsx','.eps');
             outputfig=strcat('middle_connection',newStr);
             fignew=figure('Name',outputfig);
             h=boundedline(x,middle_connection_mean,middle_connection_SEM,'m');
             for numpatch = 1:size(pulsetimes,2)
-             hpatch(numpatch)=patch([pulsetimes(numpatch) pulsetimes(numpatch)+pulsedur pulsetimes(numpatch)+pulsedur pulsetimes(numpatch)] , [min(ylim)*[1 1] max(ylim)*[1 1]],'c','EdgeColor','none');
-            
-             uistack(hpatch(numpatch), 'bottom');
+                hpatch(numpatch)=patch([pulsetimes(numpatch) pulsetimes(numpatch)+pulsedur pulsetimes(numpatch)+pulsedur pulsetimes(numpatch)] , [min(ylim)*[1 1] max(ylim)*[1 1]],'c','EdgeColor','none');
+                
+                uistack(hpatch(numpatch), 'bottom');
             end
             saveas(fignew,outputfig,'epsc');
         end
@@ -356,14 +395,23 @@ end
             end
         elseif medial_exists
             save(outmatfile,'x','middle_sup_mean','middle_sup_SEM','middle_sup_n' );
+        elseif lat_exists
+            if med_exists
+                save(outmatfile,'x','frontal_lateral_mean','frontal_lateral_SEM','frontal_lateral_n','middle_deep_mean','middle_deep_SEM','middle_deep_n' );
+            else
+                save(outmatfile,'x','frontal_lateral_mean','frontal_lateral_SEM','frontal_lateral_n' );
+            end
+            
+        elseif med_exists
+            save(outmatfile,'x','middle_deep_mean','middle_deep_SEM','middle_deep_n' );
         else
         end
-        clearvars middle_connections middle_deeps frontal_deeps dorsal_sups frontal_laterals dorsal_deeps lat_cellbodiess laterals frontal_sups middle_sups overviews 
+        clearvars middle_connections middle_deeps frontal_deeps dorsal_sups frontal_laterals dorsal_deeps lat_cellbodiess laterals frontal_sups middle_sups overviews
 end
-        
-        
-        %go back to directory of matlab scripts
-        cd(startdir);
+
+
+%go back to directory of matlab scripts
+cd(startdir);
 
 
 

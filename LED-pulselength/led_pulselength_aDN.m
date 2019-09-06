@@ -11,13 +11,13 @@ duration_acquisition = numberframes/framerate;
 baseline_start = 6;%updated Feb 2018
 baseline_end = 30;%updated Feb 2018
 startdir=pwd;
-pathname='/Volumes/LaCie/Projects/aDN/imaging/LC10-lexA_lexAop-CSChrimson_aDN_GCaMP6f_LED_adjusted/imaging_preprocessed';
+pathname=startdir;
 %pathname has to be the path to the folder were files to be processed are
 %located
-foldername='2019_07_23';%the name of the imaging folder
-subfoldername='ROI_after_adjust';%must be a folder within the imaging folder
+foldername='2019_09_04';%the name of the imaging folder
+subfoldername='ROI';%must be a folder within the imaging folder
 stackdir = fullfile(pathname,foldername,subfoldername);
-outputdirv=('/Volumes/LaCie/Projects/aDN/imaging/LC10-lexA_lexAop-CSChrimson_aDN_GCaMP6f_LED_adjusted/Results_after_adjust');
+outputdirv=strrep(pathname, 'imaging_preprocessed','Results');
 %male outputfilenames
 outputfile4p200ms=strcat(foldername,'_Male_4p200ms.xlsx');
 outputimg4p200ms=strcat(foldername,'_Male_4p200ms.eps');
@@ -49,8 +49,9 @@ coutputimg4p1s=strcat(foldername,'_contr_male_4p01s.eps');
 coutputfile4p2s=strcat(foldername,'_contr_male_4p02s.xlsx');
 coutputimg4p2s=strcat(foldername,'_contr_male_4p02s.eps');
 %female outputfilenames
-foutputfile1p5s=strcat(foldername,'_Female_4p200ms.xlsx');
-foutputimg1p5s=strcat(foldername,'_Female_1p05s.eps');
+foutputfile4p200ms=strcat(foldername,'_Female_4p200ms.xlsx');
+
+foutputimg4p200ms=strcat(foldername,'_Female_4p200ms.eps');
 foutputfile2p5s=strcat(foldername,'_Female_2p05s.xlsx');
 foutputimg2p5s=strcat(foldername,'_Female_2p05s.eps');
 foutputfile4p5s=strcat(foldername,'_Female_4p05s.xlsx');
@@ -64,8 +65,9 @@ foutputimg4p1s=strcat(foldername,'_Female_4p01s.eps');
 foutputfile4p2s=strcat(foldername,'_Female_4p02s.xlsx');
 foutputimg4p2s=strcat(foldername,'_Female_4p02s.eps');
 %controls without lexA
-cfoutputfile1p5s=strcat(foldername,'_contr_female_4p200ms.xlsx');
-cfoutputimg1p5s=strcat(foldername,'_contr_female_1p05s.eps');
+cfoutputfile4p200ms=strcat(foldername,'_contr_female_4p200ms.xlsx');
+
+cfoutputimg4p200ms=strcat(foldername,'_contr_female_4p200ms.eps');
 cfoutputfile2p5s=strcat(foldername,'_contr_female_2p05s.xlsx');
 cfoutputimg2p5s=strcat(foldername,'_contr_female_2p05s.eps');
 cfoutputfile4p5s=strcat(foldername,'_contr_female_4p05s.xlsx');
@@ -260,9 +262,9 @@ filenames(:) = {''};
         flatcell = strfind(filenames,'lateral_deep');
         ffrontalsup = strfind(filenames,'lateral_sup');
         fdorsaldeep = strfind(filenames,'dorsal_deep');%does not exist
-        ffrontallat = strfind(filenames,'frontal_lateral');%does not exist
+        ffrontallat = strfind(filenames,'_lateral');%changed from frontal lateral to lateral
         fdorsalsup = strfind(filenames,'_cellbodies');
-        fmiddledeep = strfind(filenames,'medial_deep');
+        fmiddledeep = strfind(filenames,'medial');%changed from medial deep
         fconnect = strfind(filenames,'connection');%does not exist
         
         nonoverview = cellfun('isempty',foverview);
@@ -276,6 +278,7 @@ filenames(:) = {''};
         nonmiddledeep = cellfun('isempty',fmiddledeep);
         nonconnect = cellfun('isempty',fconnect);
         
+       
         female = strfind(filenames,'female');
         %disp(female);
         male = cellfun('isempty',female);
@@ -286,6 +289,8 @@ filenames(:) = {''};
         %disp(experimentals);
        variablestoclear={'dff4p200ms','name4p200ms','dff4p200mso','dff4p200mso','dff4p200msms','name4p200msms','dff4p200msl','name4p200msl','dff4p200mslc','name4p200mslc','dff4p200msfs','name4p200msfs','dff4p200msdd','name4p200msdd','dff4p200msfl','name4p200msfl','dff4p200msds','name4p200msds','dff4p200msmd','name4p200msmd','dff4p200msc','name4p200msc','dff2p5s','name2p5s','dff2p5so','dff2p5so','dff2p5sms','name2p5sms','dff2p5sl','name2p5sl','dff2p5slc','name2p5slc','dff2p5sfs','name2p5sfs','dff2p5sdd','name2p5sdd','dff2p5sfl','name2p5sfl','dff2p5sds','name2p5sds','dff2p5smd','name2p5smd','dff2p5sc','name2p5sc','dff4p5s','name4p5s','dff4p5so','dff4p5so','dff4p5sms','name4p5sms','dff4p5sl','name4p5sl','dff4p5slc','name4p5slc','dff4p5sfs','name4p5sfs','dff4p5sdd','name4p5sdd','dff4p5sfl','name4p5sfl','dff4p5sds','name4p5sds','dff4p5smd','name4p5smd','dff4p5sc','name4p5sc','dff2p20s','name2p20s','dff2p20so','dff2p20so','dff2p20sms','name2p20sms','dff2p20sl','name2p20sl','dff2p20slc','name2p20slc','dff2p20sfs','name2p20sfs','dff2p20sdd','name2p20sdd','dff2p20sfl','name2p20sfl','dff2p20sds','name2p20sds','dff2p20smd','name2p20smd','dff2p20sc','name2p20sc','dff4p1s','name4p1s','dff4p1so','dff4p1so','dff4p1sms','name4p1sms','dff4p1sl','name4p1sl','dff4p1slc','name4p1slc','dff4p1sfs','name4p1sfs','dff4p1sdd','name4p1sdd','dff4p1sfl','name4p1sfl','dff4p1sds','name4p1sds','dff4p1smd','name4p1smd','dff4p1sc','name4p1sc','dff4p2s','name4p2s','dff4p2so','dff4p2so','dff4p2sms','name4p2sms','dff4p2sl','name4p2sl','dff4p2slc','name4p2slc','dff4p2sfs','name4p2sfs','dff4p2sdd','name4p2sdd','dff4p2sfl','name4p2sfl','dff4p2sds','name4p2sds','dff4p2smd','name4p2smd','dff4p2sc','name4p2sc'};
         for v = 1:length(filenames)
+            frequency=regexp(filenames{v},'_(\d*)Hz','tokens');
+            celldisp(frequency);
             if male(v) ==1
                 if experimentals(v) ==1
             if non4p200ms(v) == 0 %if the file has a 1pulse_5s pulse protocol
@@ -1113,6 +1118,8 @@ n4p1so = 0;
  end
  
         for v = 1:length(filenames)
+            frequency=regexp(filenames{v},'_(\d*)Hz','tokens');
+            celldisp(frequency);
             if male(v) ==0 %females
                 if experimentals(v) ==1
             if non4p200ms(v) == 0 %if the file has a 1pulse_5s pulse protocol
@@ -1120,46 +1127,57 @@ n4p1so = 0;
                 n4p200ms =n4p200ms+1;
                 dff4p200ms(:,n4p200ms) =   dff(:,v); %make a new matrix to safe dff of all files with this pulse protocol
                 name4p200ms(n4p200ms)=filenames(v);
+                freq4p200ms(n4p200ms)=frequency{1}{1};
                 if nonoverview(v) == 0
                    n4p200mso = n4p200mso + 1;
                    dff4p200mso(:,n4p200mso) = dff(:,v);
                    name4p200mso(n4p200mso)=filenames(v);
+                   freq4p200mso(n4p200mso)=frequency{1}{1};
                 elseif nonmiddlesup(v) == 0
                    n4p200msms = n4p200msms + 1;
                    dff4p200msms(:,n4p200msms) = dff(:,v);
                    name4p200msms(n4p200msms)=filenames(v);
+                   freq4p200msms(n4p200msms)=frequency{1}{1};
                 elseif nonlateral(v) == 0
                    n4p200msl = n4p200msl + 1;
                    dff4p200msl(:,n4p200msl) = dff(:,v);
                    name4p200msl(n4p200msl)=filenames(v);
+                   freq4p200msl(n4p200msl)=frequency{1}{1};
                  elseif nonlatcell(v) == 0
                    n4p200mslc = n4p200mslc + 1;
                    dff4p200mslc(:,n4p200mslc) = dff(:,v);
                    name4p200mslc(n4p200mslc)=filenames(v);
+                   freq4p200mslc(n4p200mslc)=frequency{1}{1};
                  elseif nonfrontalsup(v) == 0
                    n4p200msfs = n4p200msfs + 1;
                    dff4p200msfs(:,n4p200msfs) = dff(:,v);
                    name4p200msfs(n4p200msfs)=filenames(v);
+                   freq4p200msfs(n4p200msfs)=frequency{1}{1};
                  elseif nondorsaldeep(v) == 0
                    n4p200msdd = n4p200msdd + 1;
                    dff4p200msdd(:,n4p200msdd) = dff(:,v);
                    name4p200msdd(n4p200msdd)=filenames(v);
+                   freq4p200msdd(n4p200msdd)=frequency{1}{1};
                  elseif nonfrontallat(v) == 0
                    n4p200msfl = n4p200msfl + 1;
                    dff4p200msfl(:,n4p200msfl) = dff(:,v);
                    name4p200msfl(n4p200msfl)=filenames(v);
+                   freq4p200msfl(n4p200msfl)=frequency{1}{1};
                   elseif nondorsalsup(v) == 0
                    n4p200msds = n4p200msds + 1;
                    dff4p200msds(:,n4p200msds) = dff(:,v);
                    name4p200msds(n4p200msds)=filenames(v);
+                   freq4p200msds(n4p200msds)=frequency{1}{1};
                   elseif nonmiddledeep(v) == 0
                    n4p200msmd = n4p200msmd + 1;
                    dff4p200msmd(:,n4p200msmd) = dff(:,v);
                    name4p200msmd(n4p200msmd)=filenames(v);
+                   freq4p200msmd(n4p200msmd)=frequency{1}{1};
                   elseif nonconnect(v) == 0
                    n4p200msc = n4p200msc + 1;
                    dff4p200msc(:,n4p200msc) = dff(:,v);
                    name4p200msc(n4p200msc)=filenames(v);
+                   freq4p200msc(n4p200msc)=frequency{1}{1};
                     
                   end   
                
@@ -1167,6 +1185,7 @@ n4p1so = 0;
                 n2p5s = n2p5s+1;
                 dff2p5s(:,n2p5s) =   dff(:,v);
                 name2p5s(n2p5s)=filenames(v);
+                
                 if nonoverview(v) == 0
                    n2p5so = n2p5so + 1;
                    dff2p5so(:,n2p5so) = dff(:,v);
@@ -1214,46 +1233,57 @@ n4p1so = 0;
                 n4p5s = n4p5s+1;
                dff4p5s(:,n4p5s) =   dff(:,v);
                name4p5s(n4p5s)=filenames(v);
+               freq4p5s(n4p5s)=frequency{1}{1};
                if nonoverview(v) == 0
                    n4p5so = n4p5so + 1;
                    dff4p5so(:,n4p5so) = dff(:,v);
                    name4p5so(n4p5so)=filenames(v);
+                   freq4p5so(n4p5so)=frequency{1}{1};
                 elseif nonmiddlesup(v) == 0
                    n4p5sms = n4p5sms + 1;
                    dff4p5sms(:,n4p5sms) = dff(:,v);
                    name4p5sms(n4p5sms)=filenames(v);
+                   freq4p5sms(n4p5sms)=frequency{1}{1};
                 elseif nonlateral(v) == 0
                    n4p5sl = n4p5sl + 1;
                    dff4p5sl(:,n4p5sl) = dff(:,v);
                    name4p5sl(n4p5sl)=filenames(v);
+                   freq4p5sl(n4p5sl)=frequency{1}{1};
                  elseif nonlatcell(v) == 0
                    n4p5slc = n4p5slc + 1;
                    dff4p5slc(:,n4p5slc) = dff(:,v);
                    name4p5slc(n4p5slc)=filenames(v);
+                   freq4p5slc(n4p5slc)=frequency{1}{1};
                  elseif nonfrontalsup(v) == 0
                    n4p5sfs = n4p5sfs + 1;
                    dff4p5sfs(:,n4p5sfs) = dff(:,v);
                    name4p5sfs(n4p5sfs)=filenames(v);
+                   freq4p5sfs(n4p5sfs)=frequency{1}{1};
                  elseif nondorsaldeep(v) == 0
                    n4p5sdd = n4p5sdd + 1;
                    dff4p5sdd(:,n4p5sdd) = dff(:,v);
                    name4p5sdd(n4p5sdd)=filenames(v);
+                   freq4p5sdd(n4p5sdd)=frequency{1}{1};
                  elseif nonfrontallat(v) == 0
                    n4p5sfl = n4p5sfl + 1;
                    dff4p5sfl(:,n4p5sfl) = dff(:,v);
                    name4p5sfl(n4p5sfl)=filenames(v);
+                   freq4p5sfl(n4p5sfl)=frequency{1}{1};
                   elseif nondorsalsup(v) == 0
                    n4p5sds = n4p5sds + 1;
                    dff4p5sds(:,n4p5sds) = dff(:,v);
                    name4p5sds(n4p5sds)=filenames(v);
+                   freq4p5sds(n4p5sds)=frequency{1}{1};
                   elseif nonmiddledeep(v) == 0
                    n4p5smd = n4p5smd + 1;
                    dff4p5smd(:,n4p5smd) = dff(:,v);
                    name4p5smd(n4p5smd)=filenames(v);
+                   freq4p5smd(n4p5smd)=frequency{1}{1};
                   elseif nonconnect(v) == 0
                    n4p5sc = n4p5sc + 1;
                    dff4p5sc(:,n4p5sc) = dff(:,v);
                    name4p5sc(n4p5sc)=filenames(v);
+                   freq4p5sc(n4p5sc)=frequency{1}{1};
                     
                   end   
               
@@ -1353,46 +1383,57 @@ n4p1so = 0;
                 n4p1s = n4p1s+1;
                dff4p1s(:,n4p1s) =   dff(:,v);
                name4p1s(n4p1s)=filenames(v);
+               freq4p1s(n4p1s)=frequency{1}{1};
                if nonoverview(v) == 0
                    n4p1so = n4p1so + 1;
                    dff4p1so(:,n4p1so) = dff(:,v);
                    name4p1so(n4p1so)=filenames(v);
+                   freq4p1so(n4p1so)=frequency{1}{1};
                 elseif nonmiddlesup(v) == 0
                    n4p1sms = n4p1sms + 1;
                    dff4p1sms(:,n4p1sms) = dff(:,v);
                    name4p1sms(n4p1sms)=filenames(v);
+                   freq4p1sms(n4p1sms)=frequency{1}{1};
                 elseif nonlateral(v) == 0
                    n4p1sl = n4p1sl + 1;
                    dff4p1sl(:,n4p1sl) = dff(:,v);
                    name4p1sl(n4p1sl)=filenames(v);
+                   freq4p1sl(n4p1sl)=frequency{1}{1};
                  elseif nonlatcell(v) == 0
                    n4p1slc = n4p1slc + 1;
                    dff4p1slc(:,n4p1slc) = dff(:,v);
                    name4p1slc(n4p1slc)=filenames(v);
+                   freq4p1slc(n4p1slc)=frequency{1}{1};
                  elseif nonfrontalsup(v) == 0
                    n4p1sfs = n4p1sfs + 1;
                    dff4p1sfs(:,n4p1sfs) = dff(:,v);
                    name4p1sfs(n4p1sfs)=filenames(v);
+                   freq4p1sfs(n4p1sfs)=frequency{1}{1};
                  elseif nondorsaldeep(v) == 0
                    n4p1sdd = n4p1sdd + 1;
                    dff4p1sdd(:,n4p1sdd) = dff(:,v);
                    name4p1sdd(n4p1sdd)=filenames(v);
+                   freq4p1sdd(n4p1sdd)=frequency{1}{1};
                  elseif nonfrontallat(v) == 0
                    n4p1sfl = n4p1sfl + 1;
                    dff4p1sfl(:,n4p1sfl) = dff(:,v);
                    name4p1sfl(n4p1sfl)=filenames(v);
+                   freq4p1sfl(n4p1sfl)=frequency{1}{1};
                   elseif nondorsalsup(v) == 0
                    n4p1sds = n4p1sds + 1;
                    dff4p1sds(:,n4p1sds) = dff(:,v);
                    name4p1sds(n4p1sds)=filenames(v);
+                   freq4p1sds(n4p1sds)=frequency{1}{1};
                   elseif nonmiddledeep(v) == 0
                    n4p1smd = n4p1smd + 1;
                    dff4p1smd(:,n4p1smd) = dff(:,v);
                    name4p1smd(n4p1smd)=filenames(v);
+                   freq4p1smd(n4p1smd)=frequency{1}{1};
                   elseif nonconnect(v) == 0
                    n4p1sc = n4p1sc + 1;
                    dff4p1sc(:,n4p1sc) = dff(:,v);
                    name4p1sc(n4p1sc)=filenames(v);
+                   freq4p1sc(n4p1sc)=frequency{1}{1};
                     
                   end   
                 
