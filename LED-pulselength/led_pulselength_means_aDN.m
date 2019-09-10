@@ -173,11 +173,13 @@ filenames(gg,1) = cellstr(filename);
             outputfig=strcat('overview',newStr);%make the figure name
             fignew=figure('Name',outputfig);
             %plot the mean with a shaded area showing the SEM
-            h=boundedline(x,overview_mean, overview_SEM,'m');
+            h=boundedline(x,overview_mean, overview_SEM,'k');
+            xlim([0,105]);
+            ylim([-0.2,1.2])
             for numpatch = 1:size(pulsetimes,2)%loop through the number of pulses
                 %for each pulse, generate a shaded area in the plot
                 %indicating the pulse duration
-                hpatch(numpatch)=patch([pulsetimes(numpatch) pulsetimes(numpatch)+pulsedur pulsetimes(numpatch)+pulsedur pulsetimes(numpatch)] , [min(ylim)*[1 1] max(ylim)*[1 1]],'c','EdgeColor','none');
+                hpatch(numpatch)=patch([pulsetimes(numpatch) pulsetimes(numpatch)+pulsedur pulsetimes(numpatch)+pulsedur pulsetimes(numpatch)] , [min(ylim)*[1 1] max(ylim)*[1 1]],'r','EdgeColor','none');
                 %send the shaded area to the back of the graph
                 uistack(hpatch(numpatch), 'bottom');
             end
