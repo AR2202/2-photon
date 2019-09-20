@@ -20,7 +20,7 @@
 %use of reduced touchtimes option requires the name of touch directory to
 %contain the string 'reduced'
 
-touchdir = ('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/touchtimes_GCaMP6s_l_r_reduced');
+touchdir = ('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/touchtimes_full');
 % The folder where the touchtimes files are located
 resultsdir = ('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/Results');
 % The folder where the results of single experiments are located
@@ -54,6 +54,7 @@ if reduced
     touchtimes_r=cellfun(@(testtimes) expand_reduced_touchtimes(testtimes),touchtimes_r,'UniformOutput',false);
 
 end
+
 %touchtimes(cellfun ('isempty', touchtimes)) ={[0;0]};
 resultfilestrings=cellfun(@(filename) strrep((regexprep(filename,'_(\d+).xlsx','_')),'touchtimes_',''), files, 'UniformOutput', false);
 numberstrings=cellfun(@(filename) strrep((regexprep(filename,'touchtimes_(\d+)_(\d+)_(\d+)_','')),'.xlsx',''), files, 'UniformOutput', false);
@@ -68,9 +69,9 @@ foundstr=cellfun(@(numbers,files) cellfun(@(resultsfiles) cellfun(@(exp) contain
 [found]=cellfun(@(numbers,files) cellfun(@(resultsfiles) cellfun(@(exp) foundstringnames(exp,numbers),resultsfiles, 'Uniformoutput', false), files,'UniformOutput', false),numberstrings, expnames, 'UniformOutput', false);
 [foundin,foundfilename,fileindex]= cellfun(@(exps,nums,rfiles) findfounds2(exps,nums,rfiles), expnames, numberstrings,resultfiles,'UniformOutput',false);
  
-  imagingfilestrings=string(foundfilename);
+  imagingfilestrings=foundfilename;
  
- all_expresults=cellfun(@(foundname,foundindex) resultfinder(string(foundname),foundindex{1,1}), foundin,fileindex,'UniformOutput',false);
+ all_expresults=cellfun(@(foundname,foundindex) resultfinder(foundname,foundindex{1,1}), foundin,fileindex,'UniformOutput',false);
   
  data_array=cellfun(@(data1,data2,filename,resultname,data3) {transpose(data1),transpose(data2),transpose(filename),transpose(resultname),transpose(data3)}, touchtimes, all_expresults,foundfilename,foundin,touchtimes_r,'UniformOutput', false);  
  data_array=transpose(data_array);                  
@@ -88,6 +89,16 @@ foundstr=cellfun(@(numbers,files) cellfun(@(resultsfiles) cellfun(@(exp) contain
 t_foundfilename=transpose(foundfilename);
 t_foundin=transpose(foundin);
 
+eventpeaks_mean = cellfun(@(ev) standardizeMissing(ev,0),eventpeaks_mean);
+eventpeaks_mean=standardizeMissing(eventpeaks_mean,Inf);
+mean_event = cellfun(@(ev) standardizeMissing(ev,0),mean_event, 'uni',false);
+eventsmat = cellfun(@(ev) standardizeMissing(ev,0),eventsmat,'uni',false);
+
+eventpeaks_mean_contra = cellfun(@(ev) standardizeMissing(ev,0),eventpeaks_mean_contra);
+mean_event_contra = cellfun(@(ev) standardizeMissing(ev,0),mean_event_contra, 'uni',false);
+eventsmat_contra = cellfun(@(ev) standardizeMissing(ev,0),eventsmat_contra,'uni',false);
+
+
 %This part of the script averages over the experiments of each species type
 
 combinedtable_unfiltered=table(eventpeaks_mean, mean_event, t_foundfilename,t_foundin,eventsmat);
@@ -95,7 +106,10 @@ combinedtable_contra_unfiltered=table(eventpeaks_mean_contra, mean_event_contra,
 %find the male experimental flies
 combinedtable = combinedtable_unfiltered( contains(string(combinedtable_unfiltered.t_foundfilename),filterstring), : ); 
 combinedtable_contra = combinedtable_contra_unfiltered( contains(string(combinedtable_contra_unfiltered.t_foundfilename),filterstring), : ); 
-
+%combinedtable=standardizeMissing(combinedtable,{0});
+combinedtable = rmmissing(combinedtable);
+%combinedtable_contra=standardizeMissing(combinedtable_contra,{0});
+combinedtable_contra = rmmissing(combinedtable_contra);
 combinedtable_male = combinedtable( contains(string(combinedtable.t_foundfilename),'_male_fly'), : ); 
 
 combinedtable_male_contra = combinedtable_contra( contains(string(combinedtable_contra.t_foundfilename),'_male_fly'), : ); 
@@ -143,8 +157,8 @@ balldata_m_contra=table2cell(balltable_m_contra);
 
 %mean of male touching a virgin
  
-vir_eventpeaks_mean_m=mean(cell2mat(virtable_m.eventpeaks_mean));
-vir_eventpeaks_SEM=std(cell2mat(virtable_m.eventpeaks_mean))/sqrt(size(cell2mat(virtable_m.eventpeaks_mean),1));
+vir_eventpeaks_mean_m=mean(virtable_m.eventpeaks_mean);
+vir_eventpeaks_SEM=std(virtable_m.eventpeaks_mean/sqrt(size(virtable_m.eventpeaks_mean,1)));
 
 cell_mean_event_m=cell2mat(transpose(virtable_m.mean_event(~cellfun(@isempty, virtable_m.mean_event))));
 
@@ -218,8 +232,8 @@ oenegf_SEM_event_m_contra=std(cell_mean_event_m_contra,0,2)/sqrt(size(cell_mean_
 
  
  
-ball_eventpeaks_mean_m=mean(cell2mat(balltable_m.eventpeaks_mean));
-ball_eventpeaks_SEM_m=std(cell2mat(balltable_m.eventpeaks_mean))/sqrt(size(cell2mat(balltable_m.eventpeaks_mean),1));
+ball_eventpeaks_mean_m=mean(balltable_m.eventpeaks_mean);
+ball_eventpeaks_SEM_m=std(balltable_m.eventpeaks_mean)/sqrt(size(balltable_m.eventpeaks_mean,1));
 cell_mean_event_m=cell2mat(transpose(balltable_m.mean_event(~cellfun(@isempty, balltable_m.mean_event))));
 
 ball_mean_event_m=mean(cell_mean_event_m,2);
@@ -277,8 +291,8 @@ balldata_f_contra=table2cell(balltable_f_contra);
 
  %mean of virgin
  
-vir_eventpeaks_mean_f=mean(cell2mat(virtable_f.eventpeaks_mean));
-vir_eventpeaks_SEM_f=std(cell2mat(virtable_f.eventpeaks_mean))/sqrt(size(cell2mat(virtable_f.eventpeaks_mean),1));
+vir_eventpeaks_mean_f=mean(virtable_f.eventpeaks_mean);
+vir_eventpeaks_SEM_f=std(virtable_f.eventpeaks_mean)/sqrt(size(virtable_f.eventpeaks_mean,1));
 
 cell_mean_event_f=cell2mat(transpose(virtable_f.mean_event(~cellfun(@isempty, virtable_f.mean_event))));
 
@@ -350,8 +364,8 @@ oenegf_SEM_event_f_contra=std(cell_mean_event_f_contra,0,2)/sqrt(size(cell_mean_
 
  
  
-ball_eventpeaks_mean_f=mean(cell2mat(balltable_f.eventpeaks_mean));
-ball_eventpeaks_SEM_f=std(cell2mat(balltable_f.eventpeaks_mean))/sqrt(size(cell2mat(balltable_f.eventpeaks_mean),1));
+ball_eventpeaks_mean_f=mean(balltable_f.eventpeaks_mean);
+ball_eventpeaks_SEM_f=std(balltable_f.eventpeaks_mean)/sqrt(size(balltable_f.eventpeaks_mean,1));
 cell_mean_event_f=cell2mat(transpose(balltable_f.mean_event(~cellfun(@isempty, balltable_f.mean_event))));
 
 ball_mean_event_f=mean(cell_mean_event_f,2);
@@ -1049,11 +1063,15 @@ function [touchstartframes,eventsmat,eventpeaks,eventpeaks_mean,eventpeaks_SEM,m
 if contains(string(data{3}),'(r)')
     disp('imaged right side');
     touchtimes=data{5};
+
     touch_other_side=data{1};
+
 else
     disp('imaged left side');
     touchtimes=data{1};
+%     touchtimes(cellfun(@isnan,touchtimes)) = {[]};
     touch_other_side=data{5};
+%     touch_other_side(cellfun(@isnan,touch_other_side)) = {[]};
 end
 
 
@@ -1073,7 +1091,17 @@ intervaltime=5;
 excludedoubles=0;
 %shift the matrix to the right by one 
 %framerate of imaging to be entered here
-
+if isnan(touchtimes) 
+    touchstartframes=0;
+    eventsmat=0';
+    eventpeaks=0;
+    eventpeaks_mean=0';
+    eventpeaks_SEM=0;
+    mean_event=0;
+    SEM_event=0;
+    x_events=0;
+else
+    
 touchtimes_shifted=circshift(touchtimes,[0,1]);
 touchtimes_shifted(1)=0;
 %subtract the shifted matrix from the original one (corresponds to
@@ -1097,9 +1125,10 @@ if excludedoubles
 tfarray=arrayfun(@(time) (~doubletouch(time,intervaltime,eventtime,touch_other_side)),starttimes);
 starttimes=tfarray.*starttimes;%This contains zeros for all spaces in the matrix that overlap with a touch from the contralateral side
 end
-touchstarts=nonzeros(starttimes);%reduce matrix to contain only starts
+touchstarts=rmmissing(nonzeros(starttimes));%reduce matrix to contain only starts
 %calculate the frame number from the time of the touchstarts
 touchstartframes=round(touchstarts*framerate);
+
 %calculate the timepoints
 x=1:numframes;
 x=(x-1)/framerate;
@@ -1113,7 +1142,7 @@ newfig=@(tt) figure();
 %this defines events and saves them to a cell array called events 
 %the events are defined as the fluorescence trace starting at basetime
 %before touchstart and ending at touchstart + eventtime
-events=arrayfun(@(touchstart) fluo(touchstart-(ceil(basetime*framerate)):touchstart+floor(eventtime*framerate)), touchstartframes,'UniformOutput',false);
+events=arrayfun(@(touchstart) fluo(touchstart-(ceil(basetime*framerate)):touchstart+(floor(eventtime*framerate))), touchstartframes,'UniformOutput',false);
 %convert cell array events to a matrix - necessary for subsequent
 %calculations
 %[eventsmat, event]=makemyevents(events);
@@ -1168,6 +1197,7 @@ plot(x_events,eventsmat,'k',x_events,mean_event,'m');
 %end
 
 
+end
 end
                     
                       
