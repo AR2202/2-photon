@@ -10,17 +10,17 @@ clear all;
 
 framerate = 5.92; % frame rate in Hz
 
-numberframes=500;% number of frames
+numberframes=600;% number of frames
 duration_acquisition = numberframes/framerate; 
 
 startdir=pwd;
-pathname='/Users/annika/Documents/projects/dsx_GABAergic_neurons/imaging/P1_female_touch/touchtimes_active';
+pathname='/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/touchtimes_full';
 
-touchdir = ('/Users/annika/Documents/projects/dsx_GABAergic_neurons/imaging/P1_female_touch/touchtimes_active');
+touchdir = ('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/touchtimes_full');
 % The folder where the touchtimes files are located
-resultsdir = ('/Users/annika/Documents/projects/dsx_GABAergic_neurons/imaging/P1_female_touch/Results_P1');
+resultsdir = ('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/Results');
 % The folder where the results of single experiments are located
-outputdirmean=('/Users/annika/Documents/projects/dsx_GABAergic_neurons/imaging/P1_female_touch/Results_plot');
+outputdirmean=('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/Results_plot');
 %The folder where the mean data should be written to
 x = (1:numberframes)';% this is a column vector of the frame numbers
 x= (x-1)/framerate;%calculate the timepoints of the frames from the frame number

@@ -20,11 +20,11 @@
 %use of reduced touchtimes option requires the name of touch directory to
 %contain the string 'reduced'
 
-touchdir = ('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/touchtimes_full');
+touchdir = ('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/touchtimes_GCaMP6s_full');
 % The folder where the touchtimes files are located
 resultsdir = ('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/Results');
 % The folder where the results of single experiments are located
-outputdirmean=('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/Results_medial');
+outputdirmean=('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/Results_GCaMP6');
 outputdirsingles=('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/Results_single_exp');
 %The folder where the mean data should be written to
 filterstring = 'medial_superficial'; % a string by which exps should be filtered
@@ -32,6 +32,10 @@ filterstring = 'medial_superficial'; % a string by which exps should be filtered
 
 
 %This part of the script reads in the data
+lateralized = 0;
+if contains (touchdir, '_r_l_')
+    lateralized = 1;
+end
 
 reduced=0;
 if contains (touchdir, 'reduced')
@@ -46,8 +50,11 @@ files = dir('*.xlsx');
 files = {files.name};
 %read in all the touchtimes from the files
 touchtimes=cellfun(@(filename) table2array(readtable(filename,'Range','E:E','ReadVariableNames',1)), files, 'UniformOutput', false);
-touchtimes_r=cellfun(@(filename) table2array(readtable(filename,'Range','I:I','ReadVariableNames',1)), files, 'UniformOutput', false);
-
+if lateralized
+    touchtimes_r=cellfun(@(filename) table2array(readtable(filename,'Range','I:I','ReadVariableNames',1)), files, 'UniformOutput', false);
+else
+    touchtimes_r = touchtimes;
+end
 if reduced
     disp ('reduced touchtime format was used.');
     touchtimes=cellfun(@(testtimes) expand_reduced_touchtimes(testtimes),touchtimes,'UniformOutput',false);
@@ -1082,7 +1089,7 @@ framerate=5.92;
 %number of frames in the imaging file
 numframes=500;
 %time for calculating the baseline before each touch
-basetime=3;
+basetime=5;
 %time of the event after start of touch
 eventtime=15;
 intervaltime=5;
