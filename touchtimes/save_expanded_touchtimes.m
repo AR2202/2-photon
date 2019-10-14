@@ -1,5 +1,5 @@
 currentdir = pwd;
-touchdir = ('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/touchtimes_GCaMP6s_l_r_reduced');
+touchdir = ('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/touchtimes_GCaMP7_l_r_reduced');
 % The folder where the touchtimes files are located
 
 outputdir=('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/touchtimes_full_test');
