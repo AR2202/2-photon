@@ -20,12 +20,13 @@
 %'genders': cell array, default: {'_female';'_male'}
 %'neuronparts': cell array, default: {'medial';'lateral'}
 %'pulsedur': numeric (in s), default 5
+%'resultsname': name of folder where results should go, default'Results'
 
 function frequencyplot(foldername,varargin)
 
 
 
-options = struct('framerate',5.92,'baseline_start',2,'baseline_end',11,'frequencies',[4,10,20,40], 'pulselengths',[8,12,20],'pulsetimes',[20,40,60,80],'genders',{{'_female';'_male'}},'neuronparts',{{'medial';'lateral'}},'pulsedur', 5);
+options = struct('framerate',5.92,'baseline_start',2,'baseline_end',11,'frequencies',[4,10,20,40], 'pulselengths',[8,12,20],'pulsetimes',[20,40,60,80],'genders',{{'_female';'_male'}},'neuronparts',{{'medial';'lateral'}},'pulsedur', 5,'resultsdir','Results');
 
 %# read the acceptable names
 optionNames = fieldnames(options);
@@ -64,6 +65,7 @@ pulsetimes = options.pulsetimes;%timings of the pulses
 genders = options.genders;
 neuronparts=options.neuronparts;
 pulsedur =options.pulsedur;%duration (in s) of pulse bursts
+resultsdir=options.resultsdir
 
 startdir=pwd;
 pathname = startdir;
@@ -72,12 +74,12 @@ subfoldername='ROI';%must be a folder within the imaging folder
 stackdir = fullfile(pathname,foldername,subfoldername);
 
 if exist(stackdir, 'dir')
-    outputdir=strrep(pathname, 'imaging_preprocessed','Results');
+    outputdir=strrep(pathname, 'imaging_preprocessed',resultsdir);
     directories.name = fullfile(pathname,foldername);
     directories.isdir = 1;
     
 else
-    outputdir=fullfile(pathname,'Results');
+    outputdir=fullfile(pathname,resultsdir);
     directories = dir(foldername);
     
 end

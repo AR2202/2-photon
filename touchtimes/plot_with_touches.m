@@ -1,43 +1,69 @@
 
-% Annika Rings, June 2017
-%Script for reading Excel files with touchtimes of individual experiment
-%and finding the corresponding results of deltaF/F of the experiment
-%plots the experimental data with shaded areas for the touchtimes
+% Annika Rings, Oct 2019
+%PLOT_WITH_TOUCHES is a function that plots the fluorescence with
+%shaded areas for touchtimes
+%no required arguments
+%if no arguments are specified, defaults are used
+%optional key-value pair arguments are:
+%framerate: calcium imaging framerate (in Hz), default 5.92
+%touchdir: directory with touchtimes files
+%resultsdir: directory with imaging results files
+%outputdirmean: directory that results should be written to
+%reduced: whether or not reduced touchtimes format is used; default:
+%determine this from the name of the touchdir (based on whether this name contains
+%the string 'reduced')
+%dependencies: boundedline package
 
-clear all; 
+function plot_with_touches(varargin)
+options = struct('framerate',5.92,'numberframes',600,'touchdir','/Volumes/LaCie/Projects/Matthew/touchtimes','resultsdir','/Volumes/LaCie/Projects/Matthew/Results','outputdirmean','/Volumes/LaCie/Projects/Matthew/Results','reduced',false);
+%# read the acceptable names
+optionNames = fieldnames(options);
 
-%% 1. Set constants, variables and local functions
-
-framerate = 5.92; % frame rate in Hz
-
-numberframes=600;% number of frames
-duration_acquisition = numberframes/framerate; 
+%# count arguments - throw exception if the number is not divisible by 2
+nArgs = length(varargin);
+if round(nArgs/2)~=nArgs/2
+    error('plot_with_touches called with wrong number of arguments: expected Name/Value pair arguments')
+end
+override_reduced=0;
+for pair = reshape(varargin,2,[]) %# pair is {propName;propValue}
+    inpName = lower(pair{1}); %# make case insensitive
+    %check if reduced was specified by caller, if so override the default setting for
+    %how reduced is determined
+    if inpName == 'reduced'
+        override_reduced=1;
+    end
+    %check if the entered key is a valid key. If yes, replace the default by
+    %the caller specified value. Otherwise, throw and exception
+    if any(strcmp(inpName,optionNames))
+        
+        options.(inpName) = pair{2};
+    else
+        error('%s is not a recognized parameter name',inpName)
+    end
+end
+%setting the values for optional arguments
+framerate = options.framerate;
+numberframes = options.numberframes;
+touchdir = options.touchdir;
+resultsdir = options.resultsdir;
+outputdirmean=options.outputdirmean;
+reduced = options.reduced;
 
 startdir=pwd;
-pathname='/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/touchtimes_GCaMP7_l_r_reduced';
-
-touchdir = ('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/touchtimes_GCaMP7_l_r_reduced');
-% The folder where the touchtimes files are located
-resultsdir = ('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/Results');
-% The folder where the results of single experiments are located
-outputdirmean=('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/Results');
-%The folder where the mean data should be written to
 x = (1:numberframes)';% this is a column vector of the frame numbers
 x= (x-1)/framerate;%calculate the timepoints of the frames from the frame number
-
-
+duration_acquisition = numberframes/framerate;
 
 ee = 1;
 ii = 1;
-%determine whether the touchdir directory name contains the string
-%'reduced' to indicate that the reduced touchtime format was used.
-if contains (touchdir, 'reduced')
-    reduced =1;
-else
-reduced =0;
+%determine whether reduced touchtimes format was used
+if ~override_reduced
+    if contains (touchdir, 'reduced')
+        reduced =1;
+    else
+        reduced =0;
+    end
 end
-
-
 
 
  
@@ -57,21 +83,19 @@ filenames(:) = {''};
             % go back into the stack directory
             cd(touchdir);
             filename = files{ii}{ee}{gg};
-            %[~, sheets] = xlsfinfo(filename);
+            
            
             
                 touchtimes_l = table2array(readtable(filename,'Range','E:E','ReadVariableNames',1));
                 touchtimes_r = table2array(readtable(filename,'Range','I:I','ReadVariableNames',1));
                 touchtimes = [touchtimes_l;touchtimes_r];
-                touchframes = table2array(readtable(filename,'Range','D:D','ReadVariableNames',1));
-                startframe =  table2array(readtable(filename,'Range','A2:A2','ReadVariableNames',0));
-               % disp(touchtimes); %for debugging
-               %disp(touchframes);%for debugging
-               %disp(startframe);
+                
+               
+               
                resultfilestring=strrep((regexprep(filename,'_(\d+).xlsx','_')),'touchtimes_','');
                numberstring=strrep((regexprep(filename,'touchtimes_(\d+)_(\d+)_(\d+)_','')),'.xlsx','');
                
-               %disp(resultfilestring);
+               
                 cd(resultsdir);
                 resultfiles = dir(strcat(resultfilestring,'*.xlsx'));
                 resultfiles = {resultfiles.name};
@@ -82,7 +106,7 @@ filenames(:) = {''};
                     expnames =table2array(readtable(resultfilename,'Sheet','Sheet2','ReadVariableNames',0));
                     findnumberstring=strfind(expnames,numberstring);
                     foundfile=find(~cellfun(@isempty,findnumberstring));
-                   % disp(foundfile);
+                   
                     if ~isempty(foundfile)
                         expnumb=foundfile(1,1);
                         expresults =table2array(readtable(resultfilename,'Sheet','Sheet1','ReadVariableNames',0));
