@@ -29,7 +29,8 @@ for pair = reshape(varargin,2,[]) %# pair is {propName;propValue}
     inpName = lower(pair{1}); %# make case insensitive
     %check if reduced was specified by caller, if so override the default setting for
     %how reduced is determined
-    if inpName == 'reduced'
+    if strcmp(inpName, 'reduced')
+        disp('manually overriding reduced touchtimes identifier')
         override_reduced=1;
     end
     %check if the entered key is a valid key. If yes, replace the default by
