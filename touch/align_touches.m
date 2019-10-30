@@ -20,17 +20,32 @@
 %use of reduced touchtimes option requires the name of touch directory to
 %contain the string 'reduced'
 
-touchdir = ('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/touchtimes_GCaMP6s_full');
-% The folder where the touchtimes files are located
-resultsdir = ('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/Results');
-% The folder where the results of single experiments are located
-outputdirmean=('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/Results_GCaMP6');
-outputdirsingles=('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/Results_single_exp');
-%The folder where the mean data should be written to
-filterstring = 'medial_superficial'; % a string by which exps should be filtered
+% touchdir = ('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/touchtimes_GCaMP6s_full');
+% % The folder where the touchtimes files are located
+% resultsdir = ('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/Results');
+% % The folder where the results of single experiments are located
+% outputdirmean=('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/Results_GCaMP6');
+% outputdirsingles=('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/Results_single_exp');
+% %The folder where the mean data should be written to
+% filterstring = 'medial_superficial'; % a string by which exps should be filtered
 %this can be a specific part of the neuron imaged form
+%dependencies: 
+%-options_resolver.m
+%-boundedline.m
 
-
+function align_touches(varargin)
+options = struct('framerate',5.92,'numberframes',600,'touchdir','/Volumes/LaCie/Projects/Matthew/touchtimes','resultsdir','/Volumes/LaCie/Projects/Matthew/Results','outputdirmean','/Volumes/LaCie/Projects/Matthew/Results','reduced',false);
+arguments = varargin;
+%call the options_resolver function to check optional key-value pair
+%arguments
+[options,override_reduced]=options_resolver(options,arguments,'align_touches');
+%setting the values for optional arguments
+framerate = options.framerate;
+numberframes = options.numberframes;
+touchdir = options.touchdir;
+resultsdir = options.resultsdir;
+outputdirmean=options.outputdirmean;
+reduced = options.reduced;
 %This part of the script reads in the data
 lateralized = 0;
 if contains (touchdir, '_l_r_')

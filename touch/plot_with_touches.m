@@ -12,36 +12,15 @@
 %reduced: whether or not reduced touchtimes format is used; default:
 %determine this from the name of the touchdir (based on whether this name contains
 %the string 'reduced')
-%dependencies: boundedline package
+%dependencies: options_resolver.m
+
 
 function plot_with_touches(varargin)
-options = struct('framerate',5.92,'numberframes',600,'touchdir','/Volumes/LaCie/Projects/Matthew/touchtimes','resultsdir','/Volumes/LaCie/Projects/Matthew/Results','outputdirmean','/Volumes/LaCie/Projects/Matthew/Results','reduced',false);
-%# read the acceptable names
-optionNames = fieldnames(options);
-
-%# count arguments - throw exception if the number is not divisible by 2
-nArgs = length(varargin);
-if round(nArgs/2)~=nArgs/2
-    error('plot_with_touches called with wrong number of arguments: expected Name/Value pair arguments')
-end
-override_reduced=0;
-for pair = reshape(varargin,2,[]) %# pair is {propName;propValue}
-    inpName = lower(pair{1}); %# make case insensitive
-    %check if reduced was specified by caller, if so override the default setting for
-    %how reduced is determined
-    if strcmp(inpName, 'reduced')
-        disp('manually overriding reduced touchtimes identifier')
-        override_reduced=1;
-    end
-    %check if the entered key is a valid key. If yes, replace the default by
-    %the caller specified value. Otherwise, throw and exception
-    if any(strcmp(inpName,optionNames))
-        
-        options.(inpName) = pair{2};
-    else
-        error('%s is not a recognized parameter name',inpName)
-    end
-end
+arguments=varargin;
+ options = struct('framerate',5.92,'numberframes',600,'touchdir','/Volumes/LaCie/Projects/Matthew/touchtimes','resultsdir','/Volumes/LaCie/Projects/Matthew/Results','outputdirmean','/Volumes/LaCie/Projects/Matthew/Results','reduced',false);
+%call the options_resolver function to check optional key-value pair
+%arguments
+[options,override_reduced]=options_resolver(options,arguments,'plot_with_touches');
 %setting the values for optional arguments
 framerate = options.framerate;
 numberframes = options.numberframes;
