@@ -17,7 +17,7 @@
 
 function plot_with_touches(varargin)
 arguments=varargin;
- options = struct('framerate',5.92,'numberframes',600,'touchdir','/Volumes/LaCie/Projects/Matthew/touchtimes','resultsdir','/Volumes/LaCie/Projects/Matthew/Results','outputdirmean','/Volumes/LaCie/Projects/Matthew/Results','reduced',false);
+ options = struct('framerate',5.92,'numberframes',600,'touchdir','touchtimes','resultsdir','Results','outputdirmean','Results','reduced',false);
 %call the options_resolver function to check optional key-value pair
 %arguments
 [options,override_reduced]=options_resolver(options,arguments,'plot_with_touches');
