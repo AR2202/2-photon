@@ -1,26 +1,36 @@
+function [dff,virgindff, virginf,filenames]=genitalia_touch(foldername,varargin)
 
-clear all; 
+arguments=varargin;
+ options = struct('framerate',5.92,'numberframes',600,'baseline_start',2,'baseline_end',11,'outputdir','../Results');
+%call the options_resolver function to check optional key-value pair
+%arguments
+[options,~]=options_resolver(options,arguments,'plot_with_touches');
+%setting the values for optional arguments
+framerate = options.framerate;
+numberframes = options.numberframes;
+baseline_start = options.baseline_start;
+baseline_end = options.baseline_end;
+outputdirv=options.outputdir;
+
 
 %% 1. Set constants, variables and local functions
 
 extracting = @mean; % taking the mean of each frame
-framerate = 5.92; % frame rate in Hz
+%framerate = 5.92; % frame rate in Hz
 
-numberframes=600;
+%numberframes=600;
 duration_acquisition = numberframes/framerate; 
-baseline_start = 2;
-baseline_end = 11;
+%baseline_start = 2;
+%baseline_end = 11;
 startdir=pwd;
-pathname='/Volumes/LaCie/Projects/Matthew/imaging_preprocessed';
-%pathname has to be the path to the folder were files to be processed are
-%located
-foldername='2019_10_24';%the name of the imaging folder
-subfoldername='ROI';%must be a folder within the imaging folder
-stackdir = fullfile(pathname,foldername,subfoldername);
-outputdirv=('/Volumes/LaCie/Projects/Matthew/Results');
 
-outputfilev=strcat(foldername,'_touch_needle.xlsx');
-outputimgv=strcat(foldername,'_touch_needle.eps');
+%foldername='2019_10_24';%the name of the imaging folder
+subfoldername='ROI';%must be a folder within the imaging folder
+stackdir = fullfile(foldername,subfoldername);
+
+
+outputfilev=strcat(outputdirv,'_touch_needle.xlsx');
+outputimgv=strcat(outputdirv,'_touch_needle.eps');
 
 ee = 1;
 ii = 1;
@@ -30,7 +40,7 @@ virgin = 0;%used here for touch needle
 
 
  
-
+cd (startdir)
 
 cd(stackdir)
 files{ii}{ee} = dir('*.tif');
@@ -45,6 +55,7 @@ filenames(:) = {''};
         for gg = 1:length(files{ii}{ee})
             
             % go back into the stack directory
+            cd(startdir);
             cd(stackdir);
             filename = files{ii}{ee}{gg};
             
@@ -106,6 +117,7 @@ filenames(:) = {''};
        
         
         Tvnames=table(virginname);
+        cd(startdir);
         cd(outputdirv);
         writetable(Tv,outputfilev,'Sheet',1,'WriteVariableNames',false);
         writetable(Tvnames,outputfilev,'Sheet',2,'WriteVariableNames',false);
