@@ -14,13 +14,13 @@ numberframes=600;% number of frames
 duration_acquisition = numberframes/framerate; 
 
 startdir=pwd;
-pathname='/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/touchtimes_full';
+pathname='/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/touchtimes_GCaMP6s_reduced';
 
-touchdir = ('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/touchtimes_full');
+touchdir = ('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/touchtimes_GCaMP6s_reduced');
 % The folder where the touchtimes files are located
 resultsdir = ('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/Results');
 % The folder where the results of single experiments are located
-outputdirmean=('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/Results_plot');
+outputdirmean=('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/Results_GCaMP6');
 %The folder where the mean data should be written to
 x = (1:numberframes)';% this is a column vector of the frame numbers
 x= (x-1)/framerate;%calculate the timepoints of the frames from the frame number

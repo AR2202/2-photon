@@ -33,8 +33,8 @@
 %-options_resolver.m
 %-boundedline.m
 
-function align_touches(varargin)
-options = struct('framerate',5.92,'numframes',600,'touchdir','touchtimes','resultsdir','Results','outputdirmean','Results','outputdir_singles','Results_single_exp','basetime',10,'eventtime',20,'intervaltime',5,'excludedoubles',0,'filterstring','','reduced',false);
+function align_touches_vir_sim_yak(varargin)
+options = struct('framerate',5.92,'numframes',600,'touchdir','touchtimes','resultsdir','Results','outputdirmean','Results','outputdir_singles','Results_single_exp','basetime',10,'eventtime',20,'intervaltime',5,'excludedoubles',0,'filterstring','_medial','reduced',false);
 arguments = varargin;
 
 %call the options_resolver function to check optional key-value pair
@@ -47,11 +47,14 @@ touchdir = options.touchdir;
 resultsdir = options.resultsdir;
 outputdirmean=options.outputdirmean;
 reduced = options.reduced;
-intervaltime = options.intervaltime,
+intervaltime = options.intervaltime;
 basetime=options.basetime;
 eventtime = options.eventtime;
 excludedoubles=options.excludedoubles;
 filterstring=options.filterstring;
+
+
+
 
 %This part of the script reads in the data
 currentdir = pwd;
@@ -62,6 +65,9 @@ end
 if contains (touchdir, '_r_l_')
     lateralized = 1;
 end
+options.lateralized=lateralized;
+
+
 
 if ~override_reduced
     if contains (touchdir, 'reduced')
@@ -103,6 +109,7 @@ resultfilenames=cellfun(@(resultfile) resultfile, {resultfiles}, 'UniformOutput'
 expnames=cellfun(@(resultfile) cellfun(@(resultf) table2array(readtable(resultf,'Sheet','Sheet2','ReadVariableNames',0)), resultfile, 'UniformOutput', false), resultfiles, 'UniformOutput', false);
 foundstr=cellfun(@(numbers,files) cellfun(@(resultsfiles) cellfun(@(exp) contains(exp,numbers),resultsfiles), files,'UniformOutput', false),numberstrings, expnames, 'UniformOutput', false);
 [found]=cellfun(@(numbers,files) cellfun(@(resultsfiles) cellfun(@(exp) foundstringnames(exp,numbers),resultsfiles, 'Uniformoutput', false), files,'UniformOutput', false),numberstrings, expnames, 'UniformOutput', false);
+
 [foundin,foundfilename,fileindex]= cellfun(@(exps,nums,rfiles) findfounds2(exps,nums,rfiles), expnames, numberstrings,resultfiles,'UniformOutput',false);
  
   imagingfilestrings=foundfilename;
@@ -417,8 +424,8 @@ ball_SEM_event_f_contra=std(cell_mean_event_f_contra,0,2)/sqrt(size(cell_mean_ev
 
 %find the mated female experimental flies
 
-combinedtable_mfemale = combinedtable( contains(string(combinedtable.t_foundfilename),'_matedF_fly'), : ); 
-combinedtable_mfemale_contra = combinedtable_contra( contains(string(combinedtable_contra.t_foundfilename),'_matedF_fly'), : ); 
+combinedtable_mfemale = combinedtable( contains(string(combinedtable.t_foundfilename),'_matedFemale_fly'), : ); 
+combinedtable_mfemale_contra = combinedtable_contra( contains(string(combinedtable_contra.t_foundfilename),'_matedFemale_fly'), : ); 
 
 simtable_mf = combinedtable_mfemale( contains(string(combinedtable_mfemale.t_foundin),'simulans'), : ); 
 yaktable_mf = combinedtable_mfemale( contains(string(combinedtable_mfemale.t_foundin),'yakuba'), : ); 
@@ -1128,6 +1135,29 @@ basetime=options.basetime;
 eventtime = options.eventtime;
 excludedoubles=options.excludedoubles;
 filterstring=options.filterstring;
+lateralized=options.lateralized;
+
+if lateralized
+    if contains(string(data{3}),'(r)')
+        disp('imaged right side');
+        touchtimes=data{5};
+        
+        touch_other_side=data{1};
+        
+    else
+        disp('imaged left side');
+        touchtimes=data{1};
+        
+        touch_other_side=data{5};
+        
+    end
+else
+    touchtimes=data{1};
+    
+    touch_other_side=data{5};
+    
+end
+
 %function [eventpeaks_mean,eventpeaks_SEM,mean_event,SEM_event,touchtimes,fluo] = find_touch_events(data)
 if contains(string(data{3}),'(r)')
     disp('imaged right side');
@@ -1290,16 +1320,16 @@ end
                       
                        end
                        function [foundinfiles,fffounds,iindex]=findfounds2(resultsarray,numbarray,rresultfilenames)
-                       [fffounds,iindex]=cellfun(@(resultsfiles) findfounds(resultsfiles,numbarray), resultsarray,'UniformOutput', false);
-                      %foundinfiles={};
-                       for i=1:length(resultsarray)
-                       if isempty(fffounds{i})==1
-                          foundinfiles{i}={};
-                       else
-                           
-                            foundinfiles{i}=rresultfilenames{i};
-                       end
-                       end
+[fffounds,iindex]=cellfun(@(resultsfiles) findfounds(resultsfiles,numbarray), resultsarray,'UniformOutput', false);
+%foundinfiles={};
+for i=1:length(resultsarray)
+    if isempty(fffounds{i})==1
+        foundinfiles{i}={};
+    else
+        
+        foundinfiles{i}=rresultfilenames{i};
+    end
+end
                        fffounds=fffounds(~cellfun('isempty',fffounds));
                        foundinfiles=foundinfiles(~cellfun('isempty',foundinfiles));
                        iindex=iindex(~cellfun('isempty',iindex));
