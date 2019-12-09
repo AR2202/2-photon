@@ -455,9 +455,15 @@ catch ME
     disp(errorMessage);
 end
 cd (currentdir);
-
-
 end
+try
+    cd(outputdirmean);
+    save('x_events.mat','xevents_nonempty{1,1}');
+catch ME
+    errorMessage = ME.message;
+    disp(errorMessage);
+end
+
 end
 
 %This part is the definition of the functions used in the previous parts of
