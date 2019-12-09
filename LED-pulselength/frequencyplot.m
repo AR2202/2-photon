@@ -26,7 +26,7 @@ function frequencyplot(foldername,varargin)
 
 
 
-options = struct('framerate',5.92,'baseline_start',2,'baseline_end',11,'frequencies',[4,10,20,40], 'pulselengths',[8,12,20],'pulsetimes',[20,40,60,80],'genders',{{'_female';'_male'}},'neuronparts',{{'medial';'lateral'}},'pulsedur', 5,'resultsdir','Results');
+options = struct('framerate',5.92,'baseline_start',2,'baseline_end',11,'frequencies',[4,10,20,40], 'pulselengths',[8,12,20],'pulsetimes',[20,40,60,80],'genders',{{'_female';'_male'}},'neuronparts',{{'medial';'lateral'}},'pulsedur', 5,'resultsdir','Results','multiroi',false);
 
 %# read the acceptable names
 optionNames = fieldnames(options);
@@ -66,11 +66,17 @@ genders = options.genders;
 neuronparts=options.neuronparts;
 pulsedur =options.pulsedur;%duration (in s) of pulse bursts
 resultsdir=options.resultsdir
+multiroi=options.multiroi
 
 startdir=pwd;
 pathname = startdir;
 
+if multiroi
+    subfoldername='ROIS';%must be a folder within the imaging folder
+
+    else
 subfoldername='ROI';%must be a folder within the imaging folder
+end
 stackdir = fullfile(pathname,foldername,subfoldername);
 
 if exist(stackdir, 'dir')
@@ -106,7 +112,7 @@ for g=1:size(genders,1)
                 directoryname = fullfile(pathname,foldername,directories(p).name);
                 disp(directoryname);
                 
-                files=dir(strcat(directoryname,'/',subfoldername,'/*',gender,'*',neuronpart,'*',f,'Hz*',pulselengthname,'*.tif'));
+                files=dir(char(strcat(directoryname,'/',subfoldername,'/*',gender,'*',neuronpart,'*',f,'Hz*',pulselengthname,'*.tif')));
                 newfilenames=arrayfun(@(f) fullfile(directoryname,subfoldername,f.name),files, 'uni',false);
                 filenames = vertcat(filenames,newfilenames);
                 disp(filenames);
