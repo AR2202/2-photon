@@ -26,7 +26,7 @@ function frequencyplot(foldername,varargin)
 
 
 
-options = struct('framerate',5.92,'baseline_start',2,'baseline_end',11,'frequencies',[4,10,20,40], 'pulselengths',[8,12,20],'pulsetimes',[20,40,60,80],'genders',{{'_female';'_male'}},'neuronparts',{{'medial';'lateral'}},'pulsedur', 5,'resultsdir','Results','multiroi',false);
+options = struct('framerate',5.92,'baseline_start',2,'baseline_end',11,'frequencies',[4,10,20,40], 'pulselengths',[8,12,20],'pulsetimes',[20,40,60,80],'genders',{{'_female';'_male'}},'neuronparts',{{'medial';'lateral'}},'pulsedur', 5,'resultsdir','Results','multiroi',false,'numrois',1);
 
 %# read the acceptable names
 optionNames = fieldnames(options);
@@ -65,8 +65,19 @@ pulsetimes = options.pulsetimes;%timings of the pulses
 genders = options.genders;
 neuronparts=options.neuronparts;
 pulsedur =options.pulsedur;%duration (in s) of pulse bursts
-resultsdir=options.resultsdir
-multiroi=options.multiroi
+resultsdir=options.resultsdir;
+multiroi=options.multiroi;
+numrois=options.numrois;
+
+if pulsedur == 0.2
+    pulsedurstr = '200ms';
+elseif pulsedur == 1
+    pulsedurstr = '1s';
+elseif pulsedur == 5
+    pulsedurstr = '5s';
+else pulsedurstr = '';
+end
+
 
 startdir=pwd;
 pathname = startdir;
@@ -76,6 +87,7 @@ if multiroi
 
     else
 subfoldername='ROI';%must be a folder within the imaging folder
+numrois =1; %set numrois to 1 if multiroi is false
 end
 stackdir = fullfile(pathname,foldername,subfoldername);
 
@@ -112,7 +124,7 @@ for g=1:size(genders,1)
                 directoryname = fullfile(pathname,foldername,directories(p).name);
                 disp(directoryname);
                 
-                files=dir(char(strcat(directoryname,'/',subfoldername,'/*',gender,'*',neuronpart,'*',f,'Hz*',pulselengthname,'*.tif')));
+                files=dir(char(strcat(directoryname,'/',subfoldername,'/*',gender,'*',neuronpart,'*',pulsedurstr,'*',f,'Hz*',pulselengthname,'*.tif')));
                 newfilenames=arrayfun(@(f) fullfile(directoryname,subfoldername,f.name),files, 'uni',false);
                 filenames = vertcat(filenames,newfilenames);
                 disp(filenames);
@@ -129,12 +141,13 @@ for g=1:size(genders,1)
             
             %calculating mean, n and SEM of dff
             mean_dff=mean(dff);
-            n_files=size(dff,1);
+            n_files=size(dff,1)/numrois;
+            n_rois=size(dff,1);
             SEM_dff=std(dff)./n_files;
             %make the figure name and path to output
             
-            outputfig=fullfile(outputdir,(strcat(outputname,gender,'_',neuronpart,'.eps')));
-            fignew=figure('Name',strcat( outputname,gender,'_',neuronpart));
+            outputfig=fullfile(outputdir,(strcat(outputname,gender,'_',neuronpart,'_',pulsedurstr,'.eps')));
+            fignew=figure('Name',strcat( outputname,gender,'_',neuronpart,'_',pulsedurstr));
             %plot the mean with a shaded area showing the SEM
             h=boundedline(x,mean_dff, SEM_dff,'k');
             xlim([0,105]);
@@ -149,7 +162,7 @@ for g=1:size(genders,1)
             saveas(fignew,outputfig,'epsc');
             dff_of_pulses=cellfun(@(f)dff_pulses(f,pulsetimes,pulsedur,framerate),fluo,'uni',false);
             pulsedff=cell2mat(dff_of_pulses);
-            outputmatfile=fullfile(outputdir,(strcat(outputname,gender,'_',neuronpart,'.mat')));
+            outputmatfile=fullfile(outputdir,(strcat(outputname,gender,'_',neuronpart,'_',pulsedurstr,'.mat')));
             save(outputmatfile,'pulsedff','mean_dff','n_files','SEM_dff','dff');
             pulsemeans(j,i)=mean(pulsedff);
             pulseSEMs(j,i)=std(pulsedff)/(numel(pulsedff));
@@ -157,7 +170,7 @@ for g=1:size(genders,1)
     end
     
     outputplot=fullfile(outputdir,strcat(gender,'_',neuronpart,'frequencyplot.eps'));
-    fignew=figure('Name',strcat('dF/F vs. frequency',gender,'_',neuronpart));
+    fignew=figure('Name',strcat('dF/F vs. frequency',gender,'_',neuronpart,'_',pulsedurstr));
     colors=['k','r','b'];
     hold 'on';
     for j=1:size(pulsemeans,1)
