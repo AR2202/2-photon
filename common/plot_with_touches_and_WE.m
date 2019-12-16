@@ -108,9 +108,18 @@ filenames(:) = {''};
                     
                         end
                         outputfig=strcat(speciestype,'_',resultfilestring,numberstring,'.eps');%make the figure name
-                        fignew=figure('Name',outputfig);
+                        fignew=figure('Name',outputfig,'Units','centimeters','Position',[10 10 15 5]);
                         %plot the mean with a shaded area showing the SEM
+
                         h=plot(x,dff,'k');
+                                                xlim([0,100]);
+                        ylim([-1,1]);
+                        %title('Frequency');
+                        xlabel('s');
+                        ylabel ('\DeltaF/F');
+                        ax = gca;
+                        ax.FontSize = 13;
+                        ax.LineWidth=2;
                         if reduced
                             disp('Reduced touchtimes format was used.');
                             for numpatch = 1:numel(pulsetimes)
@@ -125,7 +134,7 @@ filenames(:) = {''};
                             for numpatch = 1:(floor(size(touchtimes)/2))%loop through the number of touches
                                 %for each touch, generate a shaded area in the plot
                                 index=2*numpatch-1;
-                                hpatch(index)=patch([touchtimes(index) touchtimes(index+1) touchtimes(index+1) touchtimes(index)] , [min(ylim)*[1 1] max(ylim)*[1 1]],'c','EdgeColor','none');
+                                hpatch(index)=patch([touchtimes(index) touchtimes(index+1) touchtimes(index+1) touchtimes(index)] , [min(ylim)*[1 1] max(ylim)*[1 1]],[(166/255) (172/255) (175/255)],'EdgeColor','none');
                                 %send the shaded area to the back of the graph
                                 uistack(hpatch(index), 'bottom');
                                 
@@ -133,8 +142,9 @@ filenames(:) = {''};
                             for numpatch = 1:(floor(size(wingtimes)/2))%loop through the number of touches
                                 %for each touch, generate a shaded area in the plot
                                 index=2*numpatch-1;
-                                hpatch(index)=patch([wingtimes(index) wingtimes(index+1) wingtimes(index+1) wingtimes(index)] , [min(ylim)*[1 1] max(ylim)*[1 1]],'g','EdgeColor','none');
-                                %send the shaded area to the back of the graph
+                                hpatch(index)=patch([wingtimes(index) wingtimes(index+1) wingtimes(index+1) wingtimes(index)] , [min(ylim)*[1 1] max(ylim)*[1 1]],[(230/255) (176/255) (170/255)],'EdgeColor','none');
+                                %send the shaded area to the back of the
+                                %graph/255)
                                 uistack(hpatch(index), 'bottom');
                                 
                             end
@@ -153,14 +163,14 @@ filenames(:) = {''};
                             for numpatch = 1:size(touchtimes)%loop through the number of touches
                                 %for each touch, generate a shaded area in the plot
                                 
-                                hpatch(numpatch)=patch([touchtimes(numpatch) touchtimes(numpatch)+0.2 touchtimes(numpatch)+0.2 touchtimes(numpatch)] , [min(ylim)*[1 1] max(ylim)*[1 1]],'c','EdgeColor','none');
+                                hpatch(numpatch)=patch([touchtimes(numpatch) touchtimes(numpatch)+0.2 touchtimes(numpatch)+0.2 touchtimes(numpatch)] , [min(ylim)*[1 1] max(ylim)*[1 1]],[(166/255) (172/255) (175/255)],'EdgeColor','none');
                                 %send the shaded area to the back of the graph
                                 uistack(hpatch(numpatch), 'bottom');
                             end
                             for numpatch = 1:size(wingtimes)%loop through the number of touches
                                 %for each touch, generate a shaded area in the plot
                                 
-                                hpatch(numpatch)=patch([wingtimes(numpatch) wingtimes(numpatch)+0.2 touchtimes(numpatch)+0.2 touchtimes(numpatch)] , [min(ylim)*[1 1] max(ylim)*[1 1]],'g','EdgeColor','none');
+                                hpatch(numpatch)=patch([wingtimes(numpatch) wingtimes(numpatch)+0.2 touchtimes(numpatch)+0.2 touchtimes(numpatch)] , [min(ylim)*[1 1] max(ylim)*[1 1]],[(230/255) (176/255) (170/255)],'EdgeColor','none');
                                 %send the shaded area to the back of the graph
                                 uistack(hpatch(numpatch), 'bottom');
                             end
