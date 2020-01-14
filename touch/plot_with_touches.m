@@ -31,7 +31,7 @@ reduced = options.reduced;
 
 startdir=pwd;
 x = (1:numberframes)';% this is a column vector of the frame numbers
-x= (x-1)/framerate;%calculate the timepoints of the frames from the frame number
+x= x/framerate;%calculate the timepoints of the frames from the frame number - changed so that frame 1 is not at time 0 but at time 1/framerate
 duration_acquisition = numberframes/framerate;
 
 ee = 1;
@@ -61,6 +61,7 @@ filenames(:) = {''};
         for gg = 1:length(files{ii}{ee})
             
             % go back into the stack directory
+            cd(startdir);
             cd(touchdir);
             filename = files{ii}{ee}{gg};
             
@@ -75,12 +76,12 @@ filenames(:) = {''};
                resultfilestring=strrep((regexprep(filename,'_(\d+).xlsx','_')),'touchtimes_','');
                numberstring=strrep((regexprep(filename,'touchtimes_(\d+)_(\d+)_(\d+)_','')),'.xlsx','');
                
-               
+               cd (startdir);
                 cd(resultsdir);
                 resultfiles = dir(strcat(resultfilestring,'*.xlsx'));
                 resultfiles = {resultfiles.name};
                 for ff = 1:length(resultfiles)
-                    cd(resultsdir);
+                    %cd(resultsdir);
                     resultfilename=resultfiles{ff};
                     speciestype=strrep((strrep(resultfilename,resultfilestring,'')),'.xlsx','');
                     expnames =table2array(readtable(resultfilename,'Sheet','Sheet2','ReadVariableNames',0));
@@ -116,6 +117,7 @@ filenames(:) = {''};
                                 uistack(hpatch(numpatch), 'bottom');
                             end
                         end
+                        cd(startdir);
                         cd(outputdirmean);
                         saveas(fignew,outputfig,'epsc');
                     end
@@ -125,7 +127,7 @@ filenames(:) = {''};
           
  
                 
-           
+    
 
 end
         

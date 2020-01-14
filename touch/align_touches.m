@@ -463,7 +463,7 @@ catch ME
     errorMessage = ME.message;
     disp(errorMessage);
 end
-
+cd (currentdir);
 end
 
 %This part is the definition of the functions used in the previous parts of
@@ -550,7 +550,7 @@ else
     
     %calculate the timepoints
     x=1:numframes;
-    x=(x-1)/framerate;
+    x=x/framerate; %changed to make frame one start at time 1/framerate instead of time 0 due to time required for laser scanning
     
     
     
