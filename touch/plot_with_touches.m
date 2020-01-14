@@ -84,6 +84,11 @@ filenames(:) = {''};
                     %cd(resultsdir);
                     resultfilename=resultfiles{ff};
                     speciestype=strrep((strrep(resultfilename,resultfilestring,'')),'.xlsx','');
+                    if contains(speciestype,'mROI')
+                        multiROI =1;
+                    else
+                        multiROI = 0;
+                    end
                     expnames =table2array(readtable(resultfilename,'Sheet','Sheet2','ReadVariableNames',0));
                     findnumberstring=strfind(expnames,numberstring);
                     foundfile=find(~cellfun(@isempty,findnumberstring));
@@ -91,7 +96,20 @@ filenames(:) = {''};
                     if ~isempty(foundfile)
                         expnumb=foundfile(1,1);
                         expresults =table2array(readtable(resultfilename,'Sheet','Sheet1','ReadVariableNames',0));
+                        if multiROI
+                            exprs=[];
+                            for i=1:length(foundfile)
+                                expnumb = foundfile (1,i);
+                                expr = expresults(:,expnumb);
+                                exprs = [exprs expr];
+                            end
+                            expresult = mean(exprs,2);
+                        else
+                        expnumb=foundfile(1,1);
+                        
                         expresult=expresults(:,expnumb);
+                    
+                        end
                     
                         
                         outputfig=strcat(speciestype,'_',resultfilestring,numberstring,'.eps');%make the figure name

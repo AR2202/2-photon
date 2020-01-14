@@ -1,7 +1,7 @@
 function [dff,virgindff, virginf,filenames]=genitalia_touch(foldername,varargin)
 
 arguments=varargin;
- options = struct('framerate',5.92,'numberframes',600,'baseline_start',2,'baseline_end',11,'outputdir','../Results');
+ options = struct('framerate',5.92,'numberframes',600,'baseline_start',2,'baseline_end',11,'outputdir','../Results','multiROI',false);
 %call the options_resolver function to check optional key-value pair
 %arguments
 [options,~]=options_resolver(options,arguments,'plot_with_touches');
@@ -11,7 +11,7 @@ numberframes = options.numberframes;
 baseline_start = options.baseline_start;
 baseline_end = options.baseline_end;
 outputdirv=options.outputdir;
-
+multiROI=options.multiROI;
 
 %% 1. Set constants, variables and local functions
 
@@ -25,12 +25,17 @@ duration_acquisition = numberframes/framerate;
 startdir=pwd;
 
 %foldername='2019_10_24';%the name of the imaging folder
-subfoldername='ROI';%must be a folder within the imaging folder
+if multiROI
+    subfoldername='ROIS';%must be a folder within the imaging folder
+    
+    outputfilev=strcat(foldername,'_touch_needle_mROI.xlsx');
+    outputimgv=strcat(foldername,'_touch_needle_mROI.eps');
+else
+    subfoldername='ROI';%must be a folder within the imaging folder
+    outputfilev=strcat(foldername,'_touch_needle.xlsx');
+    outputimgv=strcat(foldername,'_touch_needle.eps');
+end
 stackdir = fullfile(foldername,subfoldername);
-
-
-outputfilev=strcat(outputdirv,'_touch_needle.xlsx');
-outputimgv=strcat(outputdirv,'_touch_needle.eps');
 
 ee = 1;
 ii = 1;
