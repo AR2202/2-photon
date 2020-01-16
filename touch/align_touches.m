@@ -144,17 +144,20 @@ eventpeaks_mean_contra = cellfun(@(ev) standardizeMissing(ev,0),eventpeaks_mean_
 mean_event_contra = cellfun(@(ev) standardizeMissing(ev,0),mean_event_contra, 'uni',false);
 eventsmat_contra = cellfun(@(ev) standardizeMissing(ev,0),eventsmat_contra,'uni',false);
 
-
+average_event=cellfun(@(foundinfilename,foundinfile) average_within_fly(foundfilename,foundin,eventsmat,foundinfilename{1},foundinfile),foundfilename,foundin,'uni',false);
+average_event_contra=cellfun(@(foundinfilename,foundinfile) average_within_fly(foundfilename,foundin,eventsmat_contra,foundinfilename{1},foundinfile),foundfilename,foundin,'uni',false);
 %This part of the script averages over the experiments of each species type
+average2mat=transpose(cell2mat(average_event));
+average2mat_contra=transpose(cell2mat(average_event));
 
-combinedtable_unfiltered=table(eventpeaks_mean, mean_event, t_foundfilename,t_foundin,eventsmat);
-combinedtable_contra_unfiltered=table(eventpeaks_mean_contra, mean_event_contra, t_foundfilename,t_foundin,eventsmat_contra);
+combinedtable_unfiltered=table(eventpeaks_mean, mean_event, t_foundfilename,t_foundin,eventsmat,average2mat);
+combinedtable_contra_unfiltered=table(eventpeaks_mean_contra, mean_event_contra, t_foundfilename,t_foundin,eventsmat_contra,average2mat_contra);
 %find the male experimental flies
 combinedtable = combinedtable_unfiltered( contains(string(combinedtable_unfiltered.t_foundfilename),filterstring), : );
 combinedtable_contra = combinedtable_contra_unfiltered( contains(string(combinedtable_contra_unfiltered.t_foundfilename),filterstring), : );
 %combinedtable=standardizeMissing(combinedtable,{0});
 combinedtable = rmmissing(combinedtable);
-%combinedtable_contra=standardizeMissing(combinedtable_contra,{0});
+%combinedtable_contra=standardizeMissing(combinedtable_contra,{0});unique
 combinedtable_contra = rmmissing(combinedtable_contra);
 combinedtable_male = combinedtable( contains(string(combinedtable.t_foundfilename),'_male_fly'), : );
 
@@ -194,13 +197,12 @@ male_eventpeaks_mean_m=mean(maletable_m.eventpeaks_mean);
 male_eventpeaks_SEM_m=std(maletable_m.eventpeaks_mean)/sqrt(size(maletable_m.eventpeaks_mean,1));
 
 
-cell_mean_event_m=cell2mat(transpose(maletable_m.mean_event(~cellfun(@isempty, maletable_m.mean_event))));
+cell_mean_event_m=transpose(rmmissing(unique(maletable_m.average2mat,'rows')));
 
 male_mean_event_m=mean(cell_mean_event_m,2);
 male_SEM_event_m=std(cell_mean_event_m,0,2)/sqrt(size(cell_mean_event_m,2));
 
-cell_mean_event_m_contra=cell2mat(transpose(maletable_m_contra.mean_event_contra(~cellfun(@isempty, maletable_m_contra.mean_event_contra))));
-
+cell_mean_event_m_contra=transpose(rmmissing(unique(maletable_m_contra.average2mat_contra,'rows')));
 male_mean_event_m_contra=mean(cell_mean_event_m_contra,2);
 male_SEM_event_m_contra=std(cell_mean_event_m_contra,0,2)/sqrt(size(cell_mean_event_m_contra,2));
 
@@ -243,12 +245,11 @@ maledata_f_contra=table2cell(maletable_f_contra);
 male_eventpeaks_mean_f=mean(maletable_f.eventpeaks_mean);
 male_eventpeaks_SEM_f=std(maletable_f.eventpeaks_mean)/sqrt(size(maletable_f.eventpeaks_mean,1));
 
-cell_mean_event_f=cell2mat(transpose(maletable_f.mean_event(~cellfun(@isempty, maletable_f.mean_event))));
+cell_mean_event_f=transpose(rmmissing(unique(maletable_f.average2mat,'rows')));
 
 male_mean_event_f=mean(cell_mean_event_f,2);
 male_SEM_event_f=std(cell_mean_event_f,0,2)/sqrt(size(cell_mean_event_f,2));
-cell_mean_event_f_contra=cell2mat(transpose(maletable_f_contra.mean_event_contra(~cellfun(@isempty, maletable_f_contra.mean_event_contra))));
-
+cell_mean_event_f_contra=transpose(rmmissing(unique(maletable_f_contra.average2mat_contra,'rows')));
 male_mean_event_f_contra=mean(cell_mean_event_f_contra,2);
 male_SEM_event_f_contra=std(cell_mean_event_f_contra,0,2)/sqrt(size(cell_mean_event_f_contra,2));
 
@@ -289,12 +290,10 @@ maledata_mf_contra=table2cell(maletable_mf_contra);
 male_eventpeaks_mean_mf=mean(maletable_mf.eventpeaks_mean);
 male_eventpeaks_SEM_mf=std(maletable_mf.eventpeaks_mean)/sqrt(size(maletable_mf.eventpeaks_mean,1));
 
-cell_mean_event_mf=cell2mat(transpose(maletable_mf.mean_event(~cellfun(@isempty, maletable_mf.mean_event))));
-
+cell_mean_event_mf=transpose(rmmissing(unique(maletable_mf.average2mat,'rows')));
 male_mean_event_mf=mean(cell_mean_event_mf,2);
 male_SEM_event_mf=std(cell_mean_event_mf,0,2)/sqrt(size(cell_mean_event_mf,2));
-cell_mean_event_mf_contra=cell2mat(transpose(maletable_mf_contra.mean_event_contra(~cellfun(@isempty, maletable_mf_contra.mean_event_contra))));
-
+cell_mean_event_mf_contra=transpose(rmmissing(unique(maletable_mf.average2mat_contra,'rows')));
 male_mean_event_mf_contra=mean(cell_mean_event_mf_contra,2);
 male_SEM_event_mf_contra=std(cell_mean_event_mf_contra,0,2)/sqrt(size(cell_mean_event_mf_contra,2));
 
@@ -570,7 +569,7 @@ else
         
         eventbases1=mean(eventsmat((1:round(basetime*framerate)+1),:));
         %calculate dF/F using the baseline from the events in eventsmat
-        eventsmat=(eventsmat-eventbases1)/eventbases1;
+        eventsmat=(eventsmat-eventbases1)./eventbases1;
         
         
     else
@@ -665,4 +664,12 @@ end
 
 function tf=doubletouch(touchtime,interval,dur,touchtimes_other_side)
 tf=any((touchtime-interval)<touchtimes_other_side&touchtimes_other_side<(touchtime+dur));
+end
+
+function average_event=average_within_fly(foundfilenamearr,foundinarr,eventsmatarr,filename,foundinfilename)
+flynumb = regexp(filename{1},"fly\d+_",'match');
+sames = cellfun(@(foundfilename,foundin1) (contains(foundfilename{1}{1},flynumb{1}) && (string(foundin1{1})==string(foundinfilename))), foundfilenamearr,foundinarr);
+total_eventsmat=eventsmatarr(sames);
+eventsmat_new=horzcat(total_eventsmat{:});
+average_event=mean(eventsmat_new,2);
 end
