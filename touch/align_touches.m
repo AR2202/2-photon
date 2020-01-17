@@ -667,7 +667,7 @@ tf=any((touchtime-interval)<touchtimes_other_side&touchtimes_other_side<(touchti
 end
 
 function average_event=average_within_fly(foundfilenamearr,foundinarr,eventsmatarr,filename,foundinfilename)
-flynumb = regexp(filename{1},"fly\d+_",'match');
+flynumb = regexp(filename{1},"fly\d+_",'match');%expecting the filename to contain the string 'fly' followed by the fly number
 sames = cellfun(@(foundfilename,foundin1) (contains(foundfilename{1}{1},flynumb{1}) && (string(foundin1{1})==string(foundinfilename))), foundfilenamearr,foundinarr);
 total_eventsmat=eventsmatarr(sames);
 eventsmat_new=horzcat(total_eventsmat{:});
