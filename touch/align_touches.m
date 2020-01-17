@@ -148,7 +148,7 @@ average_event=cellfun(@(foundinfilename,foundinfile) average_within_fly(foundfil
 average_event_contra=cellfun(@(foundinfilename,foundinfile) average_within_fly(foundfilename,foundin,eventsmat_contra,foundinfilename{1},foundinfile),foundfilename,foundin,'uni',false);
 %This part of the script averages over the experiments of each species type
 average2mat=transpose(cell2mat(average_event));
-average2mat_contra=transpose(cell2mat(average_event));
+average2mat_contra=transpose(cell2mat(average_event_contra));
 
 combinedtable_unfiltered=table(eventpeaks_mean, mean_event, t_foundfilename,t_foundin,eventsmat,average2mat);
 combinedtable_contra_unfiltered=table(eventpeaks_mean_contra, mean_event_contra, t_foundfilename,t_foundin,eventsmat_contra,average2mat_contra);
@@ -293,7 +293,7 @@ male_eventpeaks_SEM_mf=std(maletable_mf.eventpeaks_mean)/sqrt(size(maletable_mf.
 cell_mean_event_mf=transpose(rmmissing(unique(maletable_mf.average2mat,'rows')));
 male_mean_event_mf=mean(cell_mean_event_mf,2);
 male_SEM_event_mf=std(cell_mean_event_mf,0,2)/sqrt(size(cell_mean_event_mf,2));
-cell_mean_event_mf_contra=transpose(rmmissing(unique(maletable_mf.average2mat_contra,'rows')));
+cell_mean_event_mf_contra=transpose(rmmissing(unique(maletable_mf_contra.average2mat_contra,'rows')));%changed for debugging
 male_mean_event_mf_contra=mean(cell_mean_event_mf_contra,2);
 male_SEM_event_mf_contra=std(cell_mean_event_mf_contra,0,2)/sqrt(size(cell_mean_event_mf_contra,2));
 

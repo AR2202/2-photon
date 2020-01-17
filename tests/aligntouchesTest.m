@@ -4,17 +4,18 @@ end
 
 
 
+
 function test_align_touches(testCase)
-load(fullfile('testdata/testdat_genitalia_touch.mat'),'dff','virgindff','virginf','filenames');
-expSolution_dff=dff;
-expSolution_virgindff=virgindff;
-expSolution_virginf=virginf;
-expSolution_filenames=filenames;
+load(fullfile('testdata/mean_male_touch.mat'),'male_mean_event_m','male_SEM_event_m');
+expSolution_mean=male_mean_event_m;
+expSolution_SEM=male_SEM_event_m;
 
-[actSolution_dff, actSolution_virgindff,actSolution_virginf,actSolution_filenames] = genitalia_touch('testdata','outputdir','Results_test');
 
-verifyEqual(testCase,actSolution_dff,expSolution_dff);
-verifyEqual(testCase,actSolution_virgindff,expSolution_virgindff);
-verifyEqual(testCase,actSolution_virginf,expSolution_virginf);
-verifyEqual(testCase,actSolution_filenames,expSolution_filenames);
+align_touches('touchdir','touchtimes_reduced','resultsdir','Results_test','outputdirmean','Results_test');
+load(fullfile('Results_test/mean_male_touch.mat'),'male_mean_event_m','male_SEM_event_m');
+actSolution_mean=male_mean_event_m;
+actSolution_SEM=male_SEM_event_m;
+verifyEqual(testCase,actSolution_mean,expSolution_mean);
+verifyEqual(testCase,actSolution_SEM,expSolution_SEM);
+
 end
