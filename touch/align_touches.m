@@ -657,7 +657,18 @@ else
     eventsmat=transpose(eventsmat);
     %average all events frame by frame (after aligning them to the start of the
     %touch event)
-    if isempty(eventsmat)==0
+    eventpeaks=transpose(max(eventsmat((round(basetime*framerate)+1:size(eventsmat,1)),:)));
+    % baseline for each event before the touch
+    if ~isempty(eventsmat)
+        eventbases=transpose(mean(eventsmat((1:round(basetime*framerate)+1),:)));
+        
+        %calculate deltaF/F for that event
+        
+        eventpeaks_dff=(eventpeaks-eventbases)./eventbases;
+    else
+        eventpeaks_dff=0;
+    end
+    if ~isempty(eventsmat)
         
         eventbases1=mean(eventsmat((1:round(basetime*framerate)+1),:));
         %calculate dF/F using the baseline from the events in eventsmat
@@ -672,17 +683,7 @@ else
     SEM_event=std(eventsmat,0,2)/sqrt(size(eventsmat,2));
     %calculate single peak of each event during eventtime
     %first_touch_event=eventsmat(:,1);
-    eventpeaks=transpose(max(eventsmat((round(basetime*framerate)+1:size(eventsmat,1)),:)));
-    % baseline for each event before the touch
-    if ~isempty(eventsmat)
-        eventbases=transpose(mean(eventsmat((1:round(basetime*framerate)+1),:)));
-        
-        %calculate deltaF/F for that event
-        
-        eventpeaks_dff=(eventpeaks-eventbases)./eventbases;
-    else
-        eventpeaks_dff=0;
-    end
+    
     
     %calculate the mean of the peaks of single events
     
