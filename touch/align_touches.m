@@ -447,7 +447,7 @@ if lateralized
         plot_male_event_m=boundedline(xevents_nonempty{1,1},male_mean_event_m,male_SEM_event_m,'m');
         cd(outputdirmean);
         saveas(fignew,'male_mean_event_ipsi','epsc');
-        save('mean_male_touch_ipsi.mat','male_mean_event_m','male_SEM_event_m','male_eventpeaks_mean_m','male_eventpeaks_SEM_m');
+        save('mean_male_touch_ipsi.mat','male_mean_event_m','male_SEM_event_m','male_eventpeaks_mean_m','male_eventpeaks_SEM_m','cell_mean_eventpeak_m');
         
     catch ME
         errorMessage = ME.message;
@@ -460,7 +460,7 @@ if lateralized
         plot_male_event_m_contra=boundedline(xevents_nonempty_contra{1,1},male_mean_event_m_contra,male_SEM_event_m_contra,'m');
         cd(outputdirmean);
         saveas(fignew,'male_mean_event_contra','epsc');
-        save('mean_male_touch_contra.mat','male_mean_event_m_contra','male_SEM_event_m_contra','male_eventpeaks_mean_m_contra','male_eventpeaks_SEM_m_contra');
+        save('mean_male_touch_contra.mat','male_mean_event_m_contra','male_SEM_event_m_contra','male_eventpeaks_mean_m_contra','male_eventpeaks_SEM_m_contra','cell_mean_eventpeak_m_contra');
         
     catch ME
         errorMessage = ME.message;
@@ -475,7 +475,7 @@ if lateralized
         
         cd(outputdirmean);
         saveas(fignew,'female_mean_event_ipsi','epsc');
-        save('mean_female_touch_ipsi.mat','male_mean_event_f','male_SEM_event_f','male_eventpeaks_mean_f','male_eventpeaks_SEM_f');
+        save('mean_female_touch_ipsi.mat','male_mean_event_f','male_SEM_event_f','male_eventpeaks_mean_f','male_eventpeaks_SEM_f','cell_mean_eventpeak_f');
         
         
     catch ME
@@ -490,7 +490,7 @@ if lateralized
         
         cd(outputdirmean);
         saveas(fignew,'female_mean_event_contra','epsc');
-        save('mean_female_touch_contra.mat','male_mean_event_f_contra','male_SEM_event_f_contra','male_eventpeaks_mean_f_contra','male_eventpeaks_SEM_f_contra');
+        save('mean_female_touch_contra.mat','male_mean_event_f_contra','male_SEM_event_f_contra','male_eventpeaks_mean_f_contra','male_eventpeaks_SEM_f_contra','cell_mean_eventpeak_f_contra');
         
     catch ME
         errorMessage = ME.message;
@@ -505,7 +505,7 @@ if lateralized
         
         cd(outputdirmean);
         saveas(fignew,'mated_female_mean_event_ipsi','epsc');
-        save('mean_mated_female_touch_ipsi.mat','male_mean_event_mf','male_SEM_event_mf','male_eventpeaks_mean_mf','male_eventpeaks_SEM_mf');
+        save('mean_mated_female_touch_ipsi.mat','male_mean_event_mf','male_SEM_event_mf','male_eventpeaks_mean_mf','male_eventpeaks_SEM_mf','cell_mean_eventpeak_mf');
         
         
     catch ME
@@ -520,7 +520,7 @@ if lateralized
         
         cd(outputdirmean);
         saveas(fignew,'mated_female_mean_event_contra','epsc');
-        save('mean_mated_female_touch_contra.mat','male_mean_event_mf_contra','male_SEM_event_mf_contra','male_eventpeaks_mean_mf_contra','male_eventpeaks_SEM_mf_contra');
+        save('mean_mated_female_touch_contra.mat','male_mean_event_mf_contra','male_SEM_event_mf_contra','male_eventpeaks_mean_mf_contra','male_eventpeaks_SEM_mf_contra','cell_mean_eventpeak_mf_contra');
         
     catch ME
         errorMessage = ME.message;
@@ -535,7 +535,7 @@ else
         plot_male_event_m=boundedline(xevents_nonempty{1,1},male_mean_event_m,male_SEM_event_m,'m');
         cd(outputdirmean);
         saveas(fignew,'male_mean_event','epsc');
-        save('mean_male_touch.mat','male_mean_event_m','male_SEM_event_m','male_eventpeaks_mean_m','male_eventpeaks_SEM_m');
+        save('mean_male_touch.mat','male_mean_event_m','male_SEM_event_m','male_eventpeaks_mean_m','male_eventpeaks_SEM_m','cell_mean_eventpeak_m');
         
     catch ME
         errorMessage = ME.message;
@@ -550,7 +550,7 @@ else
         
         cd(outputdirmean);
         saveas(fignew,'female_mean_event','epsc');
-        save('mean_female_touch.mat','male_mean_event_f','male_SEM_event_f','male_eventpeaks_mean_f','male_eventpeaks_SEM_f');
+        save('mean_female_touch.mat','male_mean_event_f','male_SEM_event_f','male_eventpeaks_mean_f','male_eventpeaks_SEM_f','cell_mean_eventpeak_f');
         
         
     catch ME
@@ -568,7 +568,7 @@ else
         
         cd(outputdirmean);
         saveas(fignew,'mated_female_mean_event','epsc');
-        save('mean_mated_female_touch.mat','male_mean_event_mf','male_SEM_event_mf','male_eventpeaks_mean_mf','male_eventpeaks_SEM_mf');
+        save('mean_mated_female_touch.mat','male_mean_event_mf','male_SEM_event_mf','male_eventpeaks_mean_mf','male_eventpeaks_SEM_mf','cell_mean_eventpeak_mf');
         
         
     catch ME
