@@ -202,11 +202,11 @@ data_array_swapped=transpose(data_array_swapped);
 
 %call the main function 'find_touch_events' on both the ipsi and contra-
 %lateral data array
-[touchstartframes,eventsmat,eventpeaks,eventpeaks_mean,eventpeaks_SEM,mean_event,SEM_event,touchtimes,fluo,x_events]...
+[touchstartframes,eventsmat,eventpeaks_dff,eventpeaks_mean,eventpeaks_SEM,mean_event,SEM_event,touchtimes,fluo,x_events]...
     = cellfun(@(data_arr) find_touch_events(data_arr,options),...
     data_array, 'UniformOutput', false);
 
-[touchstartframes_contra,eventsmat_contra,eventpeaks_contra,eventpeaks_mean_contra,eventpeaks_SEM_contra,mean_event_contra,SEM_event_contra,touchtimes_contra,fluo_contra,x_events_contra]...
+[touchstartframes_contra,eventsmat_contra,eventpeaks_dff_contra,eventpeaks_mean_contra,eventpeaks_SEM_contra,mean_event_contra,SEM_event_contra,touchtimes_contra,fluo_contra,x_events_contra]...
     = cellfun(@(data_arr) find_touch_events(data_arr,options),...
     data_array_swapped, 'UniformOutput', false);
 
@@ -236,12 +236,27 @@ average_event_contra=cellfun(@(foundinfilename,foundinfile)...
 
 average2mat=transpose(cell2mat(average_event));
 average2mat_contra=transpose(cell2mat(average_event_contra));
+
+eventpeaks_dff_transposed=cellfun(@(evpeak) transpose(evpeak), eventpeaks_dff, 'UniformOutput', false);
+eventpeaks_dff_transposed_contra=cellfun(@(evpeak) transpose(evpeak), eventpeaks_dff_contra, 'UniformOutput', false);
+average_eventpeak=cellfun(@(foundinfilename,foundinfile)...
+    average_within_fly(foundfilename,foundin,eventpeaks_dff_transposed,foundinfilename{1},foundinfile),...
+    foundfilename,foundin,'uni',false);
+
+average_eventpeak_contra=cellfun(@(foundinfilename,foundinfile)...
+    average_within_fly(foundfilename,foundin,eventpeaks_dff_transposed_contra,foundinfilename{1},foundinfile),...
+    foundfilename,foundin,'uni',false);
+
+
+average_peak_mat=transpose(cell2mat(average_eventpeak));
+average_peak_mat_contra=transpose(cell2mat(average_eventpeak_contra));
+
 %This part of the script averages over the experiments of each species type
 %--------------------------------------------------------------------------
 combinedtable_unfiltered...
-    =table(eventpeaks_mean, mean_event, t_foundfilename,t_foundin,eventsmat,average2mat);
+    = table(average_peak_mat, mean_event, t_foundfilename,t_foundin,eventsmat,average2mat);
 combinedtable_contra_unfiltered...
-    =table(eventpeaks_mean_contra, mean_event_contra, t_foundfilename,t_foundin,eventsmat_contra,average2mat_contra);
+    = table(average_peak_mat_contra, mean_event_contra, t_foundfilename,t_foundin,eventsmat_contra,average2mat_contra);
 
 %find the male experimental flies
 combinedtable...
@@ -284,9 +299,10 @@ maledata_m_contra = table2cell(maletable_m_contra);
 %mean of male touching  male
 %-------------------------------------
 
+cell_mean_eventpeak_m = transpose(rmmissing(unique(maletable_m.average_peak_mat,'rows')));
 
-male_eventpeaks_mean_m = mean(maletable_m.eventpeaks_mean);
-male_eventpeaks_SEM_m = std(maletable_m.eventpeaks_mean)/sqrt(size(maletable_m.eventpeaks_mean,1));
+male_eventpeaks_mean_m = mean(cell_mean_eventpeak_m,2);
+male_eventpeaks_SEM_m = std(cell_mean_eventpeak_m,0,2)/sqrt(size(cell_mean_eventpeak_m,2));
 
 
 cell_mean_event_m = transpose(rmmissing(unique(maletable_m.average2mat,'rows')));
@@ -298,7 +314,10 @@ cell_mean_event_m_contra = transpose(rmmissing(unique(maletable_m_contra.average
 male_mean_event_m_contra = mean(cell_mean_event_m_contra,2);
 male_SEM_event_m_contra = std(cell_mean_event_m_contra,0,2)/sqrt(size(cell_mean_event_m_contra,2));
 
+cell_mean_eventpeak_m_contra = transpose(rmmissing(unique(maletable_m_contra.average_peak_mat_contra,'rows')));
 
+male_eventpeaks_mean_m_contra = mean(cell_mean_eventpeak_m_contra,2);
+male_eventpeaks_SEM_m_contra = std(cell_mean_eventpeak_m_contra,0,2)/sqrt(size(cell_mean_eventpeak_m_contra,2));
 
 
 %find the female experimental flies
@@ -333,13 +352,23 @@ maledata_f_contra=table2cell(maletable_f_contra);
 
 
 
-male_eventpeaks_mean_f=mean(maletable_f.eventpeaks_mean);
-male_eventpeaks_SEM_f=std(maletable_f.eventpeaks_mean)/sqrt(size(maletable_f.eventpeaks_mean,1));
+cell_mean_eventpeak_f = transpose(rmmissing(unique(maletable_f.average_peak_mat,'rows')));
+
+male_eventpeaks_mean_f = mean(cell_mean_eventpeak_f,2);
+male_eventpeaks_SEM_f = std(cell_mean_eventpeak_f,0,2)/sqrt(size(cell_mean_eventpeak_m,2));
+
 
 cell_mean_event_f=transpose(rmmissing(unique(maletable_f.average2mat,'rows')));
 
 male_mean_event_f=mean(cell_mean_event_f,2);
 male_SEM_event_f=std(cell_mean_event_f,0,2)/sqrt(size(cell_mean_event_f,2));
+
+cell_mean_eventpeak_f_contra = transpose(rmmissing(unique(maletable_f_contra.average_peak_mat_contra,'rows')));
+
+male_eventpeaks_mean_f_contra = mean(cell_mean_eventpeak_f_contra,2);
+male_eventpeaks_SEM_f_contra = std(cell_mean_eventpeak_f_contra,0,2)/sqrt(size(cell_mean_eventpeak_f_contra,2));
+
+
 cell_mean_event_f_contra=transpose(rmmissing(unique(maletable_f_contra.average2mat_contra,'rows')));
 male_mean_event_f_contra=mean(cell_mean_event_f_contra,2);
 male_SEM_event_f_contra=std(cell_mean_event_f_contra,0,2)/sqrt(size(cell_mean_event_f_contra,2));
@@ -378,13 +407,21 @@ maledata_mf_contra=table2cell(maletable_mf_contra);
 
 
 
-male_eventpeaks_mean_mf=mean(maletable_mf.eventpeaks_mean);
-male_eventpeaks_SEM_mf=std(maletable_mf.eventpeaks_mean)/sqrt(size(maletable_mf.eventpeaks_mean,1));
+cell_mean_eventpeak_mf = transpose(rmmissing(unique(maletable_mf.average_peak_mat,'rows')));
+
+male_eventpeaks_mean_mf = mean(cell_mean_eventpeak_mf,2);
+male_eventpeaks_SEM_mf = std(cell_mean_eventpeak_mf,0,2)/sqrt(size(cell_mean_eventpeak_mf,2));
 
 cell_mean_event_mf=transpose(rmmissing(unique(maletable_mf.average2mat,'rows')));
 male_mean_event_mf=mean(cell_mean_event_mf,2);
 male_SEM_event_mf=std(cell_mean_event_mf,0,2)/sqrt(size(cell_mean_event_mf,2));
-cell_mean_event_mf_contra=transpose(rmmissing(unique(maletable_mf_contra.average2mat_contra,'rows')));%changed for debugging
+
+cell_mean_eventpeak_mf_contra = transpose(rmmissing(unique(maletable_mf_contra.average_peak_mat_contra,'rows')));
+
+male_eventpeaks_mean_mf_contra = mean(cell_mean_eventpeak_mf_contra,2);
+male_eventpeaks_SEM_mf_contra = std(cell_mean_eventpeak_mf_contra,0,2)/sqrt(size(cell_mean_eventpeak_mf_contra,2));
+
+cell_mean_event_mf_contra=transpose(rmmissing(unique(maletable_mf_contra.average2mat_contra,'rows')));
 male_mean_event_mf_contra=mean(cell_mean_event_mf_contra,2);
 male_SEM_event_mf_contra=std(cell_mean_event_mf_contra,0,2)/sqrt(size(cell_mean_event_mf_contra,2));
 
@@ -410,7 +447,7 @@ if lateralized
         plot_male_event_m=boundedline(xevents_nonempty{1,1},male_mean_event_m,male_SEM_event_m,'m');
         cd(outputdirmean);
         saveas(fignew,'male_mean_event_ipsi','epsc');
-        save('mean_male_touch_ipsi.mat','male_mean_event_m','male_SEM_event_m');
+        save('mean_male_touch_ipsi.mat','male_mean_event_m','male_SEM_event_m','male_eventpeaks_mean_m','male_eventpeaks_SEM_m');
         
     catch ME
         errorMessage = ME.message;
@@ -423,7 +460,7 @@ if lateralized
         plot_male_event_m_contra=boundedline(xevents_nonempty_contra{1,1},male_mean_event_m_contra,male_SEM_event_m_contra,'m');
         cd(outputdirmean);
         saveas(fignew,'male_mean_event_contra','epsc');
-        save('mean_male_touch_contra.mat','male_mean_event_m_contra','male_SEM_event_m_contra');
+        save('mean_male_touch_contra.mat','male_mean_event_m_contra','male_SEM_event_m_contra','male_eventpeaks_mean_m_contra','male_eventpeaks_SEM_m_contra');
         
     catch ME
         errorMessage = ME.message;
@@ -438,7 +475,7 @@ if lateralized
         
         cd(outputdirmean);
         saveas(fignew,'female_mean_event_ipsi','epsc');
-        save('mean_female_touch_ipsi.mat','male_mean_event_f','male_SEM_event_f');
+        save('mean_female_touch_ipsi.mat','male_mean_event_f','male_SEM_event_f','male_eventpeaks_mean_f','male_eventpeaks_SEM_f');
         
         
     catch ME
@@ -453,7 +490,7 @@ if lateralized
         
         cd(outputdirmean);
         saveas(fignew,'female_mean_event_contra','epsc');
-        save('mean_female_touch_contra.mat','male_mean_event_f_contra','male_SEM_event_f_contra');
+        save('mean_female_touch_contra.mat','male_mean_event_f_contra','male_SEM_event_f_contra','male_eventpeaks_mean_f_contra','male_eventpeaks_SEM_f_contra');
         
     catch ME
         errorMessage = ME.message;
@@ -468,7 +505,7 @@ if lateralized
         
         cd(outputdirmean);
         saveas(fignew,'mated_female_mean_event_ipsi','epsc');
-        save('mean_mated_female_touch_ipsi.mat','male_mean_event_mf','male_SEM_event_mf');
+        save('mean_mated_female_touch_ipsi.mat','male_mean_event_mf','male_SEM_event_mf','male_eventpeaks_mean_mf','male_eventpeaks_SEM_mf');
         
         
     catch ME
@@ -483,7 +520,7 @@ if lateralized
         
         cd(outputdirmean);
         saveas(fignew,'mated_female_mean_event_contra','epsc');
-        save('mean_mated_female_touch_contra.mat','male_mean_event_mf_contra','male_SEM_event_mf_contra');
+        save('mean_mated_female_touch_contra.mat','male_mean_event_mf_contra','male_SEM_event_mf_contra','male_eventpeaks_mean_mf_contra','male_eventpeaks_SEM_mf_contra');
         
     catch ME
         errorMessage = ME.message;
@@ -498,7 +535,7 @@ else
         plot_male_event_m=boundedline(xevents_nonempty{1,1},male_mean_event_m,male_SEM_event_m,'m');
         cd(outputdirmean);
         saveas(fignew,'male_mean_event','epsc');
-        save('mean_male_touch.mat','male_mean_event_m','male_SEM_event_m');
+        save('mean_male_touch.mat','male_mean_event_m','male_SEM_event_m','male_eventpeaks_mean_m','male_eventpeaks_SEM_m');
         
     catch ME
         errorMessage = ME.message;
@@ -513,7 +550,7 @@ else
         
         cd(outputdirmean);
         saveas(fignew,'female_mean_event','epsc');
-        save('mean_female_touch.mat','male_mean_event_f','male_SEM_event_f');
+        save('mean_female_touch.mat','male_mean_event_f','male_SEM_event_f','male_eventpeaks_mean_f','male_eventpeaks_SEM_f');
         
         
     catch ME
@@ -531,7 +568,7 @@ else
         
         cd(outputdirmean);
         saveas(fignew,'mated_female_mean_event','epsc');
-        save('mean_mated_female_touch.mat','male_mean_event_mf','male_SEM_event_mf');
+        save('mean_mated_female_touch.mat','male_mean_event_mf','male_SEM_event_mf','male_eventpeaks_mean_mf','male_eventpeaks_SEM_mf');
         
         
     catch ME
@@ -542,7 +579,7 @@ else
 end
 try
     cd(outputdirmean);
-    save('x_events.mat','xevents_nonempty{1,1}');
+    save('x_events.mat','xevents_nonempty');
 catch ME
     errorMessage = ME.message;
     disp(errorMessage);
@@ -553,7 +590,7 @@ end
 %This part is the definition of the functions used in the previous parts of
 %the script.
 
-function [touchstartframes,eventsmat,eventpeaks,eventpeaks_mean,eventpeaks_SEM,mean_event,SEM_event,touchtimes,fluo,x_events]...
+function [touchstartframes,eventsmat,eventpeaks_dff,eventpeaks_mean,eventpeaks_SEM,mean_event,SEM_event,touchtimes,fluo,x_events]...
     = find_touch_events(data,options)
 framerate = options.framerate;
 numframes = options.numframes;
