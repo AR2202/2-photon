@@ -34,7 +34,12 @@
 %-boundedline.m
 
 function align_touches_vir_sim_yak(varargin)
-options = struct('framerate',5.92,'numframes',600,'touchdir','touchtimes','resultsdir','Results','outputdirmean','Results','outputdir_singles','Results_single_exp','basetime',10,'eventtime',20,'intervaltime',5,'excludedoubles',0,'filterstring','_medial','reduced',false);
+options = struct('framerate',5.92,'numframes'...
+    ,500,'touchdir','touchtimes','resultsdir',...
+    'Results','outputdirmean','Results',...
+    'outputdir_singles','Results_single_exp',...
+    'basetime',5,'eventtime',15,'intervaltime',5,...
+    'excludedoubles',0,'filterstring','_medial','reduced',false);
 arguments = varargin;
 
 %call the options_resolver function to check optional key-value pair
@@ -97,7 +102,7 @@ if reduced
 
 end
 
-%touchtimes(cellfun ('isempty', touchtimes)) ={[0;0]};
+
 resultfilestrings=cellfun(@(filename) strrep((regexprep(filename,'_(\d+).xlsx','_')),'touchtimes_',''), files, 'UniformOutput', false);
 numberstrings=cellfun(@(filename) strrep((regexprep(filename,'touchtimes_(\d+)_(\d+)_(\d+)_','')),'.xlsx',''), files, 'UniformOutput', false);
  cd (currentdir);              
@@ -201,7 +206,7 @@ balldata_m_contra=table2cell(balltable_m_contra);
 %mean of male touching a virgin
  
 vir_eventpeaks_mean_m=mean(virtable_m.eventpeaks_mean);
-vir_eventpeaks_SEM=std(virtable_m.eventpeaks_mean/sqrt(size(virtable_m.eventpeaks_mean,1)));
+vir_eventpeaks_SEM_m=std(virtable_m.eventpeaks_mean/sqrt(size(virtable_m.eventpeaks_mean,1)));
 
 cell_mean_event_m=cell2mat(transpose(virtable_m.mean_event(~cellfun(@isempty, virtable_m.mean_event))));
 
@@ -209,6 +214,9 @@ vir_mean_event_m=mean(cell_mean_event_m,2);
 vir_SEM_event_m=std(cell_mean_event_m,0,2)/sqrt(size(cell_mean_event_m,2));
 
 cell_mean_event_m_contra=cell2mat(transpose(virtable_m_contra.mean_event_contra(~cellfun(@isempty, virtable_m_contra.mean_event_contra))));
+
+vir_eventpeaks_mean_m_contra=mean(virtable_m_contra.eventpeaks_mean_contra);
+vir_eventpeaks_SEM_m_contra=std(virtable_m_Contra.eventpeaks_mean_contra/sqrt(size(virtable_m_contra.eventpeaks_mean_contra,1)));
 
 vir_mean_event_m_contra=mean(cell_mean_event_m_contra,2);
 vir_SEM_event_m_contra=std(cell_mean_event_m_contra,0,2)/sqrt(size(cell_mean_event_m_contra,2));
@@ -229,6 +237,10 @@ male_SEM_event_m=std(cell_mean_event_m,0,2)/sqrt(size(cell_mean_event_m,2));
 
 cell_mean_event_m_contra=cell2mat(transpose(maletable_m_contra.mean_event_contra(~cellfun(@isempty, maletable_m_contra.mean_event_contra))));
 
+male_eventpeaks_mean_m_contra=mean(maletable_m_contra.eventpeaks_mean_contra);
+male_eventpeaks_SEM_m_contra=std(maletable_m_contra.eventpeaks_mean_contra)/sqrt(size(maletable_m_contra.eventpeaks_mean_contra,1));
+
+
 male_mean_event_m_contra=mean(cell_mean_event_m_contra,2);
 male_SEM_event_m_contra=std(cell_mean_event_m_contra,0,2)/sqrt(size(cell_mean_event_m_contra,2));
 
@@ -247,6 +259,10 @@ oenegm_mean_event_m=mean(cell_mean_event_m,2);
 oenegm_SEM_event_m=std(cell_mean_event_m,0,2)/sqrt(size(cell_mean_event_m,2));
 
 cell_mean_event_m_contra=cell2mat(transpose(oenegmtable_m_contra.mean_event_contra(~cellfun(@isempty, oenegmtable_m_contra.mean_event_contra))));
+
+oenegm_eventpeaks_mean_m_contra=mean(cell2mat(oenegmtable_m_contra.eventpeaks_mean_contra));
+oenegm_eventpeaks_SEM_m_contra=std(cell2mat(oenegmtable_m_contra.eventpeaks_mean_contra))/sqrt(size(cell2mat(oenegmtable_m_contra.eventpeaks_mean_contra),1));
+
 
 oenegm_mean_event_m_contra=mean(cell_mean_event_m_contra,2);
 oenegm_SEM_event_m_contra=std(cell_mean_event_m_contra,0,2)/sqrt(size(cell_mean_event_m_contra,2));
@@ -267,6 +283,10 @@ oenegf_SEM_event_m=std(cell_mean_event_m,0,2)/sqrt(size(cell_mean_event_m,2));
 
 cell_mean_event_m_contra=cell2mat(transpose(oenegftable_m_contra.mean_event_contra(~cellfun(@isempty, oenegftable_m_contra.mean_event_contra))));
 
+oenegf_eventpeaks_mean_m_contra=mean(oenegftable_m_contra.eventpeaks_mean_contra);
+oenegf_eventpeaks_SEM_m_contra=std(oenegftable_m_contra.eventpeaks_mean_contra)/sqrt(size(oenegftable_m_contra.eventpeaks_mean_contra,1));
+
+
 oenegf_mean_event_m_contra=mean(cell_mean_event_m_contra,2);
 oenegf_SEM_event_m_contra=std(cell_mean_event_m_contra,0,2)/sqrt(size(cell_mean_event_m_contra,2));
 
@@ -283,6 +303,10 @@ ball_mean_event_m=mean(cell_mean_event_m,2);
 ball_SEM_event_m=std(cell_mean_event_m,0,2)/sqrt(size(cell_mean_event_m,2));
 
 cell_mean_event_m_contra=cell2mat(transpose(balltable_m_contra.mean_event_contra(~cellfun(@isempty, balltable_m_contra.mean_event_contra))));
+
+ball_eventpeaks_mean_m_contra=mean(balltable_m_contra.eventpeaks_mean_contra);
+ball_eventpeaks_SEM_m_contra=std(balltable_m_contra.eventpeaks_mean_contra)/sqrt(size(balltable_m_contra.eventpeaks_mean_contra,1));
+
 
 ball_mean_event_m_contra=mean(cell_mean_event_m_contra,2);
 ball_SEM_event_m_contra=std(cell_mean_event_m_contra,0,2)/sqrt(size(cell_mean_event_m_contra,2));
@@ -344,6 +368,10 @@ vir_SEM_event_f=std(cell_mean_event_f,0,2)/sqrt(size(cell_mean_event_f,2));
 
 cell_mean_event_f_contra=cell2mat(transpose(virtable_f_contra.mean_event_contra(~cellfun(@isempty, virtable_f_contra.mean_event_contra))));
 
+vir_eventpeaks_mean_f_contra=mean(virtable_f_contra.eventpeaks_mean_contra);
+vir_eventpeaks_SEM_f_contra=std(virtable_f_contra.eventpeaks_mean_contra)/sqrt(size(virtable_f_contra.eventpeaks_mean_contra,1));
+
+
 vir_mean_event_f_contra=mean(cell_mean_event_f_contra,2);
 vir_SEM_event_f_contra=std(cell_mean_event_f_contra,0,2)/sqrt(size(cell_mean_event_f_contra,2));
 
@@ -359,6 +387,10 @@ cell_mean_event_f=cell2mat(transpose(maletable_f.mean_event(~cellfun(@isempty, m
 male_mean_event_f=mean(cell_mean_event_f,2);
 male_SEM_event_f=std(cell_mean_event_f,0,2)/sqrt(size(cell_mean_event_f,2));
 cell_mean_event_f_contra=cell2mat(transpose(maletable_f_contra.mean_event_contra(~cellfun(@isempty, maletable_f_contra.mean_event_contra))));
+
+male_eventpeaks_mean_f_contra=mean(maletable_f_contra.eventpeaks_mean_contra);
+male_eventpeaks_SEM_f_contra=std(maletable_f_contra.eventpeaks_mean_contra)/sqrt(size(maletable_f_contra.eventpeaks_mean_contra,1));
+
 
 male_mean_event_f_contra=mean(cell_mean_event_f_contra,2);
 male_SEM_event_f_contra=std(cell_mean_event_f_contra,0,2)/sqrt(size(cell_mean_event_f_contra,2));
@@ -380,6 +412,10 @@ oenegm_SEM_event_f=std(cell_mean_event_f,0,2)/sqrt(size(cell_mean_event_f,2));
 
 cell_mean_event_f_contra=cell2mat(transpose(oenegmtable_f_contra.mean_event_contra(~cellfun(@isempty, oenegmtable_f_contra.mean_event_contra))));
 
+oenegm_eventpeaks_mean_f_contra=mean(oenegmtable_f_contra.eventpeaks_mean_contra);
+oenegm_eventpeaks_SEM_f_contra=std(oenegmtable_f_contra.eventpeaks_mean_contra)/sqrt(size(oenegmtable_f_contra.eventpeaks_mean_contra,1));
+
+
 oenegm_mean_event_f_contra=mean(cell_mean_event_f_contra,2);
 oenegm_SEM_event_f_contra=std(cell_mean_event_f_contra,0,2)/sqrt(size(cell_mean_event_f_contra,2));
 
@@ -399,6 +435,9 @@ oenegf_SEM_event_f=std(cell_mean_event_f,0,2)/sqrt(size(cell_mean_event_f,2));
 
 cell_mean_event_f_contra=cell2mat(transpose(oenegftable_f_contra.mean_event_contra(~cellfun(@isempty, oenegftable_f_contra.mean_event_contra))));
 
+oenegf_eventpeaks_mean_f_contra=mean(oenegftable_f_contra.eventpeaks_mean_contra);
+oenegf_eventpeaks_SEM_f_contra=std(oenegftable_f_contra.eventpeaks_mean_contra)/sqrt(size(oenegftable_f_contra.eventpeaks_mean_contra,1));
+
 oenegf_mean_event_f_contra=mean(cell_mean_event_f_contra,2);
 oenegf_SEM_event_f_contra=std(cell_mean_event_f_contra,0,2)/sqrt(size(cell_mean_event_f_contra,2));
 
@@ -415,6 +454,10 @@ ball_mean_event_f=mean(cell_mean_event_f,2);
 ball_SEM_event_f=std(cell_mean_event_f,0,2)/sqrt(size(cell_mean_event_f,2));
 
 cell_mean_event_f_contra=cell2mat(transpose(balltable_f_contra.mean_event_contra(~cellfun(@isempty, balltable_f_contra.mean_event_contra))));
+
+
+ball_eventpeaks_mean_f_contra=mean(balltable_f_contra.eventpeaks_mean_contra);
+ball_eventpeaks_SEM_f_contra=std(balltable_f_contra.eventpeaks_mean_contra)/sqrt(size(balltable_f_contra.eventpeaks_mean_contra,1));
 
 ball_mean_event_f_contra=mean(cell_mean_event_f_contra,2);
 ball_SEM_event_f_contra=std(cell_mean_event_f_contra,0,2)/sqrt(size(cell_mean_event_f_contra,2));
@@ -476,6 +519,10 @@ vir_SEM_event_mf=std(cell_mean_event_mf,0,2)/sqrt(size(cell_mean_event_mf,2));
 
 cell_mean_event_mf_contra=cell2mat(transpose(virtable_mf_contra.mean_event_contra(~cellfun(@isempty, virtable_mf_contra.mean_event_contra))));
 
+vir_eventpeaks_mean_mf_contra=mean(virtable_mf_contra.eventpeaks_mean_contra);
+vir_eventpeaks_SEM_mf_contra=std(virtable_mf_contra.eventpeaks_mean_contra)/sqrt(size(virtable_mf_contra.eventpeaks_mean_contra,1));
+
+
 vir_mean_event_mf_contra=mean(cell_mean_event_mf_contra,2);
 vir_SEM_event_mf_contra=std(cell_mean_event_mf_contra,0,2)/sqrt(size(cell_mean_event_mf_contra,2));
 
@@ -491,6 +538,10 @@ cell_mean_event_mf=cell2mat(transpose(maletable_mf.mean_event(~cellfun(@isempty,
 male_mean_event_mf=mean(cell_mean_event_mf,2);
 male_SEM_event_mf=std(cell_mean_event_mf,0,2)/sqrt(size(cell_mean_event_mf,2));
 cell_mean_event_mf_contra=cell2mat(transpose(maletable_mf_contra.mean_event_contra(~cellfun(@isempty, maletable_mf_contra.mean_event_contra))));
+
+male_eventpeaks_mean_mf_contra=mean(maletable_mf_contra.eventpeaks_mean_contra);
+male_eventpeaks_SEM_mf_contra=std(maletable_mf_contra.eventpeaks_mean_contra)/sqrt(size(maletable_mf_contra.eventpeaks_mean_contra,1));
+
 
 male_mean_event_mf_contra=mean(cell_mean_event_mf_contra,2);
 male_SEM_event_mf_contra=std(cell_mean_event_mf_contra,0,2)/sqrt(size(cell_mean_event_mf_contra,2));
@@ -512,6 +563,9 @@ oenegm_SEM_event_mf=std(cell_mean_event_mf,0,2)/sqrt(size(cell_mean_event_mf,2))
 
 cell_mean_event_mf_contra=cell2mat(transpose(oenegmtable_mf_contra.mean_event_contra(~cellfun(@isempty, oenegmtable_mf_contra.mean_event_contra))));
 
+oenegm_eventpeaks_mean_mf_contra=mean(cell2mat(oenegmtable_mf_contra.eventpeaks_mean_contra));
+oenegm_eventpeaks_SEM_mf_contra=std(cell2mat(oenegmtable_mf_contra.eventpeaks_mean_contra))/sqrt(size(cell2mat(oenegmtable_mf_contra.eventpeaks_mean_contra),1));
+
 oenegm_mean_event_mf_contra=mean(cell_mean_event_mf_contra,2);
 oenegm_SEM_event_mf_contra=std(cell_mean_event_mf_contra,0,2)/sqrt(size(cell_mean_event_mf_contra,2));
 
@@ -531,6 +585,9 @@ oenegf_SEM_event_mf=std(cell_mean_event_mf,0,2)/sqrt(size(cell_mean_event_mf,2))
 
 cell_mean_event_mf_contra=cell2mat(transpose(oenegftable_mf_contra.mean_event_contra(~cellfun(@isempty, oenegftable_mf_contra.mean_event_contra))));
 
+oenegf_eventpeaks_mean_mf_contra=mean(cell2mat(oenegftable_mf_contra.eventpeaks_mean_contra));
+oenegf_eventpeaks_SEM_mf_contra=std(cell2mat(oenegftable_mf_contra.eventpeaks_mean_contra))/sqrt(size(cell2mat(oenegftable_mf_contra.eventpeaks_mean_contra),1));
+
 oenegf_mean_event_mf_contra=mean(cell_mean_event_mf_contra,2);
 oenegf_SEM_event_mf_contra=std(cell_mean_event_mf_contra,0,2)/sqrt(size(cell_mean_event_mf_contra,2));
 
@@ -547,6 +604,9 @@ ball_mean_event_mf=mean(cell_mean_event_mf,2);
 ball_SEM_event_mf=std(cell_mean_event_mf,0,2)/sqrt(size(cell_mean_event_mf,2));
 
 cell_mean_event_mf_contra=cell2mat(transpose(balltable_mf_contra.mean_event_contra(~cellfun(@isempty, balltable_mf_contra.mean_event_contra))));
+
+ball_eventpeaks_mean_mf_contra=mean(balltable_mf_contra.eventpeaks_mean_contra);
+ball_eventpeaks_SEM_mf_contra=std(balltable_mf_contra.eventpeaks_mean_contra)/sqrt(size(balltable_mf_contra.eventpeaks_mean_contra,1));
 
 ball_mean_event_mf_contra=mean(cell_mean_event_mf_contra,2);
 ball_SEM_event_mf_contra=std(cell_mean_event_mf_contra,0,2)/sqrt(size(cell_mean_event_mf_contra,2));
@@ -578,7 +638,7 @@ try
     plot_vir_event_m=boundedline(xevents_nonempty{1,1},vir_mean_event_m,vir_SEM_event_m,'m');
     cd(outputdirmean);
     saveas(fignew,'virgin_mean_event_males_ipsi','epsc');
-    save('mean_male_touching_female_ipsi.mat','vir_mean_event_m','vir_SEM_event_m');
+    save('mean_male_touching_female_ipsi.mat','vir_mean_event_m','vir_SEM_event_m','vir_eventpeaks_mean_m','vir_eventpeaks_SEM_m');
 catch ME
     errorMessage = ME.message;
     disp(errorMessage);
@@ -590,7 +650,7 @@ try
         plot_vir_event_m_contra=boundedline(xevents_nonempty_contra{1,1},vir_mean_event_m_contra,vir_SEM_event_m_contra,'m');
         cd(outputdirmean);
         saveas(fignew,'virgin_mean_event_male_contra','epsc');
-        save('mean_male_touching_female_contra.mat','vir_mean_event_m_contra','vir_SEM_event_m_contra');
+        save('mean_male_touching_female_contra.mat','vir_mean_event_m_contra','vir_SEM_event_m_contra','vir_eventpeaks_mean_m_contra','vir_eventpeaks_SEM_m_contra');
 
  catch ME
         errorMessage = ME.message;
@@ -614,7 +674,7 @@ try
     
     cd(outputdirmean);
     saveas(fignew,'virgin_mean_event_female_ipsi','epsc');
-    save('mean_female_touching_female_ipsi.mat','vir_mean_event_f','vir_SEM_event_f');
+    save('mean_female_touching_female_ipsi.mat','vir_mean_event_f','vir_SEM_event_f','vir_eventpeaks_mean_f','vir_eventpeaks_SEM_f');
 
 catch ME
     errorMessage = ME.message;
@@ -628,7 +688,7 @@ cd (currentdir);
         
         cd(outputdirmean);
         saveas(fignew,'virgin_mean_event_female_contra','epsc');
-        save('mean_female_touching_female_contra.mat','vir_mean_event_f_contra','vir_SEM_event_f_contra');
+        save('mean_female_touching_female_contra.mat','vir_mean_event_f_contra','vir_SEM_event_f_contra','vir_eventpeaks_mean_f_contra','vir_eventpeaks_SEM_f_contra');
 
     catch ME
         errorMessage = ME.message;
@@ -643,7 +703,7 @@ try
     
     cd(outputdirmean);
     saveas(fignew,'virgin_mean_event_mated_female_ipsi','epsc');
-    save('mean_mated_female_touching_female_ipsi.mat','vir_mean_event_mf','vir_SEM_event_mf');
+    save('mean_mated_female_touching_female_ipsi.mat','vir_mean_event_mf','vir_SEM_event_mf','vir_eventpeaks_mean_mf','vir_eventpeaks_SEM_mf');
 
 catch ME
     errorMessage = ME.message;
@@ -657,7 +717,7 @@ cd (currentdir);
         
         cd(outputdirmean);
         saveas(fignew,'virgin_mean_event_mated_female_contra','epsc');
-        save('mean_mated_female_touching_female_contra.mat','vir_mean_event_mf_contra','vir_SEM_event_mf_contra');
+        save('mean_mated_female_touching_female_contra.mat','vir_mean_event_mf_contra','vir_SEM_event_mf_contra','vir_eventpeaks_mean_mf_contra','vir_eventpeaks_SEM_mf_contra');
 
     catch ME
         errorMessage = ME.message;
@@ -688,7 +748,7 @@ try
     plot_male_event_m=boundedline(xevents_nonempty{1,1},male_mean_event_m,male_SEM_event_m,'m');
     cd(outputdirmean);
     saveas(fignew,'male_mean_event_male_ipsi','epsc');
-    save('mean_male_touching_male_ipsi.mat','male_mean_event_m','male_SEM_event_m');
+    save('mean_male_touching_male_ipsi.mat','male_mean_event_m','male_SEM_event_m','male_eventpeaks_mean_m','male_eventpeaks_SEM_m');
 
 catch ME
     errorMessage = ME.message;
@@ -701,7 +761,7 @@ cd (currentdir);
         plot_male_event_m_contra=boundedline(xevents_nonempty_contra{1,1},male_mean_event_m_contra,male_SEM_event_m_contra,'m');
         cd(outputdirmean);
         saveas(fignew,'male_mean_event_male_contra','epsc');
-         save('mean_male_touching_male_contra.mat','male_mean_event_m_contra','male_SEM_event_m_contra');
+         save('mean_male_touching_male_contra.mat','male_mean_event_m_contra','male_SEM_event_m_contra','male_eventpeaks_mean_m_contra','male_eventpeaks_SEM_m_contra');
 
     catch ME
         errorMessage = ME.message;
@@ -725,7 +785,7 @@ try
     
     cd(outputdirmean);
     saveas(fignew,'male_mean_event_female_ipsi','epsc');
-     save('mean_female_touching_male_ipsi.mat','male_mean_event_f','male_SEM_event_f');
+     save('mean_female_touching_male_ipsi.mat','male_mean_event_f','male_SEM_event_f','male_eventpeaks_mean_f','male_eventpeaks_SEM_f');
 
    
 catch ME
@@ -740,7 +800,7 @@ try
     
     cd(outputdirmean);
     saveas(fignew,'male_mean_event_female_contra','epsc');
-    save('mean_female_touching_male_contra.mat','male_mean_event_f_contra','male_SEM_event_f_contra');
+    save('mean_female_touching_male_contra.mat','male_mean_event_f_contra','male_SEM_event_f_contra','male_eventpeaks_mean_f_contra','male_eventpeaks_SEM_f_contra');
 
 catch ME
     errorMessage = ME.message;
@@ -755,7 +815,7 @@ try
     
     cd(outputdirmean);
     saveas(fignew,'male_mean_event_mated_female_ipsi','epsc');
-    save('mean_mated_female_touching_male_ipsi.mat','male_mean_event_mf','male_SEM_event_mf');
+    save('mean_mated_female_touching_male_ipsi.mat','male_mean_event_mf','male_SEM_event_mf','male_eventpeaks_mean_mf','male_eventpeaks_SEM_mf');
 
     
 catch ME
@@ -770,7 +830,7 @@ try
     
     cd(outputdirmean);
     saveas(fignew,'male_mean_event_mated_female_contra','epsc');
-    save('mean_mated_female_touching_male_contra.mat','male_mean_event_mf_contra','male_SEM_event_mf_contra');
+    save('mean_mated_female_touching_male_contra.mat','male_mean_event_mf_contra','male_SEM_event_mf_contra','male_eventpeaks_mean_mf_contra','male_eventpeaks_SEM_mf_contra');
 
 catch ME
     errorMessage = ME.message;
@@ -802,7 +862,7 @@ try
     
     cd(outputdirmean);
     saveas(fignew,'oenocyteless_male_mean_event_male_ipsi','epsc');
-    save('mean_male_touching_oenocyteless_male_ipsi.mat','oenegm_mean_event_m','oenegm_SEM_event_m');
+    save('mean_male_touching_oenocyteless_male_ipsi.mat','oenegm_mean_event_m','oenegm_SEM_event_m','oenegm_eventpeaks_mean_m','oenegm_eventpeaks_SEM_m');
 
 catch ME
     errorMessage = ME.message;
@@ -816,7 +876,7 @@ try
     
     cd(outputdirmean);
     saveas(fignew,'oenocyteless_male_mean_event_male_contra','epsc');
-    save('mean_male_touching_oenocyteless_male_contra.mat','oenegm_mean_event_m_contra','oenegm_SEM_event_m_contra');
+    save('mean_male_touching_oenocyteless_male_contra.mat','oenegm_mean_event_m_contra','oenegm_SEM_event_m_contra','oenegm_eventpeaks_mean_m_contra','oenegm_eventpeaks_SEM_m_contra');
 
 catch ME
     errorMessage = ME.message;
@@ -830,7 +890,7 @@ try
     
     cd(outputdirmean);
     saveas(fignew,'oenocyteless_male_mean_event_female_ipsi','epsc');
-    save('mean_female_touching_oenocyteless_male_ipsi.mat','oenegm_mean_event_f','oenegm_SEM_event_f');
+    save('mean_female_touching_oenocyteless_male_ipsi.mat','oenegm_mean_event_f','oenegm_SEM_event_f','oenegm_eventpeaks_mean_f','oenegm_eventpeaks_SEM_f');
 
 catch ME
     errorMessage = ME.message;
@@ -844,7 +904,7 @@ try
     
     cd(outputdirmean);
     saveas(fignew,'oenocyteless_male_mean_event_female_contra','epsc');
-     save('mean_female_touching_oenocyteless_male_contra.mat','oenegm_mean_event_f_contra','oenegm_SEM_event_f_contra');
+     save('mean_female_touching_oenocyteless_male_contra.mat','oenegm_mean_event_f_contra','oenegm_SEM_event_f_contra','oenegm_eventpeaks_mean_f_contra','oenegm_eventpeaks_SEM_f_contra');
 
 catch ME
     errorMessage = ME.message;
@@ -859,7 +919,7 @@ try
     
     cd(outputdirmean);
     saveas(fignew,'oenocyteless_male_mean_event_mated_female_ipsi','epsc');
-     save('mean_mated_female_touching_oenocyteless_male_ipsi.mat','oenegm_mean_event_mf','oenegm_SEM_event_mf');
+     save('mean_mated_female_touching_oenocyteless_male_ipsi.mat','oenegm_mean_event_mf','oenegm_SEM_event_mf','oenegm_eventpeaks_mean_mf','oenegm_eventpeaks_SEM_mf');
 
 catch ME
     errorMessage = ME.message;
@@ -873,7 +933,7 @@ try
     
     cd(outputdirmean);
     saveas(fignew,'oenocyteless_male_mean_event_mated_female_contra','epsc');
-     save('mean_mated_female_touching_oenocyteless_male_contra.mat','oenegm_mean_event_mf_contra','oenegm_SEM_event_mf_contra');
+     save('mean_mated_female_touching_oenocyteless_male_contra.mat','oenegm_mean_event_mf_contra','oenegm_SEM_event_mf_contra','oenegm_eventpeaks_mean_mf_contra','oenegm_eventpeaks_SEM_mf_contra');
 
 catch ME
     errorMessage = ME.message;
@@ -896,7 +956,7 @@ try
     
     cd(outputdirmean);
     saveas(fignew,'oenocyteless_female_mean_event_male_ipsi','epsc');
-     save('mean_male_touching_oenocyteless_female_ipsi.mat','oenegf_mean_event_m','oenegf_SEM_event_m');
+     save('mean_male_touching_oenocyteless_female_ipsi.mat','oenegf_mean_event_m','oenegf_SEM_event_m','oenegf_eventpeaks_mean_m','oenegf_eventpeaks_SEM_m');
 
 catch ME
     errorMessage = ME.message;
@@ -910,7 +970,7 @@ try
     
     cd(outputdirmean);
     saveas(fignew,'oenocyteless_female_mean_event_male_contra','epsc');
-    save('mean_male_touching_oenocyteless_female_contra.mat','oenegf_mean_event_m_contra','oenegf_SEM_event_m_contra');
+    save('mean_male_touching_oenocyteless_female_contra.mat','oenegf_mean_event_m_contra','oenegf_SEM_event_m_contra','oenegf_eventpeaks_mean_m_contra','oenegf_eventpeaks_SEM_m_contra');
 
 catch ME
     errorMessage = ME.message;
@@ -924,7 +984,7 @@ try
     
     cd(outputdirmean);
     saveas(fignew,'oenocyteless_female_mean_event_female_ipsi','epsc');
-    save('mean_female_touching_oenocyteless_female_ipsi.mat','oenegf_mean_event_f','oenegf_SEM_event_f');
+    save('mean_female_touching_oenocyteless_female_ipsi.mat','oenegf_mean_event_f','oenegf_SEM_event_f','oenegf_eventpeaks_mean_f','oenegf_eventpeaks_SEM_f');
 
 catch ME
     errorMessage = ME.message;
@@ -938,7 +998,7 @@ try
     
     cd(outputdirmean);
     saveas(fignew,'oenocyteless_female_mean_event_female_contra','epsc');
-    save('mean_female_touching_oenocyteless_female_contra.mat','oenegf_mean_event_f_contra','oenegf_SEM_event_f_contra');
+    save('mean_female_touching_oenocyteless_female_contra.mat','oenegf_mean_event_f_contra','oenegf_SEM_event_f_contra','oenegf_eventpeaks_mean_f_contra','oenegf_eventpeaks_SEM_f_contra');
 
 catch ME
     errorMessage = ME.message;
@@ -957,7 +1017,7 @@ try
     
     cd(outputdirmean);
     saveas(fignew,'oenocyteless_female_mean_event_mated_female_ipsi','epsc');
-    save('mean_mated_female_touching_oenocyteless_female_ipsi.mat','oenegf_mean_event_mf','oenegf_SEM_event_mf');
+    save('mean_mated_female_touching_oenocyteless_female_ipsi.mat','oenegf_mean_event_mf','oenegf_SEM_event_mf','oenegf_eventpeaks_mean_mf','oenegf_eventpeaks_SEM_mf');
 
 catch ME
     errorMessage = ME.message;
@@ -971,7 +1031,7 @@ try
     
     cd(outputdirmean);
     saveas(fignew,'oenocyteless_female_mean_event_mated_female_contra','epsc');
-    save('mean_mated_female_touching_oenocyteless_female_contra.mat','oenegf_mean_event_mf_contra','oenegf_SEM_event_mf_contra');
+    save('mean_mated_female_touching_oenocyteless_female_contra.mat','oenegf_mean_event_mf_contra','oenegf_SEM_event_mf_contra','oenegf_eventpeaks_mean_mf_contra','oenegf_eventpeaks_SEM_mf_contra');
 
 catch ME
     errorMessage = ME.message;
@@ -991,7 +1051,7 @@ try
     
     cd(outputdirmean);
     saveas(fignew,'ball_mean_event_male_ipsi','epsc');
-     save('mean_male_touching_ball_ipsi.mat','ball_mean_event_m','ball_SEM_event_m');
+     save('mean_male_touching_ball_ipsi.mat','ball_mean_event_m','ball_SEM_event_m','ball_eventpeaks_mean_m','ball_eventpeaks_SEM_m');
 
 catch ME
     errorMessage = ME.message;
@@ -1005,7 +1065,7 @@ try
     
     cd(outputdirmean);
     saveas(fignew,'ball_mean_event_male_contra','epsc');
-    save('mean_male_touching_ball_contra.mat','ball_mean_event_m_contra','ball_SEM_event_m_contra');
+    save('mean_male_touching_ball_contra.mat','ball_mean_event_m_contra','ball_SEM_event_m_contra','ball_eventpeaks_mean_m_contra','ball_eventpeaks_SEM_m_contra');
 
 catch ME
     errorMessage = ME.message;
@@ -1019,7 +1079,7 @@ try
     
     cd(outputdirmean);
     saveas(fignew,'ball_mean_event_female_ipsi','epsc');
-    save('mean_female_touching_ball_ipsi.mat','ball_mean_event_f','ball_SEM_event_f');
+    save('mean_female_touching_ball_ipsi.mat','ball_mean_event_f','ball_SEM_event_f','ball_eventpeaks_mean_f','ball_eventpeaks_SEM_f');
 
 catch ME
     errorMessage = ME.message;
@@ -1033,7 +1093,7 @@ try
     
     cd(outputdirmean);
     saveas(fignew,'ball_mean_event_female_contra','epsc');
-    save('mean_female_touching_ball_contra.mat','ball_mean_event_f_contra','ball_SEM_event_f_contra');
+    save('mean_female_touching_ball_contra.mat','ball_mean_event_f_contra','ball_SEM_event_f_contra','ball_eventpeaks_mean_f_contra','ball_eventpeaks_SEM_f_contra');
 
 catch ME
     errorMessage = ME.message;
@@ -1052,7 +1112,7 @@ try
     
     cd(outputdirmean);
     saveas(fignew,'ball_mean_event_mated_female_ipsi','epsc');
-    save('mean_mated_female_touching_ball_ipsi.mat','ball_mean_event_mf','ball_SEM_event_mf');
+    save('mean_mated_female_touching_ball_ipsi.mat','ball_mean_event_mf','ball_SEM_event_mf','ball_eventpeaks_mean_mf','ball_eventpeaks_SEM_mf');
 
 catch ME
     errorMessage = ME.message;
@@ -1066,7 +1126,7 @@ try
     
     cd(outputdirmean);
     saveas(fignew,'ball_mean_event_mated_female_contra','epsc');
-    save('mean_mated_female_touching_ball_contra.mat','ball_mean_event_mf_contra','ball_SEM_event_mf_contra');
+    save('mean_mated_female_touching_ball_contra.mat','ball_mean_event_mf_contra','ball_SEM_event_mf_contra','ball_eventpeaks_mean_mf_contra','ball_eventpeaks_SEM_mf_contra');
 
 catch ME
     errorMessage = ME.message;
@@ -1158,20 +1218,7 @@ else
     
 end
 
-%function [eventpeaks_mean,eventpeaks_SEM,mean_event,SEM_event,touchtimes,fluo] = find_touch_events(data)
-if contains(string(data{3}),'(r)')
-    disp('imaged right side');
-    touchtimes=data{5};
 
-    touch_other_side=data{1};
-
-else
-    disp('imaged left side');
-    touchtimes=data{1};
-%     touchtimes(cellfun(@isnan,touchtimes)) = {[]};
-    touch_other_side=data{5};
-%     touch_other_side(cellfun(@isnan,touch_other_side)) = {[]};
-end
 
 
 fluo=data{2};
@@ -1220,7 +1267,7 @@ touchstartframes=round(touchstarts*framerate);
 
 %calculate the timepoints
 x=1:numframes;
-x=(x-1)/framerate;
+x=x/framerate;
 
 
 %this is the definition of the plot_touches function
@@ -1248,24 +1295,13 @@ eventsmat=cell2mat(transpose(events));
 eventsmat=transpose(eventsmat);
 %average all events frame by frame (after aligning them to the start of the
 %touch event)
-if isempty(eventsmat)==0
 
-eventbases1=mean(eventsmat((1:round(basetime*framerate)+1),:));
-%calculate dF/F using the baseline from the events in eventsmat
-eventsmat=(eventsmat-eventbases1)/eventbases1;
-
-
-else
   
-end
-mean_event=mean(eventsmat,2);
-%SEM for each point in the averaged event
-SEM_event=std(eventsmat,0,2)/sqrt(size(eventsmat,2));
-%calculate single peak of each event during eventtime
-%first_touch_event=eventsmat(:,1);
+
+
 eventpeaks=transpose(max(eventsmat((round(basetime*framerate)+1:size(eventsmat,1)),:)));
 % baseline for each event before the touch
-if isempty(eventsmat)==0
+if ~isempty(eventsmat)
 eventbases=transpose(mean(eventsmat((1:round(basetime*framerate)+1),:)));
 
 %calculate deltaF/F for that event
@@ -1274,13 +1310,27 @@ eventpeaks_dff=(eventpeaks-eventbases)./eventbases;
 else
     eventpeaks_dff=0;
 end
+if ~isempty(eventsmat)
 
+eventbases1=mean(eventsmat((1:round(basetime*framerate)+1),:));
+%calculate dF/F using the baseline from the events in eventsmat
+eventsmat=(eventsmat-eventbases1)./eventbases1;
+
+
+else
+end
+mean_event=mean(eventsmat,2);
+%SEM for each point in the averaged event
+SEM_event=std(eventsmat,0,2)/sqrt(size(eventsmat,2));
+%calculate single peak of each event during eventtime
+%first_touch_event=eventsmat(:,1);
 %calculate the mean of the peaks of single events
 eventpeaks_mean=mean(eventpeaks_dff);
 eventpeaks_SEM=std(eventpeaks_dff,0,1)/sqrt(size(eventpeaks_dff,1));
 %make the x (timepoints) for the events - times are relative to the onset
 %of the touch
 x_events=transpose(x(1:length(mean_event))-basetime);
+%x_events= transpose(x(touchstartframes(1)-(ceil(basetime*framerate)):touchstartframes(1)+(floor(eventtime*framerate)))-x(touchstartframes(1)));
 %plot the mean event
 %currently commented out due to memory usage issues
 

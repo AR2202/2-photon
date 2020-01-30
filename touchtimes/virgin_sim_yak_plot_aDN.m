@@ -18,12 +18,12 @@ pathname='/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/touchtimes_GCaMP6s_reduc
 
 touchdir = ('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/touchtimes_GCaMP6s_reduced');
 % The folder where the touchtimes files are located
-resultsdir = ('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/Results');
+resultsdir = ('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/Results_multiROI');
 % The folder where the results of single experiments are located
 outputdirmean=('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/Results_GCaMP6');
 %The folder where the mean data should be written to
 x = (1:numberframes)';% this is a column vector of the frame numbers
-x= (x-1)/framerate;%calculate the timepoints of the frames from the frame number
+x= x/framerate;%calculate the timepoints of the frames from the frame number
 
 
 
@@ -79,16 +79,31 @@ filenames(:) = {''};
                     cd(resultsdir);
                     resultfilename=resultfiles{ff};
                     speciestype=strrep((strrep(resultfilename,resultfilestring,'')),'.xlsx','');
+                    if contains(speciestype,'mROI')
+                        multiROI =1;
+                    else
+                        multiROI = 0;
+                    end
                     expnames =table2array(readtable(resultfilename,'Sheet','Sheet2','ReadVariableNames',0));
                     findnumberstring=strfind(expnames,numberstring);
                     foundfile=find(~cellfun(@isempty,findnumberstring));
                    % disp(foundfile);
                     if ~isempty(foundfile)
-                        expnumb=foundfile(1,1);
                         expresults =table2array(readtable(resultfilename,'Sheet','Sheet1','ReadVariableNames',0));
+                        if multiROI
+                            exprs=[];
+                            for i=1:length(foundfile)
+                                expnumb = foundfile (1,i)
+                                expr = expresults(:,expnumb);
+                                exprs = [exprs expr];
+                            end
+                            expresult = mean(exprs,2);
+                        else
+                        expnumb=foundfile(1,1);
+                        
                         expresult=expresults(:,expnumb);
                     
-                        
+                        end
                         outputfig=strcat(speciestype,'_',resultfilestring,numberstring,'.eps');%make the figure name
                         fignew=figure('Name',outputfig);
                         %plot the mean with a shaded area showing the SEM
