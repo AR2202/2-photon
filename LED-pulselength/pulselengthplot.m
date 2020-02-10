@@ -58,8 +58,8 @@ for i = 1:length(pulselengths)
     uistack(hpatch(numpatch), 'bottom');
     end
             saveas(fignew,outputfig,'epsc');
-   dff_of_pulses=cellfun(@(f)dff_pulses(f,pulsetimes,pulsedur,framerate),fluo,'uni',false);
-   pulsedff=cell2mat(dff_of_pulses);
+dff_of_pulses=cellfun(@(f)dff_pulses(f,pulsetimes,pulsedur,framerate),fluo,'uni',false);
+      pulsedff=cell2mat(dff_of_pulses);
  outputmatfile=fullfile(outputdir,(strcat(outputname,'.mat')));
  save(outputmatfile,'pulsedff','mean_dff','n_files','SEM_dff');
  pulsemeans(i)=mean(pulsedff);

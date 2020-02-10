@@ -22,7 +22,7 @@
 %'pulsedur': numeric (in s), default 5
 %'resultsname': name of folder where results should go, default'Results'
 
-function frequencyplot(foldername,varargin)
+function pulselengthplot_(foldername,varargin)
 
 
 
@@ -176,18 +176,18 @@ for g=1:size(genders,1)
         end
     end
     
-    outputplot=fullfile(outputdir,strcat(gender,'_',neuronpart,'frequencyplot.eps'));
+    outputplot=fullfile(outputdir,strcat(gender,'_',neuronpart,'pulselengthplot.eps'));
     fignew=figure('Name',strcat('dF/F vs. frequency',gender,'_',neuronpart,'_',pulsedurstr));
     colors=['k','r','b','g'];
     hold 'on';
-    for j=1:size(pulsemeans,1)
-        errorbar(frequencies,pulsemeans(j,:),pulseSEMs(j,:),'o','color',colors(j),'MarkerSize',10);
+    for i=1:size(pulsemeans,2)
+        errorbar(pulselengths,pulsemeans(:,i),pulseSEMs(:,i),'o','color',colors(i),'MarkerSize',10);
     end
     
-    xlim([0,100]);
+    xlim([0,25]);
     ylim([0,2.5]);
-    title('Frequency');
-    xlabel('frequency(Hz)');
+    title('Pulselength');
+    xlabel('pulselength(ms)');
     ylabel ('\DeltaF/F');
     ax = gca;
     ax.FontSize = 13;

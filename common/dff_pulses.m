@@ -1,6 +1,6 @@
  function pulse_dff=dff_pulses(fluo, pulsetimes,pulsedur,framerate)
         for i=1:numel(pulsetimes)
-            start_event=round(pulsetimes(i)*framerate)+2;
+            start_event=round(pulsetimes(i)*framerate);
             end_event = round(pulsetimes(i)*framerate+pulsedur*framerate);
             start_base=round(pulsetimes(i)*framerate-pulsedur*framerate)-3;
             end_base=round(pulsetimes(i)*framerate)-1;
