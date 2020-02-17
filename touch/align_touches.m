@@ -79,12 +79,10 @@ filterstring=options.filterstring;
 %This part of the script reads in the data
 currentdir = pwd;
 lateralized = 0;
-if contains (touchdir, '_l_r_')
+if contains (touchdir, '_l_r_')||contains (touchdir, '_r_l_')
     lateralized = 1;
 end
-if contains (touchdir, '_r_l_')
-    lateralized = 1;
-end
+
 options.lateralized=lateralized;
 if ~override_reduced
     if contains (touchdir, 'reduced')
@@ -202,11 +200,11 @@ data_array_swapped=transpose(data_array_swapped);
 
 %call the main function 'find_touch_events' on both the ipsi and contra-
 %lateral data array
-[touchstartframes,eventsmat,eventpeaks_dff,eventpeaks_mean,eventpeaks_SEM,mean_event,SEM_event,touchtimes,fluo,x_events]...
+[touchstartframes,eventsmat,eventpeaks_dff,eventpeaks_mean,eventpeaks_SEM,mean_event,SEM_event,touchtimes,fluo,x_events,eventsmat_peak_aligned]...
     = cellfun(@(data_arr) find_touch_events(data_arr,options),...
     data_array, 'UniformOutput', false);
 
-[touchstartframes_contra,eventsmat_contra,eventpeaks_dff_contra,eventpeaks_mean_contra,eventpeaks_SEM_contra,mean_event_contra,SEM_event_contra,touchtimes_contra,fluo_contra,x_events_contra]...
+[touchstartframes_contra,eventsmat_contra,eventpeaks_dff_contra,eventpeaks_mean_contra,eventpeaks_SEM_contra,mean_event_contra,SEM_event_contra,touchtimes_contra,fluo_contra,x_events_contra,eventsmat_peak_aligned_contra]...
     = cellfun(@(data_arr) find_touch_events(data_arr,options),...
     data_array_swapped, 'UniformOutput', false);
 
@@ -237,6 +235,18 @@ average_event_contra=cellfun(@(foundinfilename,foundinfile)...
 average2mat=transpose(cell2mat(average_event));
 average2mat_contra=transpose(cell2mat(average_event_contra));
 
+average_event_peak_aligned=cellfun(@(foundinfilename,foundinfile)...
+    average_within_fly(foundfilename,foundin,eventsmat_peak_aligned,foundinfilename{1},foundinfile),...
+    foundfilename,foundin,'uni',false);
+
+average_event_peak_aligned_contra=cellfun(@(foundinfilename,foundinfile)...
+    average_within_fly(foundfilename,foundin,eventsmat_peak_aligned_contra,foundinfilename{1},foundinfile),...
+    foundfilename,foundin,'uni',false);
+
+
+average2mat_peak_aligned=transpose(cell2mat(average_event_peak_aligned));
+average2mat_peak_aligned_contra=transpose(cell2mat(average_event_peak_aligned_contra));
+
 eventpeaks_dff_transposed=cellfun(@(evpeak) transpose(evpeak), eventpeaks_dff, 'UniformOutput', false);
 eventpeaks_dff_transposed_contra=cellfun(@(evpeak) transpose(evpeak), eventpeaks_dff_contra, 'UniformOutput', false);
 average_eventpeak=cellfun(@(foundinfilename,foundinfile)...
@@ -254,9 +264,9 @@ average_peak_mat_contra=transpose(cell2mat(average_eventpeak_contra));
 %This part of the script averages over the experiments of each species type
 %--------------------------------------------------------------------------
 combinedtable_unfiltered...
-    = table(average_peak_mat, mean_event, t_foundfilename,t_foundin,eventsmat,average2mat);
+    = table(average_peak_mat, mean_event, t_foundfilename,t_foundin,eventsmat,average2mat,average2mat_peak_aligned);
 combinedtable_contra_unfiltered...
-    = table(average_peak_mat_contra, mean_event_contra, t_foundfilename,t_foundin,eventsmat_contra,average2mat_contra);
+    = table(average_peak_mat_contra, mean_event_contra, t_foundfilename,t_foundin,eventsmat_contra,average2mat_contra,average2mat_peak_aligned_contra);
 
 %find the male experimental flies
 combinedtable...
@@ -313,6 +323,16 @@ male_SEM_event_m = std(cell_mean_event_m,0,2)/sqrt(size(cell_mean_event_m,2));
 cell_mean_event_m_contra = transpose(rmmissing(unique(maletable_m_contra.average2mat_contra,'rows')));
 male_mean_event_m_contra = mean(cell_mean_event_m_contra,2);
 male_SEM_event_m_contra = std(cell_mean_event_m_contra,0,2)/sqrt(size(cell_mean_event_m_contra,2));
+
+cell_mean_event_peak_aligned_m = transpose(rmmissing(unique(maletable_m.average2mat_peak_aligned,'rows')));
+
+male_mean_event_peak_aligned_m = mean(cell_mean_event_peak_aligned_m,2);
+male_SEM_event_peak_aligned_m = std(cell_mean_event_peak_aligned_m,0,2)/sqrt(size(cell_mean_event_peak_aligned_m,2));
+
+cell_mean_event_peak_aligned_m_contra = transpose(rmmissing(unique(maletable_m_contra.average2mat_peak_aligned_contra,'rows')));
+male_mean_event_peak_aligned_m_contra = mean(cell_mean_event_peak_aligned_m_contra,2);
+male_SEM_event_peak_aligned_m_contra = std(cell_mean_event_peak_aligned_m_contra,0,2)/sqrt(size(cell_mean_event_peak_aligned_m_contra,2));
+
 
 cell_mean_eventpeak_m_contra = transpose(rmmissing(unique(maletable_m_contra.average_peak_mat_contra,'rows')));
 
@@ -445,9 +465,11 @@ if lateralized
         fignew=figure('Name','male_mean_event_ipsi');
         %requires package boundedline
         plot_male_event_m=boundedline(xevents_nonempty{1,1},male_mean_event_m,male_SEM_event_m,'m');
+        plot_male_event_peak_aligned_m=boundedline(xevents_nonempty_contra{1,1},male_mean_event_peak_aligned_m,male_SEM_event_peak_aligned_m,'c');
+    
         cd(outputdirmean);
         saveas(fignew,'male_mean_event_ipsi','epsc');
-        save('mean_male_touch_ipsi.mat','male_mean_event_m','male_SEM_event_m','male_eventpeaks_mean_m','male_eventpeaks_SEM_m','cell_mean_eventpeak_m');
+        save('mean_male_touch_ipsi.mat','male_mean_event_m','male_SEM_event_m','male_mean_event_peak_aligned_m','male_SEM_event_peak_aligned_m','male_eventpeaks_mean_m','male_eventpeaks_SEM_m','cell_mean_eventpeak_m');
         
     catch ME
         errorMessage = ME.message;
@@ -460,7 +482,7 @@ if lateralized
         plot_male_event_m_contra=boundedline(xevents_nonempty_contra{1,1},male_mean_event_m_contra,male_SEM_event_m_contra,'m');
         cd(outputdirmean);
         saveas(fignew,'male_mean_event_contra','epsc');
-        save('mean_male_touch_contra.mat','male_mean_event_m_contra','male_SEM_event_m_contra','male_eventpeaks_mean_m_contra','male_eventpeaks_SEM_m_contra','cell_mean_eventpeak_m_contra');
+        save('mean_male_touch_contra.mat','male_mean_event_m_contra','male_SEM_event_m_contra','male_mean_event_peak_aligned_m_contra','male_SEM_event_peak_aligned_m-contra','male_eventpeaks_mean_m_contra','male_eventpeaks_SEM_m_contra','cell_mean_eventpeak_m_contra');
         
     catch ME
         errorMessage = ME.message;
@@ -533,9 +555,11 @@ else
         fignew=figure('Name','male_mean_event');
         %requires package boundedline
         plot_male_event_m=boundedline(xevents_nonempty{1,1},male_mean_event_m,male_SEM_event_m,'m');
+        plot_male_event_peak_aligned_m=boundedline(xevents_nonempty_contra{1,1},male_mean_event_peak_aligned_m,male_SEM_event_peak_aligned_m,'c');
+    
         cd(outputdirmean);
         saveas(fignew,'male_mean_event','epsc');
-        save('mean_male_touch.mat','male_mean_event_m','male_SEM_event_m','male_eventpeaks_mean_m','male_eventpeaks_SEM_m','cell_mean_eventpeak_m');
+        save('mean_male_touch.mat','male_mean_event_m','male_SEM_event_m','male_mean_event_peak_aligned_m','male_SEM_event_peak_aligned_m','male_eventpeaks_mean_m','male_eventpeaks_SEM_m','cell_mean_eventpeak_m');
         
     catch ME
         errorMessage = ME.message;
@@ -590,7 +614,7 @@ end
 %This part is the definition of the functions used in the previous parts of
 %the script.
 
-function [touchstartframes,eventsmat,eventpeaks_dff,eventpeaks_mean,eventpeaks_SEM,mean_event,SEM_event,touchtimes,fluo,x_events]...
+function [touchstartframes,eventsmat,eventpeaks_dff,eventpeaks_mean,eventpeaks_SEM,mean_event,SEM_event,touchtimes,fluo,x_events,eventsmat_peak_aligned]...
     = find_touch_events(data,options)
 framerate = options.framerate;
 numframes = options.numframes;
@@ -656,7 +680,7 @@ else
     
     %find out if event starts at least 'eventtime' before end of recording (output type is
     %logical)
-    ends_on_time=endtime_intervals>=eventtime+(1/framerate);
+    ends_on_time=endtime_intervals>=eventtime+basetime+(1/framerate);
     %find starttimes of the touchevents
     starttimes=ends_on_time.*starttimes;
     %This contains zeros for all spaces in the matrix that do not end on time
@@ -694,6 +718,16 @@ else
     eventsmat=transpose(eventsmat);
     %average all events frame by frame (after aligning them to the start of the
     %touch event)
+    events_peak_aligned=arrayfun(@(touchstart) align_peaks(fluo,basetime,eventtime,framerate, touchstart), touchstartframes,'UniformOutput',false);
+    %convert cell array events to a matrix - necessary for subsequent
+    %calculations
+    %[eventsmat, event]=makemyevents(events);
+    events_peak_aligned=transpose(events_peak_aligned);
+    eventsmat_peak_aligned=cell2mat(transpose(events_peak_aligned));
+    eventsmat_peak_aligned=transpose(eventsmat_peak_aligned);
+    
+    
+    
     eventpeaks=transpose(max(eventsmat((round(basetime*framerate)+1:size(eventsmat,1)),:)));
     % baseline for each event before the touch
     if ~isempty(eventsmat)
@@ -715,6 +749,20 @@ else
     else
         
     end
+    if ~isempty(eventsmat_peak_aligned)
+        
+        eventbases1_peak_aligned=mean(eventsmat_peak_aligned((1:round((basetime-2)*framerate)+1),:));
+        %since the basetime here was calculated back from the peak, the baseline is
+        %measured only until 2s before the peak (therefore basetime -2)
+        %calculate dF/F using the baseline from the events in eventsmat
+        eventsmat_peak_aligned=(eventsmat_peak_aligned-eventbases1_peak_aligned)./eventbases1_peak_aligned;
+        
+        
+    else
+    end
+    mean_event_peak_aligned=mean(eventsmat_peak_aligned,2);
+    %SEM for each point in the averaged event
+    SEM_event_peak_aligned=std(eventsmat_peak_aligned,0,2)/sqrt(size(eventsmat_peak_aligned,2));
     mean_event=mean(eventsmat,2);
     %SEM for each point in the averaged event
     SEM_event=std(eventsmat,0,2)/sqrt(size(eventsmat,2));
@@ -814,4 +862,8 @@ sames = cellfun(@(foundfilename,foundin1)...
 total_eventsmat=eventsmatarr(sames);
 eventsmat_new=horzcat(total_eventsmat{:});
 average_event=mean(eventsmat_new,2);
+end
+function event = align_peaks(fluo,basetime,eventtime,framerate, touchstart)
+[~,peakindex] = max(fluo(touchstart:touchstart+(floor(eventtime*framerate))));
+event = fluo(peakindex+touchstart-1-(ceil((basetime)*framerate)):peakindex+touchstart-1+(floor((eventtime)*framerate)));
 end
