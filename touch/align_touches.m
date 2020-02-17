@@ -277,10 +277,15 @@ combinedtable...
     = rmmissing(combinedtable);
 combinedtable_contra...
     = rmmissing(combinedtable_contra);
+flytypes={'_male_fly'};
+for i=1:numel(flytypes)
+    
+    flytype=flytypes{i};
+
 combinedtable_male...
-    = combinedtable( contains(string(combinedtable.t_foundfilename),'_male_fly'), : );
+    = combinedtable( contains(string(combinedtable.t_foundfilename),flytype), : );
 combinedtable_male_contra...
-    = combinedtable_contra( contains(string(combinedtable_contra.t_foundfilename),'_male_fly'), : );
+    = combinedtable_contra( contains(string(combinedtable_contra.t_foundfilename),flytype), : );
 
 %extract the different species from the table
 
@@ -338,7 +343,7 @@ cell_mean_eventpeak_m_contra = transpose(rmmissing(unique(maletable_m_contra.ave
 
 male_eventpeaks_mean_m_contra = mean(cell_mean_eventpeak_m_contra,2);
 male_eventpeaks_SEM_m_contra = std(cell_mean_eventpeak_m_contra,0,2)/sqrt(size(cell_mean_eventpeak_m_contra,2));
-
+end
 
 %find the female experimental flies
 %--------------------------------------------------------------------
