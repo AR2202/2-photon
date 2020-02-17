@@ -1340,7 +1340,7 @@ else
     
     %find out if event starts at least 'eventtime' before end of recording (output type is
     %logical)
-    ends_on_time=endtime_intervals>=eventtime+(1/framerate);
+    ends_on_time=endtime_intervals>=eventtime+basetime+(1/framerate);
     %find starttimes of the touchevents
     starttimes=ends_on_time.*starttimes;%This contains zeros for all spaces in the matrix that do not end on time
     %disp(starttimes);
