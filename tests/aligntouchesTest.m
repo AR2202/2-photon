@@ -44,9 +44,9 @@ expSolution_SEM=male_SEM_event_f;
 
 
 align_touches('touchdir','touchtimes_mock_reduced','resultsdir','Results_test','outputdirmean','Results_test');
-load(fullfile('Results_test/mean_female_touch.mat'),'male_mean_event_f','male_SEM_event_f');
-actSolution_mean=male_mean_event_f;
-actSolution_SEM=male_SEM_event_f;
+load(fullfile('Results_test/mean_female_touch.mat'),'male_mean_event_m','male_SEM_event_m');
+actSolution_mean=male_mean_event_m;
+actSolution_SEM=male_SEM_event_m;
 verifyEqual(testCase,actSolution_mean,expSolution_mean);
 verifyEqual(testCase,actSolution_SEM,expSolution_SEM);
 

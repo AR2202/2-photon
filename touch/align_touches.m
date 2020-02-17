@@ -277,10 +277,13 @@ combinedtable...
     = rmmissing(combinedtable);
 combinedtable_contra...
     = rmmissing(combinedtable_contra);
-flytypes={'_male_fly'};
+flytypes={'_male_fly','_female_fly','_mated_female_fly'};
 for i=1:numel(flytypes)
     
     flytype=flytypes{i};
+    flytypepart=strrep(strrep(flytype,'_',''),'fly','');
+    figurename=strcat(flytypepart,'_mean_event');
+    dataname=strcat('mean_',flytypepart,'_touch.mat');
 
 combinedtable_male...
     = combinedtable( contains(string(combinedtable.t_foundfilename),flytype), : );
@@ -343,112 +346,8 @@ cell_mean_eventpeak_m_contra = transpose(rmmissing(unique(maletable_m_contra.ave
 
 male_eventpeaks_mean_m_contra = mean(cell_mean_eventpeak_m_contra,2);
 male_eventpeaks_SEM_m_contra = std(cell_mean_eventpeak_m_contra,0,2)/sqrt(size(cell_mean_eventpeak_m_contra,2));
-end
-
-%find the female experimental flies
-%--------------------------------------------------------------------
-combinedtable_female = combinedtable( contains(string(combinedtable.t_foundfilename),'_female_fly'), : );
-combinedtable_female_contra = combinedtable_contra( contains(string(combinedtable_contra.t_foundfilename),'_female_fly'), : );
-
-maletable_f = combinedtable_female( contains(string(combinedtable_female.t_foundin),''), : );
-
-%contralateral touches
-
-maletable_f_contra = combinedtable_female_contra( contains(string(combinedtable_female_contra.t_foundin),''), : );
 
 
-%convert the tables to cell arrays
-%ipsi
-
-
-
-maledata_f=table2cell(maletable_f);
-
-
-%contra
-
-
-maledata_f_contra=table2cell(maletable_f_contra);
-
-
-
-
-%mean of female exp flies
-
-
-
-cell_mean_eventpeak_f = transpose(rmmissing(unique(maletable_f.average_peak_mat,'rows')));
-
-male_eventpeaks_mean_f = mean(cell_mean_eventpeak_f,2);
-male_eventpeaks_SEM_f = std(cell_mean_eventpeak_f,0,2)/sqrt(size(cell_mean_eventpeak_m,2));
-
-
-cell_mean_event_f=transpose(rmmissing(unique(maletable_f.average2mat,'rows')));
-
-male_mean_event_f=mean(cell_mean_event_f,2);
-male_SEM_event_f=std(cell_mean_event_f,0,2)/sqrt(size(cell_mean_event_f,2));
-
-cell_mean_eventpeak_f_contra = transpose(rmmissing(unique(maletable_f_contra.average_peak_mat_contra,'rows')));
-
-male_eventpeaks_mean_f_contra = mean(cell_mean_eventpeak_f_contra,2);
-male_eventpeaks_SEM_f_contra = std(cell_mean_eventpeak_f_contra,0,2)/sqrt(size(cell_mean_eventpeak_f_contra,2));
-
-
-cell_mean_event_f_contra=transpose(rmmissing(unique(maletable_f_contra.average2mat_contra,'rows')));
-male_mean_event_f_contra=mean(cell_mean_event_f_contra,2);
-male_SEM_event_f_contra=std(cell_mean_event_f_contra,0,2)/sqrt(size(cell_mean_event_f_contra,2));
-
-
-
-
-
-%find the mated female experimental flies
-%-------------------------------------------------------------------
-combinedtable_mfemale = combinedtable( contains(string(combinedtable.t_foundfilename),'_matedF_fly'), : );
-combinedtable_mfemale_contra = combinedtable_contra( contains(string(combinedtable_contra.t_foundfilename),'_matedF_fly'), : );
-
-
-maletable_mf = combinedtable_mfemale( contains(string(combinedtable_mfemale.t_foundin),''), : );
-
-%contralateral touches
-
-maletable_mf_contra = combinedtable_mfemale_contra( contains(string(combinedtable_mfemale_contra.t_foundin),''), : );
-
-
-%convert the tables to cell arrays
-%ipsi
-
-
-maledata_mf=table2cell(maletable_mf);
-
-%contra
-
-
-maledata_mf_contra=table2cell(maletable_mf_contra);
-
-
-
-%mean of mated female touching
-
-
-
-cell_mean_eventpeak_mf = transpose(rmmissing(unique(maletable_mf.average_peak_mat,'rows')));
-
-male_eventpeaks_mean_mf = mean(cell_mean_eventpeak_mf,2);
-male_eventpeaks_SEM_mf = std(cell_mean_eventpeak_mf,0,2)/sqrt(size(cell_mean_eventpeak_mf,2));
-
-cell_mean_event_mf=transpose(rmmissing(unique(maletable_mf.average2mat,'rows')));
-male_mean_event_mf=mean(cell_mean_event_mf,2);
-male_SEM_event_mf=std(cell_mean_event_mf,0,2)/sqrt(size(cell_mean_event_mf,2));
-
-cell_mean_eventpeak_mf_contra = transpose(rmmissing(unique(maletable_mf_contra.average_peak_mat_contra,'rows')));
-
-male_eventpeaks_mean_mf_contra = mean(cell_mean_eventpeak_mf_contra,2);
-male_eventpeaks_SEM_mf_contra = std(cell_mean_eventpeak_mf_contra,0,2)/sqrt(size(cell_mean_eventpeak_mf_contra,2));
-
-cell_mean_event_mf_contra=transpose(rmmissing(unique(maletable_mf_contra.average2mat_contra,'rows')));
-male_mean_event_mf_contra=mean(cell_mean_event_mf_contra,2);
-male_SEM_event_mf_contra=std(cell_mean_event_mf_contra,0,2)/sqrt(size(cell_mean_event_mf_contra,2));
 
 %make the x-values for the plot
 %-------------------------
@@ -467,14 +366,16 @@ cd (currentdir);
 
 if lateralized
     try
-        fignew=figure('Name','male_mean_event_ipsi');
+        ipsiname=strcat(figurename,'_ipsi');
+        ipsidataname=strrep(dataname,'.mat','_ipsi.amt');
+        fignew=figure('Name',ipsiname);
         %requires package boundedline
         plot_male_event_m=boundedline(xevents_nonempty{1,1},male_mean_event_m,male_SEM_event_m,'m');
         plot_male_event_peak_aligned_m=boundedline(xevents_nonempty_contra{1,1},male_mean_event_peak_aligned_m,male_SEM_event_peak_aligned_m,'c');
     
         cd(outputdirmean);
-        saveas(fignew,'male_mean_event_ipsi','epsc');
-        save('mean_male_touch_ipsi.mat','male_mean_event_m','male_SEM_event_m','male_mean_event_peak_aligned_m','male_SEM_event_peak_aligned_m','male_eventpeaks_mean_m','male_eventpeaks_SEM_m','cell_mean_eventpeak_m');
+        saveas(fignew,ipsiname,'epsc');
+        save(ipsidataname,'male_mean_event_m','male_SEM_event_m','male_mean_event_peak_aligned_m','male_SEM_event_peak_aligned_m','male_eventpeaks_mean_m','male_eventpeaks_SEM_m','cell_mean_eventpeak_m');
         
     catch ME
         errorMessage = ME.message;
@@ -482,128 +383,40 @@ if lateralized
     end
     cd (currentdir);
     try
-        fignew=figure('Name','male_mean_event_contra');
+        contraname=strcat(figurename,'_contra');
+        contradataname=strrep(dataname,'.mat','_contra.mat');
+        fignew=figure('Name',ipsiname);
+        fignew=figure('Name',contraname);
         %requires package boundedline
         plot_male_event_m_contra=boundedline(xevents_nonempty_contra{1,1},male_mean_event_m_contra,male_SEM_event_m_contra,'m');
         cd(outputdirmean);
-        saveas(fignew,'male_mean_event_contra','epsc');
-        save('mean_male_touch_contra.mat','male_mean_event_m_contra','male_SEM_event_m_contra','male_mean_event_peak_aligned_m_contra','male_SEM_event_peak_aligned_m-contra','male_eventpeaks_mean_m_contra','male_eventpeaks_SEM_m_contra','cell_mean_eventpeak_m_contra');
+        saveas(fignew,contraname,'epsc');
+        save(contradataname,'male_mean_event_m_contra','male_SEM_event_m_contra','male_mean_event_peak_aligned_m_contra','male_SEM_event_peak_aligned_m-contra','male_eventpeaks_mean_m_contra','male_eventpeaks_SEM_m_contra','cell_mean_eventpeak_m_contra');
         
     catch ME
         errorMessage = ME.message;
         disp(errorMessage);
     end
+    cd (currentdir);
     
-    cd (currentdir);
-    try
-        fignew=figure('Name','female_mean_event_ipsi');
-        %requires package boundedline
-        plot_male_event_f=boundedline(xevents_nonempty{1,1},male_mean_event_f,male_SEM_event_f,'m');
-        
-        cd(outputdirmean);
-        saveas(fignew,'female_mean_event_ipsi','epsc');
-        save('mean_female_touch_ipsi.mat','male_mean_event_f','male_SEM_event_f','male_eventpeaks_mean_f','male_eventpeaks_SEM_f','cell_mean_eventpeak_f');
-        
-        
-    catch ME
-        errorMessage = ME.message;
-        disp(errorMessage);
-    end
-    cd (currentdir);
-    try
-        fignew=figure('Name','female_mean_event_contra');
-        %requires package boundedline
-        plot_male_event_f_contra=boundedline(xevents_nonempty_contra{1,1},male_mean_event_f_contra,male_SEM_event_f_contra,'m');
-        
-        cd(outputdirmean);
-        saveas(fignew,'female_mean_event_contra','epsc');
-        save('mean_female_touch_contra.mat','male_mean_event_f_contra','male_SEM_event_f_contra','male_eventpeaks_mean_f_contra','male_eventpeaks_SEM_f_contra','cell_mean_eventpeak_f_contra');
-        
-    catch ME
-        errorMessage = ME.message;
-        disp(errorMessage);
-    end
-    
-    cd (currentdir);
-    try
-        fignew=figure('Name','mated_female_mean_event_ipsi');
-        %requires package boundedline
-        plot_male_event_mf=boundedline(xevents_nonempty{1,1},male_mean_event_mf,male_SEM_event_mf,'m');
-        
-        cd(outputdirmean);
-        saveas(fignew,'mated_female_mean_event_ipsi','epsc');
-        save('mean_mated_female_touch_ipsi.mat','male_mean_event_mf','male_SEM_event_mf','male_eventpeaks_mean_mf','male_eventpeaks_SEM_mf','cell_mean_eventpeak_mf');
-        
-        
-    catch ME
-        errorMessage = ME.message;
-        disp(errorMessage);
-    end
-    cd (currentdir);
-    try
-        fignew=figure('Name','mated_female_mean_event_contra');
-        %requires package boundedline
-        plot_male_event_mf_contra=boundedline(xevents_nonempty_contra{1,1},male_mean_event_mf_contra,male_SEM_event_mf_contra,'m');
-        
-        cd(outputdirmean);
-        saveas(fignew,'mated_female_mean_event_contra','epsc');
-        save('mean_mated_female_touch_contra.mat','male_mean_event_mf_contra','male_SEM_event_mf_contra','male_eventpeaks_mean_mf_contra','male_eventpeaks_SEM_mf_contra','cell_mean_eventpeak_mf_contra');
-        
-    catch ME
-        errorMessage = ME.message;
-        disp(errorMessage);
-    end
     
 else
     
     try
-        fignew=figure('Name','male_mean_event');
+        fignew=figure('Name',figurename);
         %requires package boundedline
         plot_male_event_m=boundedline(xevents_nonempty{1,1},male_mean_event_m,male_SEM_event_m,'m');
         plot_male_event_peak_aligned_m=boundedline(xevents_nonempty_contra{1,1},male_mean_event_peak_aligned_m,male_SEM_event_peak_aligned_m,'c');
     
         cd(outputdirmean);
-        saveas(fignew,'male_mean_event','epsc');
-        save('mean_male_touch.mat','male_mean_event_m','male_SEM_event_m','male_mean_event_peak_aligned_m','male_SEM_event_peak_aligned_m','male_eventpeaks_mean_m','male_eventpeaks_SEM_m','cell_mean_eventpeak_m');
+        saveas(fignew,figurename,'epsc');
+        save(dataname,'male_mean_event_m','male_SEM_event_m','male_mean_event_peak_aligned_m','male_SEM_event_peak_aligned_m','male_eventpeaks_mean_m','male_eventpeaks_SEM_m','cell_mean_eventpeak_m');
         
     catch ME
         errorMessage = ME.message;
         disp(errorMessage);
     end
-    cd (currentdir);
     
-    try
-        fignew=figure('Name','female_mean_event');
-        %requires package boundedline
-        plot_male_event_f=boundedline(xevents_nonempty{1,1},male_mean_event_f,male_SEM_event_f,'m');
-        
-        cd(outputdirmean);
-        saveas(fignew,'female_mean_event','epsc');
-        save('mean_female_touch.mat','male_mean_event_f','male_SEM_event_f','male_eventpeaks_mean_f','male_eventpeaks_SEM_f','cell_mean_eventpeak_f');
-        
-        
-    catch ME
-        errorMessage = ME.message;
-        disp(errorMessage);
-    end
-    cd (currentdir);
-    
-    
-    
-    try
-        fignew=figure('Name','mated_female_mean_event');
-        %requires package boundedline
-        plot_male_event_mf=boundedline(xevents_nonempty{1,1},male_mean_event_mf,male_SEM_event_mf,'m');
-        
-        cd(outputdirmean);
-        saveas(fignew,'mated_female_mean_event','epsc');
-        save('mean_mated_female_touch.mat','male_mean_event_mf','male_SEM_event_mf','male_eventpeaks_mean_mf','male_eventpeaks_SEM_mf','cell_mean_eventpeak_mf');
-        
-        
-    catch ME
-        errorMessage = ME.message;
-        disp(errorMessage);
-    end
     cd (currentdir);
 end
 try
@@ -615,7 +428,7 @@ catch ME
 end
 cd (currentdir);
 end
-
+end
 %This part is the definition of the functions used in the previous parts of
 %the script.
 
