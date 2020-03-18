@@ -47,9 +47,9 @@ def signDeltax(deltaxFly,deltayFly):
 
 def mating_angle_from_angles(maleAngle,femaleAngle,relativeSign):
     if relativeSign >0:
-        matingAngle = maleAngle + femaleAngle
+        matingAngle = abs(maleAngle - femaleAngle)
     else:
-        matingAngle = math.pi - (maleAngle + femaleAngle)
+        matingAngle = math.pi - abs(maleAngle - femaleAngle)
     return matingAngle
     
 
@@ -59,8 +59,8 @@ def mating_angle(FemaleWing1X,FemaleWing1Y,FemaleWing2X,FemaleWing2Y,MaleWing1X,
     deltaxM =  MaleWing2X   -  MaleWing1X
     deltayM =  MaleWing2Y   -  MaleWing1Y
 
-    femaleAngle = abs(np.arctan(deltayF/deltaxF))
-    maleAngle   = abs(np.arctan(deltayM/deltaxM))
+    femaleAngle = np.arctan(deltayF/deltaxF)
+    maleAngle   = np.arctan(deltayM/deltaxM)
 
     signDeltaxF = signDeltax(deltaxF,deltayF)
     signDeltaxM = signDeltax(deltaxM,deltayM)
