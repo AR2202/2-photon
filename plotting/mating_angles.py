@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 import math
+import scipy
+from scipy import io
 
 def load_csv_file(path):
     datatable=pd.read_csv(path,header=1)
@@ -74,6 +76,15 @@ def mating_angle_pd_df(df):
     return matingAngleRow
 
     
-
+def mating_angles_all_rows(path):
+    data=load_csv_file(path)
+    angles=data.apply(mating_angle_pd_df, axis=1)
+    return angles
+    
 
     
+def load_feat_file(path):
+    feat=scipy.io.loadmat(path,matlab_compatible=True)
+    dataArr = feat['feat']['data'][0][0]
+    angle_between = dataArr[:,:,10]
+    return feat, angle_between
