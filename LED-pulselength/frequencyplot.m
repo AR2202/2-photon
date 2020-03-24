@@ -30,7 +30,8 @@ options = struct('framerate',5.92,'baseline_start',2,'baseline_end',11,...
     'frequencies',[4,10,20,40], 'pulselengths',[8,12,20],...
     'pulsetimes',[20,40,60,80],'genders',{{'_male';'female'}},...
     'neuronparts',{{'medial';'lateral'}},'pulsedur', 5,...
-    'resultsdir','Results','multiroi',false,'numrois',1);
+    'resultsdir','Results','multiroi',false,'numrois',1,...
+    'pulsetimesfromfile',false,'pulsetimesfile','stimtimes.mat');
 
 %# read the acceptable names
 optionNames = fieldnames(options);
@@ -65,13 +66,20 @@ baseline_end = options.baseline_end;
 
 frequencies=options.frequencies; %LED frequencies of the experiments
 pulselengths=options.pulselengths;
-pulsetimes = options.pulsetimes;%timings of the pulses
 genders = options.genders;
 neuronparts=options.neuronparts;
 pulsedur =options.pulsedur;%duration (in s) of pulse bursts
 resultsdir=options.resultsdir;
 multiroi=options.multiroi;
 numrois=options.numrois;
+pulsetimesfromfile=options.pulsetimesfromfile;
+pulsetimesfile=options.pulsetimesfile;
+if pulsetimesfromfile
+    load(pulsetimesfile);
+    pulsetimes = stimstarts./framerate;
+else
+    pulsetimes = options.pulsetimes;%timings of the pulses
+end
 
 if pulsedur == 0.2
     pulsedurstr = '200ms';
