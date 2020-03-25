@@ -269,6 +269,22 @@ def filtered_outputs(path,P):
     wing_dist_female=dataF.apply(wing_distance_female, axis=1)
     return angles_w,angles_b,wing_dist_male,wing_dist_female
 
+def tilting_row(df):
+    """calculates tilting index for one row"""
+    tilting = (df.male_wingdist/df.female_wingdist)
+    return tilting
+
+def tilting_index(malewingdist,femalewingdist,copstartframe):
+    """applies tilting_row function to the dataframe,
+    taking all frames before copstartframe as baseline"""
+    male_resting=np.median(malewingdist[1:copstartframe-1])
+    female_resting=np.median(femalewingdist[1:copstartframe-1])
+    relative_rest=male_resting/female_resting
+    wingdist_both=pd.concat({"male_wingdist":malewingdist,"female_wingdist":femalewingdist},axis=1)
+    tilting = wingdist_both[copstartframe:].apply(tilting_row,axis=1)
+    tilting_ind=tilting/relative_rest
+    return tilting_ind
+
 def load_feat_file(path):
     """loads the angle_between data from the feat.mat file.
     returns feat.data and angle_between as 2 variables"""
