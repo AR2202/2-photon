@@ -216,7 +216,58 @@ def filtered_mating_angles(path,P):
     angles_w=dataF.apply(mating_angle_pd_df, axis=1)
     angles_b=dataF.apply(mating_angle_from_body_axis_pd_df, axis=1)
     return angles_w,angles_b
+
+def wing_distance_male(df):
+    """calculates distance between wings"""
+    wing_distance_male = wing_distance(df.MaleWing1X,df.MaleWing1Y,
+                                        df.MaleWing2X,df.MaleWing2Y)
+    return wing_distance_male
+
+def wing_distance_female(df):
+    wing_distance_female = wing_distance(df.FemaleWing1X,df.FemaleWing1Y,
+                                        df.FemaleWing2X,df.FemaleWing2Y)
+    return wing_distance_female
+
+def wing_distance(wing1x,wing1y, wing2x,wing2y):
+    distance=math.sqrt((wing1x-wing2x)**2+(wing1y-wing2y)**2)
+    return distance     
+
+def wing_distance_all_rows(path):
+    """loads the csv file of deeplabcut data
+    specified as the path argument and determines wing distance
+   This is the function that should be used if you want no filtering of data"""
+    data=load_csv_file(path)
+    wing_dist_male=data.apply(wing_distance_male, axis=1)
+    wing_dist_female=data.apply(wing_distance_female, axis=1)
+    return wing_dist_male, wing_dist_female
+
+def filtered_wing_distance(path,P):
+    """loads the csv file of deeplabcut data
+    specified as the path argument and determines wing distance;
     
+    This is the function that should be used if you want filtering of data by 
+    those with a likelihood > P"""
+    data=load_csv_file(path)
+    dataF=filter_all_likelihood(data,P)
+    wing_dist_male=dataF.apply(wing_distance_male, axis=1)
+    wing_dist_female=dataF.apply(wing_distance_female, axis=1)
+    return wing_dist_male, wing_dist_female
+
+def filtered_outputs(path,P):
+    """loads the csv file of deeplabcut data
+    specified as the path argument and determines mating angle
+    from both wing and body axis data;
+    returns the angles based on wing data and the angles based on body axis
+    (in this order)
+    This is the function that should be used if you want filtering of data by 
+    those with a likelihood > P"""
+    data=load_csv_file(path)
+    dataF=filter_all_likelihood(data,P)
+    angles_w=dataF.apply(mating_angle_pd_df, axis=1)
+    angles_b=dataF.apply(mating_angle_from_body_axis_pd_df, axis=1)
+    wing_dist_male=dataF.apply(wing_distance_male, axis=1)
+    wing_dist_female=dataF.apply(wing_distance_female, axis=1)
+    return angles_w,angles_b,wing_dist_male,wing_dist_female
 
 def load_feat_file(path):
     """loads the angle_between data from the feat.mat file.
