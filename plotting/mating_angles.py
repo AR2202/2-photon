@@ -244,7 +244,6 @@ def wing_distance_all_rows(path):
 def filtered_wing_distance(path,P):
     """loads the csv file of deeplabcut data
     specified as the path argument and determines wing distance;
-    
     This is the function that should be used if you want filtering of data by 
     those with a likelihood > P"""
     data=load_csv_file(path)
@@ -256,8 +255,9 @@ def filtered_wing_distance(path,P):
 def filtered_outputs(path,P):
     """loads the csv file of deeplabcut data
     specified as the path argument and determines mating angle
-    from both wing and body axis data;
-    returns the angles based on wing data and the angles based on body axis
+    from both wing and body axis data as well as wing distance;
+    returns the angles based on wing data and the angles based on body axis, 
+    male wing distance, female wing distance
     (in this order)
     This is the function that should be used if you want filtering of data by 
     those with a likelihood > P"""
