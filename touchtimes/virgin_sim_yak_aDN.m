@@ -11,15 +11,15 @@ duration_acquisition = numberframes/framerate;
 baseline_start = 2;
 baseline_end = 11;
 startdir=pwd;
-pathname='/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/imaging_preprocessed';
+pathname='/Volumes/LaCie/Projects/aDN/imaging/aDN_touch_sugar/imaging_preprocessed';
 %pathname has to be the path to the folder were files to be processed are
 %located
-foldername='2019_10_02';%the name of the imaging folder
-subfoldername='ROIS';%must be a folder within the imaging folder
+foldername='2020_03_27';%the name of the imaging folder
+subfoldername='ROI';%must be a folder within the imaging folder
 stackdir = fullfile(pathname,foldername,subfoldername);
-outputdirv=('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/Results');
-outputdirsim=('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/Results');
-outputdiryak=('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch/Results');
+outputdirv=('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch_sugar/Results');
+outputdirsim=('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch_sugar/Results');
+outputdiryak=('/Volumes/LaCie/Projects/aDN/imaging/aDN_touch_sugar/Results');
 outputfilev=strcat(foldername,'_virgin_mROI.xlsx');
 outputimgv=strcat(foldername,'_virgin_mROI.eps');
 outputfiles=strcat(foldername,'_oenocytelessM_mROI.xlsx');
@@ -88,7 +88,7 @@ filenames(:) = {''};
             
                       
         end
-        virgins = strfind(filenames,'virgin');
+        virgins = strfind(filenames,'matedFemale');
         sims = strfind(filenames, 'oenegm');
         yaks = strfind(filenames, 'ball');
        males = strfind(filenames, 'touch_male');
@@ -131,7 +131,7 @@ filenames(:) = {''};
         if exist('virginf') == 1
         Tv=table(virginf);
         
-        virginlegend=cellfun(@(name) regexp(name,'(\d\d\d)','match'), virginname, 'UniformOutput', true);
+        virginlegend=cellfun(@(name) regexp(name,'(\d\d\d)-','match'), virginname, 'UniformOutput', true);
        
         
         Tvnames=table(virginname);
