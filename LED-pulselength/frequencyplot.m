@@ -156,6 +156,12 @@ for g=1:size(genders,1)
             pulseaverage_dff=cellfun(@(f) average_pulses(f,pulsetimes,framerate),fluo,'uni',false);
             pulseavmat=cell2mat(pulseaverage_dff);
             
+            firstpulse_dff=cellfun(@(f) average_pulses(f,pulsetimes(1),framerate),fluo,'uni',false);
+            firstmat=cell2mat(firstpulse_dff);
+            
+            lastpulse_dff=cellfun(@(f) average_pulses(f,pulsetimes(size(pulsetimes,2)),framerate),fluo,'uni',false);
+            lastmat=cell2mat(lastpulse_dff);
+            
             
             %calculating deltaF/F
             dff=calculate_dff(fluomat,baseline_start,baseline_end);
@@ -171,6 +177,10 @@ for g=1:size(genders,1)
             SEM_dff=std(dff)./n_files;
             mean_pulseav_dff=mean(pulseavmat,1);
             SEM_pulseav_dff=std(pulseavmat)./n_files;
+            mean_first_dff=mean(firstmat,1);
+            SEM_first_dff=std(firstmat)./n_files;
+            mean_last_dff=mean(lastmat,1);
+            SEM_last_dff=std(lastmat)./n_files;
             %make the figure name and path to output
    
             
@@ -204,7 +214,7 @@ for g=1:size(genders,1)
             
             pulsedff=cell2mat(dff_of_pulses);
             outputmatfile=fullfile(outputdir,(strcat(outputname,gender,'_',neuronpart,'_',pulsedurstr,'.mat')));
-            save(outputmatfile,'pulsedff','mean_dff','n_files','SEM_dff','dff','mean_pulseav_dff', 'SEM_pulseav_dff');
+            save(outputmatfile,'pulsedff','mean_dff','n_files','SEM_dff','dff','mean_pulseav_dff', 'SEM_pulseav_dff','mean_first_dff','SEM_first_dff','mean_last_dff','SEM_last_dff');
             pulsemeans(j,i)=mean(pulsedff);
             pulseSEMs(j,i)=std(pulsedff)/(numel(pulsedff));
         end
