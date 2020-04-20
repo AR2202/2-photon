@@ -1,11 +1,13 @@
 import numpy as np
-import osimport re
+import os
+import re
 import sklearn
 import sklearn.preprocessing
 import pandas as pd
 import mating_angles
 from mating_angles import filtered_outputs, unfiltered_outputs,load_csv_file,tilting_index
 from sklearn.linear_model import SGDClassifier
+from sklearn.neighbors import KNeighborsClassifier
 
 def scale_angles(angles):
     angles_matrix=angles.values.reshape(-1,1)
@@ -53,7 +55,14 @@ def train_SGD(X,y,loss="log"):
     n=X_train.shape[0]
     max_iter = np.ceil(10**6 / n)
     clf = SGDClassifier(loss=loss, max_iter=max_iter,early_stopping=True).fit(X_train, y_train)
-    return clf
+    testScore=clf.score(X_test,y_test)
+    return clf,testScore
+
+def train_knn(X,y,neighbors=3):
+    X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(X, y)
+    knn =KNeighborsClassifier(neighbors).fit(X_train,y_train)  
+    testScore=knn.score(X_test,y_test)
+    return knn,testScore
 
 def prepare_training_data(path, filtering=False,P=0.8,featurelist=["angles_w_scaled","angles_b_scaled","wing_dist_male_scaled","wing_dist_female_scaled","abd_dist_scaled","copulationP_scaled"]):
     """loads csv file and scales the features, then makes an np.array of the features and returns the array"""
@@ -71,14 +80,31 @@ def prepare_training_data(path, filtering=False,P=0.8,featurelist=["angles_w_sca
    
     return X
 
-def import_train_test(path_to_csv,path_to_images,positives):
+def import_train_test(path_to_csv,path_to_images,positives,filtering=False,P=0.8,featurelist=["angles_w_scaled","angles_b_scaled","wing_dist_male_scaled","wing_dist_female_scaled","abd_dist_scaled","copulationP_scaled"]):
     """prepares training dataset"""
     """if positives is a list of framenumbers, the first frame should be 1"""
-    X = prepare_training_data(path_to_csv)
+    X = prepare_training_data(path_to_csv,filtering=filtering,P=P,featurelist=featurelist)
     num = [int(re.search('\d+',filename).group(0)) for filename in os.listdir(path_to_images)]  
     num_shifted=[numb-1 for numb in num] 
-    X_training=X(num_shifted)
+    X_training=X[num_shifted]
     y_training=[0 for i in num_shifted]   
     positives_shifted=[pos-1 for pos in positives]
-    y_training[positives_shifted]=1
+    for pos in positives_shifted:
+        y_training[pos]=1
     return X_training,y_training
+
+def learning_pipeline(path_to_csv,path_to_images,positives,neighbors=3,filtering_data=False,filtering_train=False,P=0.8,featurelist=["angles_w_scaled","angles_b_scaled","wing_dist_male_scaled","wing_dist_female_scaled","abd_dist_scaled","copulationP_scaled"]):
+    """pipeline for machine learning"""
+    X,y=import_train_test(path_to_csv,path_to_images,positives,filtering=filtering_train,P=P,featurelist=featurelist)
+    data=prepare_training_data(path_to_csv, filtering=filtering_data,P=P,featurelist=featurelist)
+    logReg,logRegScore=train_SGD(X,y,loss="log")
+    print("Logistic Regression Test Score: {}".format(logRegScore))
+    SVM,SVMScore=train_SGD(X,y,loss="hinge")
+    print("Support Vector Machine Test Score: {}".format(SVMScore))
+    knn,knnScore=train_knn(X,y,neighbors=neighbors)
+    print("K Nearest Neighbors Test Score: {}".format(knnScore))
+    predictionsLogReg=logReg.predict(data)
+    predictionsSVM=SVM.predict(data)
+    predictionsKnn=knn.predict(data)
+    return logReg,logRegScore,predictionsLogReg,SVM,SVMScore,predictionsSVM,knn,knnScore,predictionsKnn
+
