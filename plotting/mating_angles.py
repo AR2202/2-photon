@@ -318,7 +318,7 @@ def abd_distance_all_rows(path):
     specified as the path argument and determines wing distance
    calculates distance between male and female abdomen"""
     data=load_csv_file(path)
-    dist=data.apply(distance, axis=1)
+    dist=data.apply(abd_distance, axis=1)
     return dist
 
 def load_feat_file(path):
