@@ -1,4 +1,5 @@
 import numpy as np
+import osimport re
 import sklearn
 import sklearn.preprocessing
 import pandas as pd
@@ -69,3 +70,15 @@ def prepare_training_data(path, filtering=False,P=0.8,featurelist=["angles_w_sca
             X=eval(feature)
    
     return X
+
+def import_train_test(path_to_csv,path_to_images,positives):
+    """prepares training dataset"""
+    """if positives is a list of framenumbers, the first frame should be 1"""
+    X = prepare_training_data(path_to_csv)
+    num = [int(re.search('\d+',filename).group(0)) for filename in os.listdir(path_to_images)]  
+    num_shifted=[numb-1 for numb in num] 
+    X_training=X(num_shifted)
+    y_training=[0 for i in num_shifted]   
+    positives_shifted=[pos-1 for pos in positives]
+    y_training[positives_shifted]=1
+    return X_training,y_training
