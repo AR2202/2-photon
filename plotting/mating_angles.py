@@ -257,7 +257,7 @@ def filtered_outputs(path,P):
     specified as the path argument and determines mating angle
     from both wing and body axis data as well as wing distance;
     returns the angles based on wing data and the angles based on body axis, 
-    male wing distance, female wing distance
+    male wing distance, female wing distance,distance between male and female abdomen
     (in this order)
     This is the function that should be used if you want filtering of data by 
     those with a likelihood > P"""
@@ -267,7 +267,26 @@ def filtered_outputs(path,P):
     angles_b=dataF.apply(mating_angle_from_body_axis_pd_df, axis=1)
     wing_dist_male=dataF.apply(wing_distance_male, axis=1)
     wing_dist_female=dataF.apply(wing_distance_female, axis=1)
-    return angles_w,angles_b,wing_dist_male,wing_dist_female
+    abd_dist=dataF.apply(abd_distance, axis=1)
+    return angles_w,angles_b,wing_dist_male,wing_dist_female,abd_dist
+
+def unfiltered_outputs(path):
+    """loads the csv file of deeplabcut data
+    specified as the path argument and determines mating angle
+    from both wing and body axis data as well as wing distance;
+    returns the angles based on wing data and the angles based on body axis, 
+    male wing distance, female wing distance,distance between male and female abdomen
+    (in this order)
+    This is the function that should be used if you don't want filtering of data by 
+    those with a likelihood > P"""
+    data=load_csv_file(path)
+    angles_w=data.apply(mating_angle_pd_df, axis=1)
+    angles_b=data.apply(mating_angle_from_body_axis_pd_df, axis=1)
+    wing_dist_male=data.apply(wing_distance_male, axis=1)
+    wing_dist_female=data.apply(wing_distance_female, axis=1)
+    abd_dist=data.apply(abd_distance, axis=1)
+    copulationP=data.CopulationP
+    return angles_w,angles_b,wing_dist_male,wing_dist_female,abd_dist,copulationP
 
 def tilting_row(df):
     """calculates tilting index for one row"""
@@ -284,6 +303,23 @@ def tilting_index(malewingdist,femalewingdist,copstartframe):
     tilting = wingdist_both[copstartframe:].apply(tilting_row,axis=1)
     tilting_ind=tilting/relative_rest
     return tilting_ind
+
+def abd_distance(df):
+    distanceMF = distance(df.MaleAbdomenX,df.MaleAbdomenY,
+                                        df.CopulationX,df.CopulationY)
+    return distanceMF
+
+def distance(xmale,ymale, xfemale,yfemale):
+    distance=math.sqrt((xmale-xfemale)**2+(ymale-yfemale)**2)
+    return distance     
+
+def abd_distance_all_rows(path):
+    """loads the csv file of deeplabcut data
+    specified as the path argument and determines wing distance
+   calculates distance between male and female abdomen"""
+    data=load_csv_file(path)
+    dist=data.apply(distance, axis=1)
+    return dist
 
 def load_feat_file(path):
     """loads the angle_between data from the feat.mat file.
