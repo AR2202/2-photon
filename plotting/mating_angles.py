@@ -304,6 +304,17 @@ def tilting_index(malewingdist,femalewingdist,copstartframe):
     tilting_ind=tilting/relative_rest
     return tilting_ind
 
+def tilting_index_all_frames(malewingdist,femalewingdist,copstartframe):
+    """applies tilting_row function to the dataframe,
+    taking all frames before copstartframe as baseline"""
+    male_resting=np.median(malewingdist[1:copstartframe-1])
+    female_resting=np.median(femalewingdist[1:copstartframe-1])
+    relative_rest=male_resting/female_resting
+    wingdist_both=pd.concat({"male_wingdist":malewingdist,"female_wingdist":femalewingdist},axis=1)
+    tilting = wingdist_both.apply(tilting_row,axis=1)
+    tilting_ind=tilting/relative_rest
+    return tilting_ind
+
 def abd_distance(df):
     distanceMF = distance(df.MaleAbdomenX,df.MaleAbdomenY,
                                         df.CopulationX,df.CopulationY)
