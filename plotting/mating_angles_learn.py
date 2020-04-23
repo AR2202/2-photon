@@ -5,7 +5,7 @@ import sklearn
 import sklearn.preprocessing
 import pandas as pd
 import mating_angles
-from mating_angles import filtered_outputs, unfiltered_outputs,load_csv_file,tilting_index
+from mating_angles import filtered_outputs, unfiltered_outputs,load_csv_file,tilting_index,tilting_index_all_frames
 from sklearn.linear_model import SGDClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.feature_selection import SelectFromModel
@@ -16,6 +16,8 @@ from sklearn.feature_selection import SelectPercentile, chi2
 from sklearn.model_selection import cross_val_score,GridSearchCV
 from sklearn.preprocessing import StandardScaler,MinMaxScaler
 from sklearn.naive_bayes import GaussianNB
+from joblib import dump,load
+
 
 
 def scale_angles(angles):
@@ -78,7 +80,7 @@ def train_SGD(X,y,loss="log"):
     testScore=clf.score(X_test,y_test)
     return clf,testScore,CVScore
 
-def train_knn(X,y,neighbors=3):
+def train_knn(X,y):
     X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(X, y)
     parameters = {'knc__n_neighbors': [1, 2, 3,4,5],
                 'knc__weights': ['uniform','distance']}
@@ -114,8 +116,7 @@ def train_NB(X,y):
 
 def train_randomForest(X,y):
     X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(X, y)
-    parameters = {'rfc__n_estimators': [10, 25, 50,75,100,125],
-                'rfc__weights': ['uniform','distance']}
+    parameters = {'rfc__n_estimators': [10, 25, 50,75,100,125]}
     pipe = Pipeline([('feature_selection', SelectFromModel(LinearSVC())),
                     ('rfc', RandomForestClassifier())])
     grid_search = GridSearchCV(pipe, parameters, verbose=1)
@@ -124,14 +125,15 @@ def train_randomForest(X,y):
     testScore=randomF.score(X_test,y_test)
     return randomF,testScore, CVScore
 
-def prepare_training_data(path, filtering=False,P=0.8,featurelist=["angles_w_scaled","angles_b_scaled","wing_dist_male_scaled","wing_dist_female_scaled","abd_dist_scaled","copulationP_scaled"]):
+def prepare_training_data(path, filtering=False,P=0.8,copstartframe=500,
+featurelist=["angles_w_scaled","angles_b_scaled","tilting_index","abd_dist_scaled","copulationP_scaled"]):
     """loads csv file and scales the features, then makes an np.array of the features and returns the array"""
     X=np.array([])
     if filtering:
        angles_w_scaled,angles_b_scaled,wing_dist_male_scaled,wing_dist_female_scaled,abd_dist_scaled = scale_filtered(path,P)
     else:
        angles_w_scaled,angles_b_scaled,wing_dist_male_scaled,wing_dist_female_scaled,abd_dist_scaled,copulationP_scaled = scale_unfiltered(path)
-    
+    tilting_index=tilting_index_all_frames(wing_dist_male_scaled,wing_dist_female_scaled,copstartframe)
     for feature in featurelist:
         if X.size>0:
             X=np.append(X,eval(feature),axis=1)
@@ -140,7 +142,8 @@ def prepare_training_data(path, filtering=False,P=0.8,featurelist=["angles_w_sca
    
     return X
 
-def import_train_test(path_to_csv,path_to_images,positives,filtering=False,P=0.8,featurelist=["angles_w_scaled","angles_b_scaled","wing_dist_male_scaled","wing_dist_female_scaled","abd_dist_scaled","copulationP_scaled"]):
+def import_train_test(path_to_csv,path_to_images,positives,filtering=False,P=0.8,copstartframe=500,
+featurelist=["angles_w_scaled","angles_b_scaled","tilting_index","abd_dist_scaled","copulationP_scaled"]):
     """prepares training dataset"""
     """if positives is a list of framenumbers, the first frame should be 1"""
     X = prepare_training_data(path_to_csv,filtering=filtering,P=P,featurelist=featurelist)
@@ -153,7 +156,8 @@ def import_train_test(path_to_csv,path_to_images,positives,filtering=False,P=0.8
         y_training[pos]=1
     return X_training,y_training
 
-def learning_pipeline(path_to_csv,path_to_images,positives,neighbors=3,filtering_data=False,filtering_train=False,P=0.8,featurelist=["angles_w_scaled","angles_b_scaled","wing_dist_male_scaled","wing_dist_female_scaled","abd_dist_scaled","copulationP_scaled"]):
+def learning_pipeline(path_to_csv,path_to_images,positives,training_only=False,filtering_data=False,filtering_train=False,P=0.8, copstartframe =500,
+featurelist=["angles_w_scaled","angles_b_scaled","tilting_index","abd_dist_scaled","copulationP_scaled"]):
     """pipeline for machine learning"""
     X,y=import_train_test(path_to_csv,path_to_images,positives,filtering=filtering_train,P=P,featurelist=featurelist)
     data=prepare_training_data(path_to_csv, filtering=filtering_data,P=P,featurelist=featurelist)
@@ -163,7 +167,7 @@ def learning_pipeline(path_to_csv,path_to_images,positives,neighbors=3,filtering
     suppVC,SVCScore,SVCCVScore=train_SVC(X,y)
     print("Support Vector Machine Test Score: {}".format(SVCScore))
     print("Support Vector Machine CV Score: {}".format(SVCCVScore))
-    knn,knnScore,knnCVScore=train_knn(X,y,neighbors=neighbors)
+    knn,knnScore,knnCVScore=train_knn(X,y)
     print("K Nearest Neighbors Test Score: {}".format(knnScore))
     print("K Nearest Neighbors CV Score: {}".format(knnCVScore))
     randomF,randomFScore,randomFCVScore=train_randomForest(X,y)
@@ -171,14 +175,27 @@ def learning_pipeline(path_to_csv,path_to_images,positives,neighbors=3,filtering
     print("Random Forest CV Score: {}".format(randomFCVScore))
     NB,NBScore=train_NB(X,y)
     print("Naive Bayes Test Score: {}".format(NBScore))
-    predictionsLogReg=logReg.predict(data)
-    predictionsSVC=suppVC.predict(data)
-    predictionsKnn=knn.predict(data)
-    predictionsRandomF=randomF.predict(data)
-    predictionsNB=NB.predict(data)
-    models={"LogReg":{"model":logReg,"score":logRegScore,"CVScore":logRegCVScore,"predictions":predictionsLogReg},
-            "SVC":{"model": suppVC,"score":SVCScore,"CVScore":SVCCVScore,"predictions":predictionsSVC},
-            "KNN":{"model":knn,"score":knnScore,"CVScore":knnCVScore,"predictions":predictionsKnn},
-            "RFC":{"model": randomF,"score":randomFScore,"CVScore":randomFCVScore,"predictions":predictionsRandomF},
-            "NB":{"model":NB,"score":NBScore,"predictions":predictionsNB}}
+    if training_only:
+        models={"LogReg":{"model":logReg,"score":logRegScore,"CVScore":logRegCVScore},
+            "SVC":{"model": suppVC,"score":SVCScore,"CVScore":SVCCVScore},
+            "KNN":{"model":knn,"score":knnScore,"CVScore":knnCVScore},
+            "RFC":{"model": randomF,"score":randomFScore,"CVScore":randomFCVScore},
+            "NB":{"model":NB,"score":NBScore}}
+    else:
+        predictionsLogReg=logReg.predict(data)
+        predictionsSVC=suppVC.predict(data)
+        predictionsKnn=knn.predict(data)
+        predictionsRandomF=randomF.predict(data)
+        predictionsNB=NB.predict(data)
+        models={"LogReg":{"model":logReg,"score":logRegScore,"CVScore":logRegCVScore,"predictions":predictionsLogReg},
+                "SVC":{"model": suppVC,"score":SVCScore,"CVScore":SVCCVScore,"predictions":predictionsSVC},
+                "KNN":{"model":knn,"score":knnScore,"CVScore":knnCVScore,"predictions":predictionsKnn},
+                "RFC":{"model": randomF,"score":randomFScore,"CVScore":randomFCVScore,"predictions":predictionsRandomF},
+                "NB":{"model":NB,"score":NBScore,"predictions":predictionsNB}}
+    dump(models, 'trained_models.joblib') 
+    return models
+
+def load_pretrained(filename='trained_models.joblib'):
+    """reload the pretrained model"""
+    models=load(filename)
     return models
