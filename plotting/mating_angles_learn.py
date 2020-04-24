@@ -4,21 +4,23 @@ import re
 import sklearn
 import sklearn.preprocessing
 import pandas as pd
+import matplotlib.pyplot as plt
 import mating_angles
 from mating_angles import filtered_outputs, unfiltered_outputs,load_csv_file,tilting_index,tilting_index_all_frames
-from sklearn.linear_model import SGDClassifier
+from sklearn.linear_model import SGDClassifier,RidgeCV
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.feature_selection import SelectFromModel
 from sklearn.ensemble import RandomForestClassifier 
 from sklearn.pipeline import Pipeline
 from sklearn.svm  import SVC, LinearSVC
 from sklearn.feature_selection import SelectPercentile, chi2
-from sklearn.model_selection import cross_val_score,GridSearchCV
+from sklearn.model_selection import cross_val_score,GridSearchCV,train_test_split
 from sklearn.preprocessing import StandardScaler,MinMaxScaler
 from sklearn.naive_bayes import GaussianNB
+from sklearn.ensemble import BaggingClassifier
 from joblib import dump,load
 
-
+#Feature scaling
 
 def scale_angles(angles):
     angles_matrix=angles.values.reshape(-1,1)
@@ -62,6 +64,8 @@ def scale_unfiltered(path):
     
     return angles_w_scaled,angles_b_scaled,wing_dist_male_scaled,wing_dist_female_scaled,abd_dist_scaled,copulationP_scaled
 
+#Classification models
+
 def train_SGD(X,y,loss="log"):
     X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(X, y)
     n=X_train.shape[0]
@@ -85,7 +89,7 @@ def train_knn(X,y):
     parameters = {'knc__n_neighbors': [1, 2, 3,4,5],
                 'knc__weights': ['uniform','distance']}
     pipe = Pipeline([('feature_selection', SelectFromModel(LinearSVC())),
-                    ('knc', KNeighborsClassifier(neighbors))])
+                    ('knc', BaggingClassifier(KNeighborsClassifier()))])
     grid_search = GridSearchCV(pipe, parameters, verbose=1)
     knn =grid_search.fit(X_train,y_train) 
     CVScore=grid_search.best_score_ 
@@ -99,7 +103,7 @@ def train_SVC(X,y):
   {'svc__C': [1, 10, 100, 1000], 'svc__gamma': [0.001, 0.0001], 'svc__kernel': ['rbf']},
  ]
     pipe = Pipeline([('anova', SelectPercentile(chi2)),
-                ('svc', SVC())])
+                ('svc', SVC(probability=True))])
     grid_search = GridSearchCV(pipe, param_grid, verbose=1)           
     supportV =grid_search.fit(X_train,y_train)  
     CVScore=grid_search.best_score_
@@ -156,11 +160,12 @@ featurelist=["angles_w_scaled","angles_b_scaled","tilting_index","abd_dist_scale
         y_training[pos]=1
     return X_training,y_training
 
-def learning_pipeline(path_to_csv,path_to_images,positives,training_only=False,filtering_data=False,filtering_train=False,P=0.8, copstartframe =500,
+def learning_pipeline(path_to_csv,path_to_images,positives,training_only=False,filtering_data=False,
+filtering_train=False,P=0.8, copstartframe =500,
 featurelist=["angles_w_scaled","angles_b_scaled","tilting_index","abd_dist_scaled","copulationP_scaled"]):
     """pipeline for machine learning"""
-    X,y=import_train_test(path_to_csv,path_to_images,positives,filtering=filtering_train,P=P,featurelist=featurelist)
-    data=prepare_training_data(path_to_csv, filtering=filtering_data,P=P,featurelist=featurelist)
+    X,y=import_train_test(path_to_csv,path_to_images,positives,filtering=filtering_train,P=P,featurelist=featurelist,copstartframe=copstartframe)
+    data=prepare_training_data(path_to_csv, filtering=filtering_data,P=P,featurelist=featurelist,copstartframe=copstartframe)
     logReg,logRegScore,logRegCVScore=train_SGD(X,y,loss="log")
     print("Logistic Regression Test Score: {}".format(logRegScore))
     print("Logistic Regression CV Score: {}".format(logRegCVScore))
@@ -182,16 +187,19 @@ featurelist=["angles_w_scaled","angles_b_scaled","tilting_index","abd_dist_scale
             "RFC":{"model": randomF,"score":randomFScore,"CVScore":randomFCVScore},
             "NB":{"model":NB,"score":NBScore}}
     else:
-        predictionsLogReg=logReg.predict(data)
-        predictionsSVC=suppVC.predict(data)
-        predictionsKnn=knn.predict(data)
-        predictionsRandomF=randomF.predict(data)
-        predictionsNB=NB.predict(data)
+        predictionsLogReg=logReg.predict_proba(data)
+        predictionsSVC=suppVC.predict_proba(data)
+        predictionsKnn=knn.predict_proba(data)
+        predictionsRandomF=randomF.predict_proba(data)
+        predictionsNB=NB.predict_proba(data)
+        ensembePredictions=(predictionsLogReg+predictionsSVC+predictionsKnn+predictionsRandomF+predictionsNB)/5
+        
         models={"LogReg":{"model":logReg,"score":logRegScore,"CVScore":logRegCVScore,"predictions":predictionsLogReg},
                 "SVC":{"model": suppVC,"score":SVCScore,"CVScore":SVCCVScore,"predictions":predictionsSVC},
                 "KNN":{"model":knn,"score":knnScore,"CVScore":knnCVScore,"predictions":predictionsKnn},
                 "RFC":{"model": randomF,"score":randomFScore,"CVScore":randomFCVScore,"predictions":predictionsRandomF},
-                "NB":{"model":NB,"score":NBScore,"predictions":predictionsNB}}
+                "NB":{"model":NB,"score":NBScore,"predictions":predictionsNB},
+                "ensemble":{"predictions":ensembePredictions}}
     dump(models, 'trained_models.joblib') 
     return models
 
@@ -199,3 +207,77 @@ def load_pretrained(filename='trained_models.joblib'):
     """reload the pretrained model"""
     models=load(filename)
     return models
+
+#Regression Models
+
+def train_RidgeRegressor(X,y):
+    X_train, X_test, y_train, y_test = train_test_split(X, y)
+    ridge = RidgeCV()
+    reg = ridge.fit(X_train, y_train)
+    testScore=reg.score(X_test,y_test)
+    y_predicted=reg.predict(X_test)
+    plt.figure()
+    plt.scatter(y_test,y_predicted)
+    plt.show()
+    return reg,testScore
+
+#prepare training data
+
+def coords_to_1D(df_x,df_y):
+    return (600*df_y+df_x)
+
+def prepare_features(headX,headY,abdomenX,abdomenY,wing1X,wing1Y,wing2X,wing2Y):
+    head=scale_angles(coords_to_1D(headX,headY))
+    abdomen=scale_angles(coords_to_1D(abdomenX,abdomenY))
+    wing1=scale_angles(coords_to_1D(wing1X,wing1Y))
+    wing2=scale_angles(coords_to_1D(wing2X,wing2Y))
+    features=[head,abdomen,wing1,wing2]
+    return features
+
+def prepare_male_female_features(path):
+    data=load_csv_file(path)
+    malefeatures=prepare_features(data.MaleHeadX,data.MaleHeadY,
+                                data.MaleAbdomenX,data.MaleAbdomenY,
+                                data.MaleWing1X,data.MaleWing1Y, 
+                                data.MaleWing2X,data.MaleWing2Y)
+
+    femalefeatures=prepare_features(data.FemaleHeadX,data.FemaleHeadY,
+                                data.CopulationX,data.CopulationY,
+                                data.FemaleWing1X,data.FemaleWing1Y, 
+                                data.FemaleWing2X,data.FemaleWing2Y)
+    return malefeatures, femalefeatures
+
+def prepare_regression_training_features(path,label=1):
+    """label: the index of the feature that is used as a label for training purposes;
+    corresponds to the index of features in prepare_features()
+    0:head
+    1:abdomen
+    2:wing1
+    3:wing2
+    """
+    malefeatures, femalefeatures=prepare_male_female_features(path)
+    labelMale=malefeatures[label]
+    del malefeatures[label]
+    malefeat=np.concatenate(malefeatures,axis=1)
+    labelFemale=femalefeatures[label]
+    del femalefeatures[label]
+    femalefeat=np.concatenate(femalefeatures,axis=1)
+    return malefeat,labelMale,femalefeat,labelFemale
+
+def train_regression_models(path,label=1):
+    """label: the index of the feature that is used as a label for training purposes;
+    corresponds to the index of features in prepare_features()
+    0:head
+    1:abdomen
+    2:wing1
+    3:wing2
+    """
+    Xm,ym,Xf,yf = prepare_regression_training_features(path,label=label)
+    maleRidge,maleRidgeScore=train_RidgeRegressor(Xm,ym)
+    femaleRidge,femaleRidgeScore=train_RidgeRegressor(Xf,yf)
+    print("male Ridge Regression Score: {}".format(maleRidgeScore))
+    print("female Ridge Regression Score: {}".format(femaleRidgeScore))
+    
+
+
+
