@@ -46,7 +46,7 @@ def scale_filtered(path,P):
     abd_dist_scaled=scale_angles(abd_dist)
     return angles_w_scaled,angles_b_scaled,wing_dist_male_scaled,wing_dist_female_scaled,abd_dist_scaled
 
-def scale_unfiltered(path):
+def scale_unfiltered(path,copstartframe=500):
     """loads the csv file of deeplabcut data
     specified as the path argument and determines mating angle
     from both wing and body axis data;
@@ -61,8 +61,9 @@ def scale_unfiltered(path):
     wing_dist_female_scaled=scale_angles(wing_dist_female)
     abd_dist_scaled=scale_angles(abd_dist)
     copulationP_scaled=scale_angles(copulationP)
+    tilting_index_scaled=scale_angles(tilting_index_all_frames(wing_dist_male,wing_dist_female,copstartframe))
     
-    return angles_w_scaled,angles_b_scaled,wing_dist_male_scaled,wing_dist_female_scaled,abd_dist_scaled,copulationP_scaled
+    return angles_w_scaled,angles_b_scaled,wing_dist_male_scaled,wing_dist_female_scaled,abd_dist_scaled,copulationP_scaled,tilting_index_scaled
 
 #Classification models
 
@@ -89,7 +90,7 @@ def train_knn(X,y):
     parameters = {'knc__n_neighbors': [1, 2, 3,4,5],
                 'knc__weights': ['uniform','distance']}
     pipe = Pipeline([('feature_selection', SelectFromModel(LinearSVC())),
-                    ('knc', BaggingClassifier(KNeighborsClassifier()))])
+                    ('knc', KNeighborsClassifier())])
     grid_search = GridSearchCV(pipe, parameters, verbose=1)
     knn =grid_search.fit(X_train,y_train) 
     CVScore=grid_search.best_score_ 
@@ -130,14 +131,14 @@ def train_randomForest(X,y):
     return randomF,testScore, CVScore
 
 def prepare_training_data(path, filtering=False,P=0.8,copstartframe=500,
-featurelist=["angles_w_scaled","angles_b_scaled","tilting_index","abd_dist_scaled","copulationP_scaled"]):
+featurelist=["angles_w_scaled","angles_b_scaled","abd_dist_scaled","tilting_index_scaled"]):
     """loads csv file and scales the features, then makes an np.array of the features and returns the array"""
     X=np.array([])
     if filtering:
        angles_w_scaled,angles_b_scaled,wing_dist_male_scaled,wing_dist_female_scaled,abd_dist_scaled = scale_filtered(path,P)
     else:
-       angles_w_scaled,angles_b_scaled,wing_dist_male_scaled,wing_dist_female_scaled,abd_dist_scaled,copulationP_scaled = scale_unfiltered(path)
-    tilting_index=tilting_index_all_frames(wing_dist_male_scaled,wing_dist_female_scaled,copstartframe)
+       angles_w_scaled,angles_b_scaled,wing_dist_male_scaled,wing_dist_female_scaled,abd_dist_scaled,copulationP_scaled,tilting_index_scaled = scale_unfiltered(path,copstartframe=copstartframe)
+    #tilting_index=tilting_index_all_frames(wing_dist_male_scaled,wing_dist_female_scaled,copstartframe)
     for feature in featurelist:
         if X.size>0:
             X=np.append(X,eval(feature),axis=1)
@@ -147,10 +148,10 @@ featurelist=["angles_w_scaled","angles_b_scaled","tilting_index","abd_dist_scale
     return X
 
 def import_train_test(path_to_csv,path_to_images,positives,filtering=False,P=0.8,copstartframe=500,
-featurelist=["angles_w_scaled","angles_b_scaled","tilting_index","abd_dist_scaled","copulationP_scaled"]):
+featurelist=["angles_w_scaled","angles_b_scaled","tilting_index_scaled","abd_dist_scaled","copulationP_scaled"]):
     """prepares training dataset"""
     """if positives is a list of framenumbers, the first frame should be 1"""
-    X = prepare_training_data(path_to_csv,filtering=filtering,P=P,featurelist=featurelist)
+    X = prepare_training_data(path_to_csv,filtering=filtering,P=P,featurelist=featurelist,copstartframe=copstartframe)
     num = [int(re.search('\d+',filename).group(0)) for filename in os.listdir(path_to_images)]  
     num_shifted=[numb-1 for numb in num] 
     X_training=X[num_shifted]
@@ -160,11 +161,34 @@ featurelist=["angles_w_scaled","angles_b_scaled","tilting_index","abd_dist_scale
         y_training[pos]=1
     return X_training,y_training
 
-def learning_pipeline(path_to_csv,path_to_images,positives,training_only=False,filtering_data=False,
-filtering_train=False,P=0.8, copstartframe =500,
-featurelist=["angles_w_scaled","angles_b_scaled","tilting_index","abd_dist_scaled","copulationP_scaled"]):
+def import_train_test_from_csv(path_to_csv,path_to_labels,filtering=False,P=0.8,
+featurelist=["angles_w_scaled","angles_b_scaled","tilting_index_scaled","abd_dist_scaled"]):
+    """prepares training dataset"""
+    """if positives is a list of framenumbers, the first frame should be 1"""
+    labeltable=pd.read_csv(path_to_labels,header=0)
+    copstartframe=int(labeltable[labeltable.keys()[0]][0])
+    nums_neg=[]
+    nums_pos=[]
+    X = prepare_training_data(path_to_csv,filtering=filtering,P=P,featurelist=featurelist,copstartframe=copstartframe)
+    for i in range(0,len(labeltable[labeltable.keys()[1]]),2): 
+        nums_neg=nums_neg+list(range(labeltable[labeltable.keys()[1]][i],labeltable[labeltable.keys()[1]][i+1])) 
+    for i in range(0,len(labeltable[labeltable.keys()[2]]),2): 
+        nums_pos=nums_pos+list(range(labeltable[labeltable.keys()[2]][i],labeltable[labeltable.keys()[2]][i+1]))
+    nums=nums_neg+nums_pos 
+    y_neg=np.zeros(len(nums_neg),int)
+    y_pos=np.ones(len(nums_pos),int)
+    X_training=X[nums]
+    y_training=np.concatenate([y_neg,y_pos])   
+    return X_training,y_training,copstartframe
+
+def learning_pipeline(path_to_csv,path_to_images,positives=[],training_only=False,filtering_data=False,
+filtering_train=False,P=0.8, copstartframe =500, training_from_csv=True,
+featurelist=["angles_w_scaled","angles_b_scaled","abd_dist_scaled","tilting_index_scaled"]):
     """pipeline for machine learning"""
-    X,y=import_train_test(path_to_csv,path_to_images,positives,filtering=filtering_train,P=P,featurelist=featurelist,copstartframe=copstartframe)
+    if training_from_csv:
+        X,y,copstartframe=import_train_test_from_csv(path_to_csv,path_to_images,filtering=filtering_train,P=P,featurelist=featurelist)
+    else:
+        X,y=import_train_test(path_to_csv,path_to_images,positives,filtering=filtering_train,P=P,featurelist=featurelist,copstartframe=copstartframe)
     data=prepare_training_data(path_to_csv, filtering=filtering_data,P=P,featurelist=featurelist,copstartframe=copstartframe)
     logReg,logRegScore,logRegCVScore=train_SGD(X,y,loss="log")
     print("Logistic Regression Test Score: {}".format(logRegScore))
@@ -180,6 +204,7 @@ featurelist=["angles_w_scaled","angles_b_scaled","tilting_index","abd_dist_scale
     print("Random Forest CV Score: {}".format(randomFCVScore))
     NB,NBScore=train_NB(X,y)
     print("Naive Bayes Test Score: {}".format(NBScore))
+
     if training_only:
         models={"LogReg":{"model":logReg,"score":logRegScore,"CVScore":logRegCVScore},
             "SVC":{"model": suppVC,"score":SVCScore,"CVScore":SVCCVScore},
@@ -192,14 +217,17 @@ featurelist=["angles_w_scaled","angles_b_scaled","tilting_index","abd_dist_scale
         predictionsKnn=knn.predict_proba(data)
         predictionsRandomF=randomF.predict_proba(data)
         predictionsNB=NB.predict_proba(data)
+        #creating predictions by averaging the predicted class probabilities from each model
         ensembePredictions=(predictionsLogReg+predictionsSVC+predictionsKnn+predictionsRandomF+predictionsNB)/5
-        
+        classPredictions=np.apply_along_axis(np.argmax,1,ensembePredictions)
+        plt.plot(predictionsLogReg,predictionsSVC,predictionsKnn,predictionsRandomF,predictionsNB,ensembePredictions)
+        plt.show()
         models={"LogReg":{"model":logReg,"score":logRegScore,"CVScore":logRegCVScore,"predictions":predictionsLogReg},
                 "SVC":{"model": suppVC,"score":SVCScore,"CVScore":SVCCVScore,"predictions":predictionsSVC},
                 "KNN":{"model":knn,"score":knnScore,"CVScore":knnCVScore,"predictions":predictionsKnn},
                 "RFC":{"model": randomF,"score":randomFScore,"CVScore":randomFCVScore,"predictions":predictionsRandomF},
                 "NB":{"model":NB,"score":NBScore,"predictions":predictionsNB},
-                "ensemble":{"predictions":ensembePredictions}}
+                "ensemble":{"predictions":ensembePredictions,"classPredictions":classPredictions}}
     dump(models, 'trained_models.joblib') 
     return models
 
@@ -207,6 +235,24 @@ def load_pretrained(filename='trained_models.joblib'):
     """reload the pretrained model"""
     models=load(filename)
     return models
+
+def apply_pretrained(models,data):
+    """apply the pretrained model to new data"""
+    #load models
+    logReg=models["LogReg"]["model"]
+    suppVC=models["SVC"]["model"]
+    knn=models["KNN"]["model"]
+    randomF=models["RFC"]["model"]
+    NB=models["NB"]["model"]
+    #predict data
+    predictionsLogReg=logReg.predict_proba(data)
+    predictionsSVC=suppVC.predict_proba(data)
+    predictionsKnn=knn.predict_proba(data)
+    predictionsRandomF=randomF.predict_proba(data)
+    predictionsNB=NB.predict_proba(data)
+    ensembePredictions=(predictionsLogReg+predictionsSVC+predictionsKnn+predictionsRandomF+predictionsNB)/5
+    classPredictions=np.apply_along_axis(np.argmax,1,ensembePredictions)
+    return classPredictions
 
 #Regression Models
 
