@@ -252,7 +252,8 @@ def apply_pretrained(models,data):
     predictionsNB=NB.predict_proba(data)
     ensembePredictions=(predictionsLogReg+predictionsSVC+predictionsKnn+predictionsRandomF+predictionsNB)/5
     classPredictions=np.apply_along_axis(np.argmax,1,ensembePredictions)
-    return classPredictions
+    fraction_positives=len(classPredictions[classPredictions==1])/len(classPredictions)
+    return classPredictions,fraction_positives
 
 #Regression Models
 
