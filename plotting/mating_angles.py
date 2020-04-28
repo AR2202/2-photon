@@ -130,13 +130,13 @@ def mating_angle_from_body_axis(FemaleHeadX, FemaleHeadY,
     signDeltaxF = signDeltax2(deltaxF)
     if  signDeltaxF == 0:
         signDeltaxF = signDeltax2(deltayF)
-        signDeltaxM = signDeltax2(DeltayM)
+        signDeltaxM = signDeltax2(deltayM)
         femaleAngle = signDeltaxF * math.pi/2
     else:
         signDeltaxM = signDeltax2(deltaxM)
         if  signDeltaxM == 0:
             signDeltaxF = signDeltax2(deltayF)
-            signDeltaxM = signDeltax2(DeltayM)
+            signDeltaxM = signDeltax2(deltayM)
             maleAngle = signDeltaxM * math.pi/2
     relativeSign = signDeltaxF * signDeltaxM
     matingAngle = mating_angle_from_angles(maleAngle,
@@ -268,7 +268,8 @@ def filtered_outputs(path,P):
     wing_dist_male=dataF.apply(wing_distance_male, axis=1)
     wing_dist_female=dataF.apply(wing_distance_female, axis=1)
     abd_dist=dataF.apply(abd_distance, axis=1)
-    return angles_w,angles_b,wing_dist_male,wing_dist_female,abd_dist
+    head_dist=data.apply(head_distance, axis=1)
+    return angles_w,angles_b,wing_dist_male,wing_dist_female,abd_dist,head_dist
 
 def unfiltered_outputs(path):
     """loads the csv file of deeplabcut data
@@ -285,8 +286,9 @@ def unfiltered_outputs(path):
     wing_dist_male=data.apply(wing_distance_male, axis=1)
     wing_dist_female=data.apply(wing_distance_female, axis=1)
     abd_dist=data.apply(abd_distance, axis=1)
+    head_dist=data.apply(head_distance, axis=1)
     copulationP=data.CopulationP
-    return angles_w,angles_b,wing_dist_male,wing_dist_female,abd_dist,copulationP
+    return angles_w,angles_b,wing_dist_male,wing_dist_female,abd_dist,head_dist,copulationP
 
 def tilting_row(df):
     """calculates tilting index for one row"""
@@ -318,6 +320,11 @@ def tilting_index_all_frames(malewingdist,femalewingdist,copstartframe):
 def abd_distance(df):
     distanceMF = distance(df.MaleAbdomenX,df.MaleAbdomenY,
                                         df.CopulationX,df.CopulationY)
+    return distanceMF
+
+def head_distance(df):
+    distanceMF = distance(df.MaleHeadX,df.MaleHeadY,
+                                        df.FemaleHeadX,df.FemaleHeadY)
     return distanceMF
 
 def distance(xmale,ymale, xfemale,yfemale):
