@@ -18,6 +18,7 @@ from sklearn.model_selection import cross_val_score,GridSearchCV,train_test_spli
 from sklearn.preprocessing import StandardScaler,MinMaxScaler
 from sklearn.naive_bayes import GaussianNB
 from sklearn.ensemble import BaggingClassifier
+from sklearn.metrics import accuracy_score,balanced_accuracy_score,f1_score,log_loss,roc_auc_score
 from joblib import dump,load
 
 #Feature scaling
@@ -25,7 +26,6 @@ from joblib import dump,load
 def scale_angles(angles):
     angles_matrix=angles.values.reshape(-1,1)
     scaled=sklearn.preprocessing.MinMaxScaler()
-    standardized=StandardScaler()
     scaled_angles=scaled.fit_transform(angles_matrix) 
     return(scaled_angles)
 
@@ -182,36 +182,60 @@ featurelist=["angles_w_scaled","angles_b_scaled","tilting_index_scaled","abd_dis
     return X_training,y_training,copstartframe
 
 def learning_pipeline(path_to_csv,path_to_images,positives=[],training_only=False,filtering_data=False,
-filtering_train=False,P=0.8, copstartframe =500, training_from_csv=True,
+filtering_train=False,P=0.8, copstartframe =500, training_from_csv=True, filename='trained_models.joblib',
 featurelist=["angles_w_scaled","angles_b_scaled","abd_dist_scaled","tilting_index_scaled"]):
     """pipeline for machine learning"""
     if training_from_csv:
         X,y,copstartframe=import_train_test_from_csv(path_to_csv,path_to_images,filtering=filtering_train,P=P,featurelist=featurelist)
     else:
         X,y=import_train_test(path_to_csv,path_to_images,positives,filtering=filtering_train,P=P,featurelist=featurelist,copstartframe=copstartframe)
-    data=prepare_training_data(path_to_csv, filtering=filtering_data,P=P,featurelist=featurelist,copstartframe=copstartframe)
-    logReg,logRegScore,logRegCVScore=train_SGD(X,y,loss="log")
+    X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(X, y)
+    logReg,logRegScore,logRegCVScore=train_SGD(X_train,y_train,loss="log")
     print("Logistic Regression Test Score: {}".format(logRegScore))
     print("Logistic Regression CV Score: {}".format(logRegCVScore))
-    suppVC,SVCScore,SVCCVScore=train_SVC(X,y)
+    suppVC,SVCScore,SVCCVScore=train_SVC(X_train,y_train)
     print("Support Vector Machine Test Score: {}".format(SVCScore))
     print("Support Vector Machine CV Score: {}".format(SVCCVScore))
-    knn,knnScore,knnCVScore=train_knn(X,y)
+    knn,knnScore,knnCVScore=train_knn(X_train,y_train)
     print("K Nearest Neighbors Test Score: {}".format(knnScore))
     print("K Nearest Neighbors CV Score: {}".format(knnCVScore))
-    randomF,randomFScore,randomFCVScore=train_randomForest(X,y)
+    randomF,randomFScore,randomFCVScore=train_randomForest(X_train,y_train)
     print("Random Forest Test Score: {}".format(randomFScore))
     print("Random Forest CV Score: {}".format(randomFCVScore))
-    NB,NBScore=train_NB(X,y)
+    NB,NBScore=train_NB(X_train,y_train)
     print("Naive Bayes Test Score: {}".format(NBScore))
+    #evaluation of the ensemble model
+    predLogReg=logReg.predict_proba(X_test)
+    predSVC=suppVC.predict_proba(X_test)
+    predKnn=knn.predict_proba(X_test)
+    predRandomF=randomF.predict_proba(X_test)
+    predNB=NB.predict_proba(X_test)
+    #creating predictions by averaging the predicted class probabilities from each model
+    ensemblePred=(predLogReg+predSVC+predKnn+predRandomF+predNB)/5
+    yProb=ensemblePred[:,1]
+    yPred=np.apply_along_axis(np.argmax,1,ensemblePred)
+    accuracy=accuracy_score(y_test,yPred)
+    balanced_accuracy=balanced_accuracy_score(y_test,yPred)
+    f1=f1_score(y_test,yPred)
+    logloss=log_loss(y_test,yProb)
+    rocauc=roc_auc_score(y_test,yProb)
+    print("Ensemble Model Accuracy Score: {}".format(accuracy))
+    print("Ensemble Model Balanced Accuracy Score: {}".format(balanced_accuracy))
+    print("Ensemble Model F1 Score: {}".format(f1))
+    print("Ensemble Model Log Loss Score: {}".format(logloss))
+    print("Ensemble Model ROC AUC Score: {}".format(rocauc))
 
     if training_only:
         models={"LogReg":{"model":logReg,"score":logRegScore,"CVScore":logRegCVScore},
             "SVC":{"model": suppVC,"score":SVCScore,"CVScore":SVCCVScore},
             "KNN":{"model":knn,"score":knnScore,"CVScore":knnCVScore},
             "RFC":{"model": randomF,"score":randomFScore,"CVScore":randomFCVScore},
-            "NB":{"model":NB,"score":NBScore}}
+            "NB":{"model":NB,"score":NBScore},
+            "ensemble":{"accuracy":accuracy}}
     else:
+        #making predictions for the data
+        data=prepare_training_data(path_to_csv, filtering=filtering_data,P=P,
+        featurelist=featurelist,copstartframe=copstartframe)
         predictionsLogReg=logReg.predict_proba(data)
         predictionsSVC=suppVC.predict_proba(data)
         predictionsKnn=knn.predict_proba(data)
@@ -220,15 +244,15 @@ featurelist=["angles_w_scaled","angles_b_scaled","abd_dist_scaled","tilting_inde
         #creating predictions by averaging the predicted class probabilities from each model
         ensembePredictions=(predictionsLogReg+predictionsSVC+predictionsKnn+predictionsRandomF+predictionsNB)/5
         classPredictions=np.apply_along_axis(np.argmax,1,ensembePredictions)
-        #plt.plot(predictionsLogReg,predictionsSVC,predictionsKnn,predictionsRandomF,predictionsNB,ensembePredictions)
-        #plt.show()
+        
+        
         models={"LogReg":{"model":logReg,"score":logRegScore,"CVScore":logRegCVScore,"predictions":predictionsLogReg},
                 "SVC":{"model": suppVC,"score":SVCScore,"CVScore":SVCCVScore,"predictions":predictionsSVC},
                 "KNN":{"model":knn,"score":knnScore,"CVScore":knnCVScore,"predictions":predictionsKnn},
                 "RFC":{"model": randomF,"score":randomFScore,"CVScore":randomFCVScore,"predictions":predictionsRandomF},
                 "NB":{"model":NB,"score":NBScore,"predictions":predictionsNB},
-                "ensemble":{"predictions":ensembePredictions,"classPredictions":classPredictions}}
-    dump(models, 'trained_models.joblib') 
+                "ensemble":{"predictions":ensembePredictions,"classPredictions":classPredictions,"accuracy":accuracy}}
+    dump(models, filename) 
     return models
 
 def load_pretrained(filename='trained_models.joblib'):
@@ -238,6 +262,7 @@ def load_pretrained(filename='trained_models.joblib'):
 
 def apply_pretrained(models,data,startframe=0):
     """apply the pretrained model to new data"""
+    """startframe can be used to subset data - for example to include only copulation frames"""
     #load models
     logReg=models["LogReg"]["model"]
     suppVC=models["SVC"]["model"]
