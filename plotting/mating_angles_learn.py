@@ -220,8 +220,8 @@ featurelist=["angles_w_scaled","angles_b_scaled","abd_dist_scaled","tilting_inde
         #creating predictions by averaging the predicted class probabilities from each model
         ensembePredictions=(predictionsLogReg+predictionsSVC+predictionsKnn+predictionsRandomF+predictionsNB)/5
         classPredictions=np.apply_along_axis(np.argmax,1,ensembePredictions)
-        plt.plot(predictionsLogReg,predictionsSVC,predictionsKnn,predictionsRandomF,predictionsNB,ensembePredictions)
-        plt.show()
+        #plt.plot(predictionsLogReg,predictionsSVC,predictionsKnn,predictionsRandomF,predictionsNB,ensembePredictions)
+        #plt.show()
         models={"LogReg":{"model":logReg,"score":logRegScore,"CVScore":logRegCVScore,"predictions":predictionsLogReg},
                 "SVC":{"model": suppVC,"score":SVCScore,"CVScore":SVCCVScore,"predictions":predictionsSVC},
                 "KNN":{"model":knn,"score":knnScore,"CVScore":knnCVScore,"predictions":predictionsKnn},
@@ -236,7 +236,7 @@ def load_pretrained(filename='trained_models.joblib'):
     models=load(filename)
     return models
 
-def apply_pretrained(models,data):
+def apply_pretrained(models,data,startframe=0):
     """apply the pretrained model to new data"""
     #load models
     logReg=models["LogReg"]["model"]
@@ -252,6 +252,7 @@ def apply_pretrained(models,data):
     predictionsNB=NB.predict_proba(data)
     ensembePredictions=(predictionsLogReg+predictionsSVC+predictionsKnn+predictionsRandomF+predictionsNB)/5
     classPredictions=np.apply_along_axis(np.argmax,1,ensembePredictions)
+    classPredictions=classPredictions[startframe:]
     fraction_positives=len(classPredictions[classPredictions==1])/len(classPredictions)
     return classPredictions,fraction_positives
 
