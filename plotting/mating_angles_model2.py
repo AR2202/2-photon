@@ -12,27 +12,21 @@ def load_csv_file(path):
     FemaleHeadX=datatable['FemaleHead'][1:]
     FemaleHeadY=datatable['FemaleHead.1'][1:]
     FemaleHeadP=datatable['FemaleHead.2'][1:]
-    FemaleWing1X=datatable['FemaleWing1'][1:]
-    FemaleWing1Y=datatable['FemaleWing1.1'][1:]
-    FemaleWing1P=datatable['FemaleWing1.2'][1:]
-    FemaleWing2X=datatable['FemaleWing2'][1:]
-    FemaleWing2Y=datatable['FemaleWing2.1'][1:]
-    FemaleWing2P=datatable['FemaleWing2.2'][1:]
     MaleHeadX=datatable['MaleHead'][1:]
     MaleHeadY=datatable['MaleHead.1'][1:]
     MaleHeadP=datatable['MaleHead.2'][1:]
-    MaleWing1X=datatable['MaleWing1'][1:]
-    MaleWing1Y=datatable['MaleWing1.1'][1:]
-    MaleWing1P=datatable['MaleWing1.2'][1:]
-    MaleWing2X=datatable['MaleWing2'][1:]
-    MaleWing2Y=datatable['MaleWing2.1'][1:]
-    MaleWing2P=datatable['MaleWing2.2'][1:]
+    MaleLeftShoulderX=datatable['MaleLeftShoulder'][1:]
+    MaleLeftShoulderY=datatable['MaleLeftShoulder.1'][1:]
+    MaleLeftShoulderP=datatable['MaleLeftShoulder.2'][1:]
+    MaleRightShoulderX=datatable['MaleRightShoulder'][1:]
+    MaleRightShoulderY=datatable['MaleRightShoulder.1'][1:]
+    MaleRightShoulderP=datatable['MaleRightShoulder.2'][1:]
     MaleAbdomenX = datatable['MaleAbdomen'][1:]
     MaleAbdomenY = datatable['MaleAbdomen.1'][1:]
     MaleAbdomenP = datatable['MaleAbdomen.2'][1:]
-    CopulationX=datatable['Copulation'][1:]
-    CopulationY=datatable['Copulation.1'][1:]
-    CopulationP=datatable['Copulation.2'][1:]
+    FemaleAbdomenX=datatable['FemaleAbdomen'][1:]
+    FemaleAbdomenY=datatable['FemaleAbdomen.1'][1:]
+    FemaleAbdomenP=datatable['FemaleAbdomen.2'][1:]
     localvars = locals()
     del localvars["path"]
     del localvars["datatable"]
@@ -77,50 +71,13 @@ and the relative sign of their facing direction"""
     return matingAngle
     
 
-def mating_angle (FemaleWing1X,FemaleWing1Y,
-                  FemaleWing2X,FemaleWing2Y,
-                  MaleWing1X,MaleWing1Y,
-                  MaleWing2X,MaleWing2Y):
-    """determines mating angle from the wing position data"""
-    deltaxF =  FemaleWing2X -  FemaleWing1X
-    deltayF =  FemaleWing2Y -  FemaleWing1Y
-    deltaxM =  MaleWing2X   -  MaleWing1X
-    deltayM =  MaleWing2Y   -  MaleWing1Y
-
-    femaleAngle = np.arctan(deltayF/deltaxF)
-    maleAngle   = np.arctan(deltayM/deltaxM)
-
-    signDeltaxF = signDeltax(deltaxF,deltayF)
-    signDeltaxM = signDeltax(deltaxM,deltayM)
-    relativeSign = signDeltaxF * signDeltaxM
-    matingAngle = mating_angle_from_angles(maleAngle,
-                                           femaleAngle,
-                                           relativeSign)
-    return matingAngle
-    
-
-def mating_angle_pd_df(df):
-    """applies the mating angle function to a row in a pandas dataframe"""
-    matingAngleRow = mating_angle(df.FemaleWing1X,df.FemaleWing1Y,
-                                  df.FemaleWing2X,df.FemaleWing2Y,
-                                  df.MaleWing1X,df.MaleWing1Y,
-                                  df.MaleWing2X,df.MaleWing2Y)
-    return matingAngleRow
-
-    
-def mating_angles_all_rows(path):
-    """applies the mating angle function to all rows in a dataframe"""
-    data=load_csv_file(path)
-    angles=data.apply(mating_angle_pd_df, axis=1)
-    return angles
-
 def mating_angle_from_body_axis(FemaleHeadX, FemaleHeadY,
-                                CopulationX,CopulationY,
+                                FemaleAbdomenX,FemaleAbdomenY,
                                 MaleHeadX,MaleHeadY,
                                 MaleAbdomenX,MaleAbdomenY):
     """determines mating angle from the head and abdomen position data"""
-    deltaxF =  FemaleHeadX -  CopulationX
-    deltayF =  FemaleHeadY -  CopulationY
+    deltaxF =  FemaleHeadX -  FemaleAbdomenX
+    deltayF =  FemaleHeadY -  FemaleAbdomenY
     deltaxM =  MaleHeadX   -  MaleAbdomenX
     deltayM =  MaleHeadY   -  MaleAbdomenY
 
@@ -143,11 +100,11 @@ def mating_angle_from_body_axis(FemaleHeadX, FemaleHeadY,
                                            femaleAngle,
                                            relativeSign)
     return matingAngle
-     
+
 def mating_angle_from_body_axis_pd_df(df):
     """applies the mating_angle_from_body_axis function to a row in a pandas dataframe"""
     matingAngleRow = mating_angle_from_body_axis(df.FemaleHeadX,df.FemaleHeadY,
-                                  df.CopulationX,df.CopulationY,
+                                  df.FemaleAbdomenX,df.FemaleAbdomenY,
                                   df.MaleHeadX,df.MaleHeadY,
                                   df.MaleAbdomenX,df.MaleAbdomenY)
     return matingAngleRow
@@ -159,17 +116,6 @@ def mating_angles_all_rows_from_body_axis(path):
     angles=data.apply(mating_angle_from_body_axis_pd_df, axis=1)
     return angles
 
-def mating_angles_from_wing_and_body_axis(path):
-    """loads the csv file of deeplabcut data
-    specified as the path argument and determines mating angle
-    from both wing and body axis data;
-    returns the angles based on wing data and the angles based on body axis
-    (in this order)
-    This is the function that should be used if you want no filtering of data"""
-    data=load_csv_file(path)
-    angles_w=data.apply(mating_angle_pd_df, axis=1)
-    angles_b=data.apply(mating_angle_from_body_axis_pd_df, axis=1)
-    return angles_w,angles_b
 
 
 def filter_by_likelihood_body(data,P):
@@ -179,29 +125,12 @@ def filter_by_likelihood_body(data,P):
     isLargeHeadP=data.MaleHeadP>P
     isLargeAbdP=data.MaleAbdomenP>P
     isLargeHeadFP=data.FemaleHeadP>P
-    isLargeAbdFP=data.CopulationP>P
+    isLargeAbdFP=data.FemaleAbdomenP>P
     data_filtered=data[isLargeHeadP & isLargeAbdP & isLargeHeadFP & isLargeAbdFP]
     return data_filtered
 
-def filter_by_likelihood_wing(data,P):
-    """filteres the data (in pandas dataframe format)
-    by those where wing parameters have a 
-    likelihood >P """
-    isLargeLWingM=data.MaleWing1P>P
-    isLargeRWingM=data.MaleWing2P>P
-    isLargeLWingF=data.FemaleWing1P>P
-    isLargeRWingF=data.FemaleWing2P>P
-    data_filtered=data[isLargeLWingM & isLargeRWingM  & isLargeLWingF &isLargeRWingF]
-    return data_filtered
 
 
-def filter_all_likelihood(data,P):
-    """filteres the data (in pandas dataframe format)
-    by those where both body axis and wing parameters have a 
-    likelihood >P """
-    data_filtered1=filter_by_likelihood_body(data,P)
-    data_filtered2=filter_by_likelihood_wing(data_filtered1,P)
-    return data_filtered2
     
 def filtered_mating_angles(path,P):
     """loads the csv file of deeplabcut data
@@ -212,21 +141,17 @@ def filtered_mating_angles(path,P):
     This is the function that should be used if you want filtering of data by 
     those with a likelihood > P"""
     data=load_csv_file(path)
-    dataF=filter_all_likelihood(data,P)
-    angles_w=dataF.apply(mating_angle_pd_df, axis=1)
+    dataF=filter_by_likelihood_body(data,P)
     angles_b=dataF.apply(mating_angle_from_body_axis_pd_df, axis=1)
-    return angles_w,angles_b
+    return angles_b
 
 def wing_distance_male(df):
     """calculates distance between wings"""
-    wing_distance_male = wing_distance(df.MaleWing1X,df.MaleWing1Y,
-                                        df.MaleWing2X,df.MaleWing2Y)
+    wing_distance_male = wing_distance(df.MaleLeftShoulderX,df.MaleLeftShoulderY,
+                                        df.MaleRightShoulderX,df.MaleRightShoulderY)
     return wing_distance_male
 
-def wing_distance_female(df):
-    wing_distance_female = wing_distance(df.FemaleWing1X,df.FemaleWing1Y,
-                                        df.FemaleWing2X,df.FemaleWing2Y)
-    return wing_distance_female
+
 
 def wing_distance(wing1x,wing1y, wing2x,wing2y):
     distance=math.sqrt((wing1x-wing2x)**2+(wing1y-wing2y)**2)
@@ -238,8 +163,7 @@ def wing_distance_all_rows(path):
    This is the function that should be used if you want no filtering of data"""
     data=load_csv_file(path)
     wing_dist_male=data.apply(wing_distance_male, axis=1)
-    wing_dist_female=data.apply(wing_distance_female, axis=1)
-    return wing_dist_male, wing_dist_female
+    return wing_dist_male
 
 def filtered_wing_distance(path,P):
     """loads the csv file of deeplabcut data
@@ -247,79 +171,62 @@ def filtered_wing_distance(path,P):
     This is the function that should be used if you want filtering of data by 
     those with a likelihood > P"""
     data=load_csv_file(path)
-    dataF=filter_all_likelihood(data,P)
+    dataF=filter_by_likelihood_body(data,P)
     wing_dist_male=dataF.apply(wing_distance_male, axis=1)
-    wing_dist_female=dataF.apply(wing_distance_female, axis=1)
-    return wing_dist_male, wing_dist_female
+    return wing_dist_male
 
 def filtered_outputs(path,P):
     """loads the csv file of deeplabcut data
     specified as the path argument and determines mating angle
     from both wing and body axis data as well as wing distance;
-    returns the angles based on wing data and the angles based on body axis, 
-    male wing distance, female wing distance,distance between male and female abdomen
-    (in this order)
+    
     This is the function that should be used if you want filtering of data by 
     those with a likelihood > P"""
     data=load_csv_file(path)
-    dataF=filter_all_likelihood(data,P)
-    angles_w=dataF.apply(mating_angle_pd_df, axis=1)
+    dataF=filter_by_likelihood_body(data,P)
     angles_b=dataF.apply(mating_angle_from_body_axis_pd_df, axis=1)
     wing_dist_male=dataF.apply(wing_distance_male, axis=1)
-    wing_dist_female=dataF.apply(wing_distance_female, axis=1)
     abd_dist=dataF.apply(abd_distance, axis=1)
     head_dist=data.apply(head_distance, axis=1)
-    return angles_w,angles_b,wing_dist_male,wing_dist_female,abd_dist,head_dist
+    return angles_b,wing_dist_male,abd_dist,head_dist
 
 def unfiltered_outputs(path):
     """loads the csv file of deeplabcut data
     specified as the path argument and determines mating angle
     from both wing and body axis data as well as wing distance;
-    returns the angles based on wing data and the angles based on body axis, 
-    male wing distance, female wing distance,distance between male and female abdomen
-    (in this order)
+    
     This is the function that should be used if you don't want filtering of data by 
     those with a likelihood > P"""
     data=load_csv_file(path)
-    angles_w=data.apply(mating_angle_pd_df, axis=1)
     angles_b=data.apply(mating_angle_from_body_axis_pd_df, axis=1)
     wing_dist_male=data.apply(wing_distance_male, axis=1)
-    wing_dist_female=data.apply(wing_distance_female, axis=1)
     abd_dist=data.apply(abd_distance, axis=1)
     head_dist=data.apply(head_distance, axis=1)
-    copulationP=data.CopulationP
-    return angles_w,angles_b,wing_dist_male,wing_dist_female,abd_dist,head_dist,copulationP
+    return angles_b,wing_dist_male,abd_dist,head_dist
 
 def tilting_row(df):
     """calculates tilting index for one row"""
-    tilting = (df.male_wingdist/df.female_wingdist)
+    tilting = df.male_wingdist
     return tilting
 
-def tilting_index(malewingdist,femalewingdist,copstartframe):
+def tilting_index(malewingdist,copstartframe):
     """applies tilting_row function to the dataframe,
     taking all frames before copstartframe as baseline"""
     male_resting=np.median(malewingdist[1:copstartframe-1])
-    female_resting=np.median(femalewingdist[1:copstartframe-1])
-    relative_rest=male_resting/female_resting
-    wingdist_both=pd.concat({"male_wingdist":malewingdist,"female_wingdist":femalewingdist},axis=1)
-    tilting = wingdist_both[copstartframe:].apply(tilting_row,axis=1)
-    tilting_ind=tilting/relative_rest
+    tilting = malewingdist[copstartframe:]
+    tilting_ind=tilting/male_resting
     return tilting_ind
 
-def tilting_index_all_frames(malewingdist,femalewingdist,copstartframe):
+def tilting_index_all_frames(malewingdist,copstartframe):
     """applies tilting_row function to the dataframe,
     taking all frames before copstartframe as baseline"""
     male_resting=np.median(malewingdist[1:copstartframe-1])
-    female_resting=np.median(femalewingdist[1:copstartframe-1])
-    relative_rest=male_resting/female_resting
-    wingdist_both=pd.concat({"male_wingdist":malewingdist,"female_wingdist":femalewingdist},axis=1)
-    tilting = wingdist_both.apply(tilting_row,axis=1)
-    tilting_ind=tilting/relative_rest
+    tilting_ind=malewingdist/male_resting
     return tilting_ind
 
 def abd_distance(df):
     distanceMF = distance(df.MaleAbdomenX,df.MaleAbdomenY,
-                                        df.CopulationX,df.CopulationY)
+                                        df.FemaleAbdomenX,df.FemaleAbdomenY)
     return distanceMF
 
 def head_distance(df):
