@@ -1,15 +1,18 @@
 import numpy as np
 import math
 import sys
+#this path needs to be updated for your machine
 sys.path.append("/Users/annika/Documents/git_repos/2-photon/plotting")
 import mating_angles_model2
 from mating_angles_model2 import filtered_outputs,unfiltered_outputs,tilting_index
 import mating_angles_labelled
 from mating_angles_labelled import mating_angles_labelled
-#paths to data -
+#paths to data - enter your paths here
 
 path_to_data1='/Volumes/LaCie/Projects/Matthew/behaviour/R1_Exp2_Chamber1DLC_resnet50_Model3Apr24shuffle1_300000.csv' 
 path_to_data2='/Volumes/LaCie/Projects/Matthew/behaviour/R1_G10Ctrl3_Chamber3DLC_resnet50_Model3Apr24shuffle1_300000.csv' 
+#comment out these paths if you don't have labels
+
 path_to_control_labels='/Volumes/LaCie/Projects/Matthew/behaviour/Ch3_chamber3.csv'  
 path_to_exp_labels='/Volumes/LaCie/Projects/Matthew/behaviour/Exp2_chamber1.csv'  
 #calculating mating angles
@@ -25,6 +28,7 @@ median2tilting=np.median(tilting2)
 print("median mating angle and tilting index in group 1: {},{}".format(median1,median1tilting))
 print("median mating angle and tilting index in group 2: {},{}".format(median2,median2tilting))
 #calculating mating angles of labelled data
+#comment out this whole section if you don't have labelled data
 angles_pos2,angles_neg2=mating_angles_labelled(path_to_data2,path_to_control_labels)
 median_pos2=180*np.median(angles_pos2)/math.pi
 median_neg2=180*np.median(angles_neg2)/math.pi
