@@ -20,6 +20,8 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.ensemble import BaggingClassifier
 from sklearn.metrics import accuracy_score,balanced_accuracy_score,f1_score,log_loss,roc_auc_score
 from joblib import dump,load
+#This is the machine learning model for DLC model2
+#expects the data to be created by a DLC model that labels both flies' Head and Abdomen as well as the male's Shoulders
 
 #Feature scaling
 
@@ -158,34 +160,44 @@ featurelist=["angles_b_scaled","tilting_index_scaled","head_dist_scaled","abd_di
         y_training[pos]=1
     return X_training,y_training
 
-def import_train_test_from_csv(path_to_csv,path_to_labels,filtering=False,P=0.8,
+def import_train_test_from_csv(paths_to_csv,paths_to_labels,filtering=False,P=0.8,
 featurelist=["angles_b_scaled","tilting_index_scaled","head_dist_scaled","abd_dist_scaled"]):
     """prepares training dataset"""
-    
-    labeltable=pd.read_csv(path_to_labels,header=0)
-    copstartframe=int(labeltable[labeltable.keys()[0]][0])
-    nums_neg=[]
-    nums_pos=[]
-    X = prepare_training_data(path_to_csv,filtering=filtering,P=P,featurelist=featurelist,copstartframe=copstartframe)
-    for i in range(0,len(labeltable[labeltable.keys()[1]]),2): 
-        nums_neg=nums_neg+list(range(labeltable[labeltable.keys()[1]][i],labeltable[labeltable.keys()[1]][i+1])) 
-    for i in range(0,len(labeltable[labeltable.keys()[2]]),2): 
-        nums_pos=nums_pos+list(range(labeltable[labeltable.keys()[2]][i],labeltable[labeltable.keys()[2]][i+1]))
-    nums=nums_neg+nums_pos 
-    y_neg=np.zeros(len(nums_neg),int)
-    y_pos=np.ones(len(nums_pos),int)
-    X_training=X[nums]
-    y_training=np.concatenate([y_neg,y_pos])   
-    return X_training,y_training,copstartframe
+    copstartframes=[]
+    Xs_training=np.array([])
+    ys_training=np.array([])
+    for path_to_csv,path_to_labels in zip (paths_to_csv,paths_to_labels):
+        labeltable=pd.read_csv(path_to_labels,header=0)
+        copstartframe=int(labeltable[labeltable.keys()[0]][0])
+        nums_neg=[]
+        nums_pos=[]
+        X = prepare_training_data(path_to_csv,filtering=filtering,P=P,featurelist=featurelist,copstartframe=copstartframe)
+        for i in range(0,len(labeltable[labeltable.keys()[1]]),2): 
+            nums_neg=nums_neg+list(range(labeltable[labeltable.keys()[1]][i],labeltable[labeltable.keys()[1]][i+1])) 
+        for i in range(0,len(labeltable[labeltable.keys()[2]]),2): 
+            nums_pos=nums_pos+list(range(labeltable[labeltable.keys()[2]][i],labeltable[labeltable.keys()[2]][i+1]))
+        nums=nums_neg+nums_pos 
+        y_neg=np.zeros(len(nums_neg),int)
+        y_pos=np.ones(len(nums_pos),int)
+        X_training=X[nums]
+        y_training=np.concatenate([y_neg,y_pos]) 
+        ys_training=np.concatenate([ys_training,y_training]) 
+        if Xs_training.size>0:
+            Xs_training=np.concatenate([Xs_training,X_training])   
+        else:
+            Xs_training=X_training
+        copstartframes.append(copstartframe)
+    return Xs_training,ys_training,copstartframes
 
-def learning_pipeline(path_to_csv,path_to_images,positives=[],training_only=False,filtering_data=False,
+def learning_pipeline(paths_to_csv,paths_to_images,positives=[],training_only=True,filtering_data=False,
 filtering_train=False,P=0.8, copstartframe =500, training_from_csv=True, filename='trained_models.joblib',
 featurelist=["angles_b_scaled","head_dist_scaled","abd_dist_scaled","tilting_index_scaled"]):
     """pipeline for machine learning"""
     if training_from_csv:
-        X,y,copstartframe=import_train_test_from_csv(path_to_csv,path_to_images,filtering=filtering_train,P=P,featurelist=featurelist)
+        X,y,copstartframes=import_train_test_from_csv(paths_to_csv,paths_to_images,filtering=filtering_train,P=P,featurelist=featurelist)
+        copstartframe=copstartframes[0]
     else:
-        X,y=import_train_test(path_to_csv,path_to_images,positives,filtering=filtering_train,P=P,featurelist=featurelist,copstartframe=copstartframe)
+        X,y=import_train_test(paths_to_csv[0],paths_to_images[0],positives,filtering=filtering_train,P=P,featurelist=featurelist,copstartframe=copstartframe)
     X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(X, y)
     logReg,logRegScore,logRegCVScore=train_SGD(X_train,y_train,loss="log")
     print("Logistic Regression Test Score: {}".format(logRegScore))
@@ -231,7 +243,7 @@ featurelist=["angles_b_scaled","head_dist_scaled","abd_dist_scaled","tilting_ind
             "ensemble":{"accuracy":accuracy,"F1":f1,"LogLoss":logloss,"ROCAUC":rocauc}}
     else:
         #making predictions for the data
-        data=prepare_training_data(path_to_csv, filtering=filtering_data,P=P,
+        data=prepare_training_data(paths_to_csv[0], filtering=filtering_data,P=P,
         featurelist=featurelist,copstartframe=copstartframe)
         predictionsLogReg=logReg.predict_proba(data)
         predictionsSVC=suppVC.predict_proba(data)
@@ -279,7 +291,7 @@ def apply_pretrained(models,data,startframe=0):
     fraction_positives=len(classPredictions[classPredictions==1])/len(classPredictions)
     return classPredictions,fraction_positives
 
-def evalulate_pretrained(path_to_csv,path_to_images,positives=[],copstartframe =500, testdata_from_csv=True, 
+def evalulate_pretrained(paths_to_csv,paths_to_images,positives=[],copstartframe =500, testdata_from_csv=True, 
 filename='trained_models.joblib',
 featurelist=["angles_b_scaled","head_dist_scaled","tilting_index_scaled","abd_dist_scaled"]):
     """evaluates a pretrained model on new test data"""
@@ -292,9 +304,9 @@ featurelist=["angles_b_scaled","head_dist_scaled","tilting_index_scaled","abd_di
     randomF=models["RFC"]["model"]
     NB=models["NB"]["model"]
     if testdata_from_csv:
-        X_test,y_test,copstartframe=import_train_test_from_csv(path_to_csv,path_to_images,filtering=False,P=0.8,featurelist=featurelist)
+        X_test,y_test,copstartframe=import_train_test_from_csv(paths_to_csv,paths_to_images,filtering=False,P=0.8,featurelist=featurelist)
     else:
-        X_test,y_test=import_train_test(path_to_csv,path_to_images,positives,filtering=False,P=0.8,featurelist=featurelist,copstartframe=copstartframe)
+        X_test,y_test=import_train_test(paths_to_csv,paths_to_images,positives,filtering=False,P=0.8,featurelist=featurelist,copstartframe=copstartframe)
     
     #evaluation of the ensemble model
     predLogReg=logReg.predict_proba(X_test)

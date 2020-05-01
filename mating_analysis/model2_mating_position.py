@@ -10,10 +10,11 @@ path_to_labels='/Volumes/LaCie/Projects/Matthew/behaviour/Ch3_chamber3.csv'
 path_to_training='/Volumes/LaCie/Projects/Matthew/behaviour/R1_G10Ctrl3_Chamber3DLC_resnet50_Model3Apr24shuffle1_300000.csv' 
 path_to_data1='/Volumes/LaCie/Projects/Matthew/behaviour/R1_Exp2_Chamber1DLC_resnet50_Model3Apr24shuffle1_300000.csv' 
 path_to_data2='/Volumes/LaCie/Projects/Matthew/behaviour/R1_G10Ctrl3_Chamber3DLC_resnet50_Model3Apr24shuffle1_300000.csv' 
-
+paths_to_training=[path_to_training,path_to_Test_csv]
+paths_to_labels=[path_to_labels,path_to_test]
 features=["angles_b_scaled","head_dist_scaled","abd_dist_scaled","tilting_index_scaled"]
 #training the model
-models=learning_pipeline(path_to_training,path_to_labels,featurelist=features)  
+models=learning_pipeline(paths_to_training,paths_to_labels,featurelist=features)  
 #applying the pretrained model 
 #if model is not to be trained again, the pretrained model can be loaded from the file with load_pretrained()
 data1=prepare_training_data(path_to_data1,copstartframe=562,featurelist=features)
@@ -25,6 +26,6 @@ print("Fraction of abnormal copulation in group 2: {}".format(fraction2))
 
 #model evaluation
 print("Evaluating model on new data...")
-scores=evalulate_pretrained(path_to_Test_csv,path_to_test,featurelist=features)
+scores=evalulate_pretrained([path_to_Test_csv],[path_to_test],featurelist=features)
 
 
