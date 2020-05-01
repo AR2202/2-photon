@@ -16,7 +16,7 @@ path_to_data2='/Volumes/LaCie/Projects/Matthew/behaviour/R1_G10Ctrl3_Chamber3DLC
 path_to_control_labels='/Volumes/LaCie/Projects/Matthew/behaviour/Ch3_chamber3.csv'  
 path_to_exp_labels='/Volumes/LaCie/Projects/Matthew/behaviour/Exp2_chamber1.csv'  
 #calculating mating angles
-cutoff=16 #cutoff value for normal angle: 75 percentile of control
+cutoff=22 #cutoff value for normal angle: 75 percentile of control
 
 copulationstart1=562
 #angles
@@ -57,12 +57,34 @@ print("percentage of large mating angles above {} deg in group2: {:.0f}".format(
 #calculating mating angles of labelled data
 #comment out this whole section if you don't have labelled data
 angles_pos2,angles_neg2=mating_angles_labelled(path_to_data2,path_to_control_labels)
-median_pos2=180*np.median(angles_pos2)/math.pi
-median_neg2=180*np.median(angles_neg2)/math.pi
-print("median mating angle for abnormal in group 2: {:.0f}".format(median_pos2))
-print("median mating angle for normal in group 2: {:.0f}".format(median_neg2))
+angles_cop2_pos=180*angles_pos2/math.pi
+angles_cop2_neg=180*angles_neg2/math.pi
+median_pos2=np.median(angles_cop2_pos)
+median_neg2=np.median(angles_cop2_pos)
+percentile25_pos2=np.percentile(angles_cop2_pos,25)
+percentile75_pos2=np.percentile(angles_cop2_pos,75)
+percentile25_neg2=np.percentile(angles_cop2_neg,25)
+percentile75_neg2=np.percentile(angles_cop2_neg,75)
+percentile95_neg2=np.percentile(angles_cop2_neg,95)
+print("median mating angle for abnormal in group 2: {:.0f} ({:.0f}-{:.0f})"
+.format(median_pos2,percentile25_pos2,percentile75_pos2))
+print("median mating angle for normal in group 2: {:.0f} ({:.0f}-{:.0f})"
+.format(median_neg2,percentile25_neg2,percentile75_neg2))
+print("95 percentile mating angle for normal in group 2: {:.0f}"
+.format(percentile95_neg2))
 angles_pos,angles_neg=mating_angles_labelled(path_to_data1,path_to_exp_labels)
-median_pos=180*np.median(angles_pos)/math.pi
-median_neg=180*np.median(angles_neg)/math.pi
-print("median mating angle for abnormal in group 1: {:.0f}".format(median_pos))
-print("median mating angle for normal in group 1: {:.0f}".format(median_neg))
+angles_cop_pos=180*angles_pos/math.pi
+angles_cop_neg=180*angles_neg/math.pi
+median_pos=np.median(angles_cop_pos)
+median_neg=np.median(angles_cop_neg)
+percentile25_pos=np.percentile(angles_cop_pos,25)
+percentile75_pos=np.percentile(angles_cop_pos,75)
+percentile25_neg=np.percentile(angles_cop_neg,25)
+percentile75_neg=np.percentile(angles_cop_neg,75)
+percentile95_neg=np.percentile(angles_cop_neg,95)
+print("median mating angle for abnormal in group 1: {:.0f} ({:.0f}-{:.0f})"
+.format(median_pos,percentile25_pos,percentile75_pos))
+print("median mating angle for normal in group 1: {:.0f} ({:.0f}-{:.0f})"
+.format(median_neg,percentile25_neg,percentile75_neg))
+print("95 percentile mating angle for normal in group 1: {:.0f}"
+.format(percentile95_neg))
