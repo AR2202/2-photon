@@ -71,7 +71,7 @@ Label some frames in your videos as in the example_labels.csv file. The first ro
 
 Use the function learning_pipeline() from the mating_angles_learn_model2.py module:
 
-`models=learning_pipeline(path_to_training,path_to_labels,featurelist=features)`
+`models=learning_pipeline(list_of_paths_to_training,list_of_paths_to_labels,featurelist=features)`
 
 featurelist ist an optional argument, you can specify the features you want to use for training. The default is:
 
@@ -93,7 +93,7 @@ Use the load_pretrained() function from the mating_angles_learn_model2.py module
 * create new labelled test data as outlined above
 * Use the evaluate_pretrained() function from the mating_angles_learn_model2.py module: 
 
-`scores=evalulate_pretrained(path_to_Test_csv,path_to_test,featurelist=features)`
+`scores=evalulate_pretrained(list_of_paths_to_test_csv,list_of_paths_to_test,featurelist=features)`
 
 #### Applying the pretrained model to new data
 
