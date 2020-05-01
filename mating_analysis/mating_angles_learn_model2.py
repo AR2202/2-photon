@@ -31,7 +31,7 @@ def scale_angles(angles):
     scaled_angles=scaled.fit_transform(angles_matrix) 
     return(scaled_angles)
 
-def scale_filtered(path,P):
+def scale_filtered(path,P,removeWall=False,minWallDist=3,copstartframe=500):
     """loads the csv file of deeplabcut data
     specified as the path argument and determines mating angle
     from both wing and body axis data;
@@ -40,14 +40,15 @@ def scale_filtered(path,P):
     scales the data
     This is the function that should be used if you want filtering of data by 
     those with a likelihood > P"""
-    angles_b,wing_dist_male,abd_dist,head_dist=filtered_outputs(path,P)
+    angles_b,wing_dist_male,abd_dist,head_dist,rownumbers=filtered_outputs(path,P,removeWall=removeWall,minWallDist=minWallDist)
     angles_b_scaled=scale_angles(angles_b)
     wing_dist_male_scaled=scale_angles(wing_dist_male)
     abd_dist_scaled=scale_angles(abd_dist)
     head_dist_scaled=scale_angles(head_dist)
-    return angles_b_scaled,wing_dist_male_scaled,abd_dist_scaled,head_dist_scaled
+    tilting_index_scaled=scale_angles(tilting_index_all_frames(wing_dist_male,copstartframe,rownumbers=rownumbers))
+    return angles_b_scaled,wing_dist_male_scaled,abd_dist_scaled,head_dist_scaled,tilting_index_scaled
 
-def scale_unfiltered(path,copstartframe=500):
+def scale_unfiltered(path,removeWall=False,minWallDist=3,copstartframe=500):
     """loads the csv file of deeplabcut data
     specified as the path argument and determines mating angle
     from both wing and body axis data;
@@ -55,12 +56,12 @@ def scale_unfiltered(path,copstartframe=500):
     (in this order);
     scales the data
     This is the function that should be used if you don't want filtering of data """
-    angles_b,wing_dist_male,abd_dist,head_dist=unfiltered_outputs(path)
+    angles_b,wing_dist_male,abd_dist,head_dist,rownumbers=unfiltered_outputs(path,removeWall=removeWall,minWallDist=minWallDist)
     angles_b_scaled=scale_angles(angles_b)
     wing_dist_male_scaled=scale_angles(wing_dist_male)
     abd_dist_scaled=scale_angles(abd_dist)
     head_dist_scaled=scale_angles(head_dist)
-    tilting_index_scaled=scale_angles(tilting_index_all_frames(wing_dist_male,copstartframe))
+    tilting_index_scaled=scale_angles(tilting_index_all_frames(wing_dist_male,copstartframe,rownumbers=rownumbers))
     
     return angles_b_scaled,wing_dist_male_scaled,abd_dist_scaled,head_dist_scaled,tilting_index_scaled
 
@@ -134,7 +135,7 @@ featurelist=["angles_b_scaled","head_dist_scaled","abd_dist_scaled","tilting_ind
     """loads csv file and scales the features, then makes an np.array of the features and returns the array"""
     X=np.array([])
     if filtering:
-      angles_b_scaled,wing_dist_male_scaled,abd_dist_scaled,head_dist_scaled = scale_filtered(path,P)
+      angles_b_scaled,wing_dist_male_scaled,abd_dist_scaled,head_dist_scaled,tilting_index_scaled= scale_filtered(path,P,copstartframe=copstartframe)
     else:
        angles_b_scaled,wing_dist_male_scaled,abd_dist_scaled,head_dist_scaled,tilting_index_scaled = scale_unfiltered(path,copstartframe=copstartframe)
     #tilting_index=tilting_index_all_frames(wing_dist_male_scaled,wing_dist_female_scaled,copstartframe)
@@ -323,11 +324,11 @@ featurelist=["angles_b_scaled","head_dist_scaled","tilting_index_scaled","abd_di
     f1=f1_score(y_test,yPred)
     logloss=log_loss(y_test,yProb)
     rocauc=roc_auc_score(y_test,yProb)
-    print("Ensemble Model Accuracy Score: {}".format(accuracy))
-    print("Ensemble Model Balanced Accuracy Score: {}".format(balanced_accuracy))
-    print("Ensemble Model F1 Score: {}".format(f1))
-    print("Ensemble Model Log Loss Score: {}".format(logloss))
-    print("Ensemble Model ROC AUC Score: {}".format(rocauc))
+    print("Ensemble Model Accuracy Score: {:.2f}".format(accuracy))
+    print("Ensemble Model Balanced Accuracy Score: {:.2f}".format(balanced_accuracy))
+    print("Ensemble Model F1 Score: {:.2f}".format(f1))
+    print("Ensemble Model Log Loss Score: {:.2f}".format(logloss))
+    print("Ensemble Model ROC AUC Score: {:.2f}".format(rocauc))
     scores={"accuracy":accuracy,"balanced_accuracy":balanced_accuracy,"F1":f1,"LogLoss":logloss,"ROCAUC":rocauc}
     return scores
 

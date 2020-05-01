@@ -1,5 +1,5 @@
 import sys
-sys.path.append("/Users/annika/Documents/git_repos/2-photon/plotting")
+sys.path.append("/Users/annika/Documents/git_repos/2-photon/mating_analysis")
 import mating_angles_learn_model2
 from mating_angles_learn_model2 import learning_pipeline,apply_pretrained,prepare_training_data,evalulate_pretrained
 
@@ -22,8 +22,8 @@ data1=prepare_training_data(path_to_data1,copstartframe=562,featurelist=features
 data2=prepare_training_data(path_to_data2,copstartframe=1936,featurelist=features)
 predictions_data1,fraction1=apply_pretrained(models,data1,startframe=562) 
 predictions_data2,fraction2=apply_pretrained(models,data2,startframe=1936) 
-print("Fraction of abnormal copulation in group 1: {}".format(fraction1))
-print("Fraction of abnormal copulation in group 2: {}".format(fraction2))
+print("Fraction of abnormal copulation in group 1: {:.2f}".format(fraction1))
+print("Fraction of abnormal copulation in group 2: {:.2f}".format(fraction2))
 
 #model evaluation
 print("Evaluating model on new data...")

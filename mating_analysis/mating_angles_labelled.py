@@ -10,7 +10,7 @@ def mating_angles_labelled(path_to_csv,path_to_labels):
     labeltable=pd.read_csv(path_to_labels,header=0)
     nums_neg=[]
     nums_pos=[]
-    angles_b,_,_,_=unfiltered_outputs(path_to_csv)
+    angles_b,_,_,_,_=unfiltered_outputs(path_to_csv)
     for i in range(0,len(labeltable[labeltable.keys()[1]]),2): 
         nums_neg=nums_neg+list(range(labeltable[labeltable.keys()[1]][i],labeltable[labeltable.keys()[1]][i+1])) 
     for i in range(0,len(labeltable[labeltable.keys()[2]]),2): 

@@ -27,11 +27,13 @@ def load_csv_file(path):
     FemaleAbdomenX=datatable['FemaleAbdomen'][1:]
     FemaleAbdomenY=datatable['FemaleAbdomen.1'][1:]
     FemaleAbdomenP=datatable['FemaleAbdomen.2'][1:]
+    
     localvars = locals()
     del localvars["path"]
     del localvars["datatable"]
     df = pd.DataFrame(data=localvars)
     dffloat=df.astype('float32')
+    
     return dffloat
 
 
@@ -127,7 +129,8 @@ def filter_by_likelihood_body(data,P):
     isLargeHeadFP=data.FemaleHeadP>P
     isLargeAbdFP=data.FemaleAbdomenP>P
     data_filtered=data[isLargeHeadP & isLargeAbdP & isLargeHeadFP & isLargeAbdFP]
-    return data_filtered
+    rownumbers=np.where(isLargeHeadP & isLargeAbdP & isLargeHeadFP & isLargeAbdFP)[0]  
+    return data_filtered,rownumbers
 
 
 
@@ -141,9 +144,9 @@ def filtered_mating_angles(path,P):
     This is the function that should be used if you want filtering of data by 
     those with a likelihood > P"""
     data=load_csv_file(path)
-    dataF=filter_by_likelihood_body(data,P)
+    dataF,rownumbers=filter_by_likelihood_body(data,P)
     angles_b=dataF.apply(mating_angle_from_body_axis_pd_df, axis=1)
-    return angles_b
+    return angles_b,rownumbers
 
 def wing_distance_male(df):
     """calculates distance between wings"""
@@ -171,55 +174,86 @@ def filtered_wing_distance(path,P):
     This is the function that should be used if you want filtering of data by 
     those with a likelihood > P"""
     data=load_csv_file(path)
-    dataF=filter_by_likelihood_body(data,P)
+    dataF,rownumbers=filter_by_likelihood_body(data,P)
     wing_dist_male=dataF.apply(wing_distance_male, axis=1)
-    return wing_dist_male
+    return wing_dist_male,rownumbers
 
-def filtered_outputs(path,P):
+def filtered_outputs(path,P,removeWall=False,minWallDist=3):
     """loads the csv file of deeplabcut data
     specified as the path argument and determines mating angle
     from both wing and body axis data as well as wing distance;
     
     This is the function that should be used if you want filtering of data by 
     those with a likelihood > P"""
+    rownumbers=[]
     data=load_csv_file(path)
-    dataF=filter_by_likelihood_body(data,P)
+    
+
+    dataF,rownumbers=filter_by_likelihood_body(data,P)
+    centroidx,centroidy,d=centroids(data)
+    distanceToCentroid=dataF.apply(lambda df: centroid_distance(df,centroidx,centroidy), axis=1)   
+    
+    if removeWall: 
+        dataF=dataF[distanceToCentroid<((d/2)-minWallDist)]    
+        rownumbers=rownumbers[distanceToCentroid<((d/2)-minWallDist)]#check if this is correct
     angles_b=dataF.apply(mating_angle_from_body_axis_pd_df, axis=1)
     wing_dist_male=dataF.apply(wing_distance_male, axis=1)
     abd_dist=dataF.apply(abd_distance, axis=1)
-    head_dist=data.apply(head_distance, axis=1)
-    return angles_b,wing_dist_male,abd_dist,head_dist
+    head_dist=dataF.apply(head_distance, axis=1)
+    return angles_b,wing_dist_male,abd_dist,head_dist,rownumbers
 
-def unfiltered_outputs(path):
+def unfiltered_outputs(path,removeWall=False,minWallDist=3):
     """loads the csv file of deeplabcut data
     specified as the path argument and determines mating angle
     from both wing and body axis data as well as wing distance;
     
     This is the function that should be used if you don't want filtering of data by 
     those with a likelihood > P"""
+    rownumbers=[]
     data=load_csv_file(path)
+    centroidx,centroidy,d=centroids(data)
+    distanceToCentroid=data.apply(lambda df: centroid_distance(df,centroidx,centroidy), axis=1)   
+    if removeWall: 
+        data=data[distanceToCentroid<((d/2)-minWallDist)]    
+        rownumbers=np.where(distanceToCentroid<((d/2)-minWallDist))[0]
     angles_b=data.apply(mating_angle_from_body_axis_pd_df, axis=1)
     wing_dist_male=data.apply(wing_distance_male, axis=1)
     abd_dist=data.apply(abd_distance, axis=1)
     head_dist=data.apply(head_distance, axis=1)
-    return angles_b,wing_dist_male,abd_dist,head_dist
+    return angles_b,wing_dist_male,abd_dist,head_dist,rownumbers
+
+def centroids(data):
+    maxx=max(np.concatenate([data.FemaleHeadX,data.FemaleAbdomenX,data.MaleHeadX,data.MaleAbdomenX]))
+    minx=min(np.concatenate([data.FemaleHeadX,data.FemaleAbdomenX,data.MaleHeadX,data.MaleAbdomenX]))
+    dx=maxx-minx
+    centroidx=minx+(dx/2)
+    maxy=max(np.concatenate([data.FemaleHeadY,data.FemaleAbdomenY,data.MaleHeadY,data.MaleAbdomenY]))
+    miny=min(np.concatenate([data.FemaleHeadY,data.FemaleAbdomenY,data.MaleHeadY,data.MaleAbdomenY]))
+    dy=maxy-miny
+    centroidy=miny+(dy/2)
+    d=max([dx,dy])
+    return centroidx,centroidy,d
 
 def tilting_row(df):
     """calculates tilting index for one row"""
     tilting = df.male_wingdist
     return tilting
 
-def tilting_index(malewingdist,copstartframe):
+def tilting_index(malewingdist,copstartframe,rownumbers=[]):
     """applies tilting_row function to the dataframe,
     taking all frames before copstartframe as baseline"""
+    if rownumbers:
+        copstartframe=len([frame for frame in range(copstartframe) if frame in rownumbers]) 
     male_resting=np.median(malewingdist[1:copstartframe-1])
     tilting = malewingdist[copstartframe:]
     tilting_ind=tilting/male_resting
     return tilting_ind
 
-def tilting_index_all_frames(malewingdist,copstartframe):
+def tilting_index_all_frames(malewingdist,copstartframe,rownumbers=[]):
     """applies tilting_row function to the dataframe,
     taking all frames before copstartframe as baseline"""
+    if rownumbers:
+        copstartframe=len([frame for frame in range(copstartframe) if frame in rownumbers]) 
     male_resting=np.median(malewingdist[1:copstartframe-1])
     tilting_ind=malewingdist/male_resting
     return tilting_ind
@@ -234,6 +268,11 @@ def head_distance(df):
                                         df.FemaleHeadX,df.FemaleHeadY)
     return distanceMF
 
+def centroid_distance(df,centroidx,centroidy):
+    distancec = distance(df.MaleAbdomenX,df.MaleAbdomenY,
+                                        centroidx,centroidy)
+    return distancec
+
 def distance(xmale,ymale, xfemale,yfemale):
     distance=math.sqrt((xmale-xfemale)**2+(ymale-yfemale)**2)
     return distance     
@@ -245,6 +284,7 @@ def abd_distance_all_rows(path):
     data=load_csv_file(path)
     dist=data.apply(abd_distance, axis=1)
     return dist
+
 
 def load_feat_file(path):
     """loads the angle_between data from the feat.mat file.

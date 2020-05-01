@@ -2,7 +2,7 @@ import numpy as np
 import math
 import sys
 #this path needs to be updated for your machine
-sys.path.append("/Users/annika/Documents/git_repos/2-photon/plotting")
+sys.path.append("/Users/annika/Documents/git_repos/2-photon/mating_analysis")
 import mating_angles_model2
 from mating_angles_model2 import filtered_outputs,unfiltered_outputs,tilting_index
 import mating_angles_labelled
@@ -20,10 +20,12 @@ cutoff=22 #cutoff value for normal angle: 75 percentile of control
 
 copulationstart1=562
 #angles
-angles_b,wing_dist_male,abd_dist,head_dist=unfiltered_outputs(path_to_data1)
+angles_b,wing_dist_male,abd_dist,head_dist,rownumbers=filtered_outputs(path_to_data1,0.3,removeWall=True)
+
+copulationstart1=len([frame for frame in range(copulationstart1) if frame in rownumbers]) 
 angles_cop=180*angles_b[copulationstart1:]/math.pi
 
-median1=np.median(angles_cop)/math.pi
+median1=np.median(angles_cop)
 percentile25_1=np.percentile(angles_cop,25)
 percentile75_1=np.percentile(angles_cop,75)
 #above cutoff
@@ -36,7 +38,7 @@ percentileTilting75_1=np.percentile(tilting1,75)
 
 copulationstart2=1936
 #angles
-angles_b2,wing_dist_male2,abd_dist2,head_dist2=unfiltered_outputs(path_to_data2)
+angles_b2,wing_dist_male2,abd_dist2,head_dist2,rownumbers2=unfiltered_outputs(path_to_data2)
 angles_cop2=180*angles_b2[copulationstart2:]/math.pi
 median2=np.median(angles_cop2)
 percentile25_2=np.percentile(angles_cop2,25)
