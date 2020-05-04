@@ -185,7 +185,7 @@ def filtered_outputs(path,P,removeWall=False,minWallDist=3):
     
     This is the function that should be used if you want filtering of data by 
     those with a likelihood > P"""
-    rownumbers=[]
+    
     data=load_csv_file(path)
     
 
