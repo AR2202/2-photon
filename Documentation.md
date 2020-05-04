@@ -57,6 +57,9 @@ to the path of the mating_angles_model2.py file
 
 Additional lines might need to be commented out if you don't have labelled data. You can also change some lines to print, plot or save the mating_angles and tilting_indices.
 
+#### Removing frames close to the wall
+
+The filtered_outputs() and unfiltered_outputs() functions in the mating_angles_model2.py module take the optional keyword arguments removeWall and minWallDist. Defaults are removeWall=False and minWallDist=3. removeWall specifies whether frames where flies are on the side wall should be removed. minWallDist is the minimum distance to the wall (in pixels) that flies should have if frames are to be kept.
 
 ### Training a machine learning model to classify frames into 'normal' or 'abnormal' mating positions
 
