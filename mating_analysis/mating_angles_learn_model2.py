@@ -84,7 +84,7 @@ def scale_unfiltered(path, removeWall=False, minWallDist=3, copstartframe=500):
 
 
 def train_SGD(X, y, loss="log"):
-    X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(X, y)
+    X_train, X_test, y_train, y_test = train_test_split(X, y)
     n = X_train.shape[0]
     max_iter = np.ceil(10**6 / n)
     parameters = {
@@ -105,9 +105,9 @@ def train_SGD(X, y, loss="log"):
 
 
 def train_knn(X, y):
-    X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(X, y)
+    X_train, X_test, y_train, y_test = train_test_split(X, y)
     parameters = {'knc__n_neighbors': [1, 2, 3, 4, 5],
-                  'knc__weights': ['uniform','distance']}
+                  'knc__weights': ['uniform', 'distance']}
     pipe = Pipeline([('feature_selection', SelectFromModel(LinearSVC())),
                     ('knc', KNeighborsClassifier())])
     grid_search = GridSearchCV(pipe, parameters, verbose=1)
@@ -116,11 +116,13 @@ def train_knn(X, y):
     testScore = knn.score(X_test, y_test)
     return knn, testScore, CVScore
 
+
 def train_SVC(X, y):
-    X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(X, y)
+    X_train, X_test, y_train, y_test = train_test_split(X, y)
     param_grid = [
               {'svc__C': [1, 10, 100, 1000], 'svc__kernel': ['linear']},
-              {'svc__C': [1, 10, 100, 1000], 'svc__gamma': [0.001, 0.0001], 'svc__kernel': ['rbf']},
+              {'svc__C': [1, 10, 100, 1000], 'svc__gamma': [0.001, 0.0001],
+               'svc__kernel': ['rbf']},
               ]
     pipe = Pipeline([('anova', SelectPercentile(chi2)),
                      ('svc', SVC(probability=True))])
@@ -132,7 +134,7 @@ def train_SVC(X, y):
 
 
 def train_NB(X, y):
-    X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(X, y)
+    X_train, X_test, y_train, y_test = train_test_split(X, y)
     pipe = Pipeline([('feature_selection', SelectFromModel(LinearSVC())),
                     ('classification', GaussianNB())])
     NB = pipe.fit(X_train, y_train)  
@@ -141,20 +143,23 @@ def train_NB(X, y):
 
 
 def train_randomForest(X, y):
-    X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(X, y)
+    X_train, X_test, y_train, y_test = train_test_split(X, y)
     parameters = {'rfc__n_estimators': [10, 25, 50, 75, 100, 125]}
     pipe = Pipeline([('feature_selection', SelectFromModel(LinearSVC())),
                     ('rfc', RandomForestClassifier())])
     grid_search = GridSearchCV(pipe, parameters, verbose=1)
-    randomF =grid_search.fit(X_train,y_train)
+    randomF = grid_search.fit(X_train, y_train)
     CVScore = grid_search.best_score_
     testScore = randomF.score(X_test, y_test)
     return randomF, testScore, CVScore
 
 
 def prepare_training_data(path, filtering=False, P=0.8, copstartframe=500,
-featurelist = ["angles_b_scaled", "head_dist_scaled", "abd_dist_scaled", "tilting_index_scaled"]):
-    """loads csv file and scales the features, then makes an np.array 
+                          featurelist=["angles_b_scaled",
+                                       "head_dist_scaled",
+                                       "abd_dist_scaled",
+                                       "tilting_index_scaled"]):
+    """loads csv file and scales the features, then makes an np.array
     of the features and returns the array"""
     X = np.array([])
     if filtering:
@@ -163,14 +168,13 @@ featurelist = ["angles_b_scaled", "head_dist_scaled", "abd_dist_scaled", "tiltin
     else:
         angles_b_scaled, wing_dist_male_scaled, abd_dist_scaled, head_dist_scaled, tilting_index_scaled =\
            scale_unfiltered(path, copstartframe=copstartframe)
-    # tilting_index=tilting_index_all_frames(wing_dist_male_scaled, 
+    # tilting_index=tilting_index_all_frames(wing_dist_male_scaled,
     # wing_dist_female_scaled, copstartframe)
     for feature in featurelist:
         if X.size > 0:
-            X = np.append(X,eval(feature),axis=1)
+            X = np.append(X, eval(feature), axis=1)
         else:
             X = eval(feature)
-   
     return X
 
 
@@ -224,10 +228,10 @@ def import_train_test_from_csv(paths_to_csv, paths_to_labels, filtering=False,
         y_neg = np.zeros(len(nums_neg), int)
         y_pos = np.ones(len(nums_pos), int)
         X_training = X[nums]
-        y_training = np.concatenate([y_neg, y_pos]) 
-        ys_training = np.concatenate([ys_training, y_training]) 
+        y_training = np.concatenate([y_neg, y_pos])
+        ys_training = np.concatenate([ys_training, y_training])
         if Xs_training.size > 0:
-            Xs_training = np.concatenate([Xs_training, X_training])   
+            Xs_training = np.concatenate([Xs_training, X_training])
         else:
             Xs_training = X_training
         copstartframes.append(copstartframe)
@@ -246,7 +250,7 @@ def learning_pipeline(paths_to_csv, paths_to_images, positives=[],
                                    "tilting_index_scaled"]):
     """pipeline for machine learning"""
     if training_from_csv:
-        X, y, copstartframes = import_train_test_from_csv(paths_to_csv, 
+        X, y, copstartframes = import_train_test_from_csv(paths_to_csv,
                                                           paths_to_images,
                                                           filtering=filtering_train,
                                                           P=P,
@@ -259,7 +263,7 @@ def learning_pipeline(paths_to_csv, paths_to_images, positives=[],
                                  P=P,
                                  featurelist=featurelist,
                                  copstartframe=copstartframe)
-    X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(X, y)
+    X_train, X_test, y_train, y_test = train_test_split(X, y)
     logReg, logRegScore, logRegCVScore = train_SGD(X_train, y_train, loss="log")
     print("Logistic Regression Test Score: {}".format(logRegScore))
     print("Logistic Regression CV Score: {}".format(logRegCVScore))
@@ -269,7 +273,8 @@ def learning_pipeline(paths_to_csv, paths_to_images, positives=[],
     knn, knnScore, knnCVScore = train_knn(X_train, y_train)
     print("K Nearest Neighbors Test Score: {}".format(knnScore))
     print("K Nearest Neighbors CV Score: {}".format(knnCVScore))
-    randomF, randomFScore, randomFCVScore = train_randomForest(X_train, y_train)
+    randomF, randomFScore, randomFCVScore = train_randomForest(X_train, 
+                                                               y_train)
     print("Random Forest Test Score: {}".format(randomFScore))
     print("Random Forest CV Score: {}".format(randomFCVScore))
     NB, NBScore = train_NB(X_train, y_train)
@@ -280,7 +285,7 @@ def learning_pipeline(paths_to_csv, paths_to_images, positives=[],
     predKnn = knn.predict_proba(X_test)
     predRandomF = randomF.predict_proba(X_test)
     predNB = NB.predict_proba(X_test)
-    # creating predictions by averaging the predicted 
+    # creating predictions by averaging the predicted
     # class probabilities from each model
     ensemblePred = (predLogReg+predSVC+predKnn+predRandomF+predNB)/5
     yProb = ensemblePred[:, 1]
@@ -297,12 +302,26 @@ def learning_pipeline(paths_to_csv, paths_to_images, positives=[],
     print("Ensemble Model ROC AUC Score: {}".format(rocauc))
 
     if training_only:
-        models = {"LogReg":{"model": logReg, "score": logRegScore, "CVScore": logRegCVScore},
-            "SVC": {"model": suppVC, "score": SVCScore, "CVScore": SVCCVScore},
-            "KNN": {"model": knn, "score": knnScore, "CVScore": knnCVScore},
-            "RFC": {"model": randomF, "score": randomFScore, "CVScore": randomFCVScore},
-            "NB": {"model": NB,"score": NBScore},
-            "ensemble": {"accuracy": accuracy, "F1": f1, "LogLoss": logloss, "ROCAUC": rocauc}}
+        models = {
+            "LogReg": {"model": logReg,
+                       "score": logRegScore,
+                       "CVScore": logRegCVScore},
+            "SVC": {"model": suppVC,
+                    "score": SVCScore,
+                    "CVScore": SVCCVScore},
+            "KNN": {"model": knn,
+                    "score": knnScore,
+                    "CVScore": knnCVScore},
+            "RFC": {"model": randomF,
+                    "score": randomFScore,
+                    "CVScore": randomFCVScore},
+            "NB": {"model": NB,
+                   "score": NBScore},
+            "ensemble": {"accuracy": accuracy,
+                         "F1": f1,
+                         "LogLoss": logloss,
+                         "ROCAUC": rocauc}
+            }
     else:
         # making predictions for the data
         data = prepare_training_data(paths_to_csv[0],
@@ -323,14 +342,34 @@ def learning_pipeline(paths_to_csv, paths_to_images, positives=[],
                               + predictionsNB)/5
         classPredictions = np.apply_along_axis(np.argmax, 1,
                                                ensembePredictions)
-        models = {"LogReg": {"model": logReg, "score": logRegScore, "CVScore": logRegCVScore, "predictions": predictionsLogReg},
-                  "SVC": {"model": suppVC, "score": SVCScore, "CVScore": SVCCVScore, "predictions": predictionsSVC},
-                  "KNN": {"model": knn,"score": knnScore,"CVScore": knnCVScore, "predictions": predictionsKnn},
-                  "RFC": {"model": randomF, "score":randomFScore, "CVScore": randomFCVScore, "predictions": predictionsRandomF},
-                  "NB": {"model": NB, "score": NBScore, "predictions": predictionsNB},
-                  "ensemble": {"predictions": ensembePredictions, "classPredictions": classPredictions, "accuracy": accuracy,
-                  "F1": f1, "LogLoss": logloss,"ROCAUC": rocauc}}
-    dump(models, filename) 
+        models = {
+                  "LogReg": {"model": logReg,
+                             "score": logRegScore,
+                             "CVScore": logRegCVScore,
+                             "predictions": predictionsLogReg},
+                  "SVC": {"model": suppVC,
+                          "score": SVCScore,
+                          "CVScore": SVCCVScore,
+                          "predictions": predictionsSVC},
+                  "KNN": {"model": knn,
+                          "score": knnScore,
+                          "CVScore": knnCVScore,
+                          "predictions": predictionsKnn},
+                  "RFC": {"model": randomF,
+                          "score": randomFScore,
+                          "CVScore": randomFCVScore,
+                          "predictions": predictionsRandomF},
+                  "NB": {"model": NB,
+                         "score": NBScore,
+                        "predictions": predictionsNB},
+                  "ensemble": {"predictions": ensembePredictions,
+                               "classPredictions": classPredictions,
+                               "accuracy": accuracy,
+                               "F1": f1,
+                               "LogLoss": logloss,
+                               "ROCAUC": rocauc}
+                  }
+    dump(models, filename)
     return models
 
 
