@@ -155,6 +155,8 @@ def train_randomForest(X, y):
 
 
 def prepare_training_data(path, filtering=False, P=0.8, copstartframe=500,
+                          removeWall=False,
+                          minWallDist=3,
                           featurelist=["angles_b_scaled",
                                        "head_dist_scaled",
                                        "abd_dist_scaled",
@@ -164,10 +166,12 @@ def prepare_training_data(path, filtering=False, P=0.8, copstartframe=500,
     X = np.array([])
     if filtering:
         angles_b_scaled, wing_dist_male_scaled, abd_dist_scaled, head_dist_scaled, tilting_index_scaled =\
-           scale_filtered(path, P, copstartframe=copstartframe)
+           scale_filtered(path, P, copstartframe=copstartframe,
+                          removeWall=removeWall, minWallDist=minWallDist)
     else:
         angles_b_scaled, wing_dist_male_scaled, abd_dist_scaled, head_dist_scaled, tilting_index_scaled =\
-           scale_unfiltered(path, copstartframe=copstartframe)
+           scale_unfiltered(path, copstartframe=copstartframe,
+                            removeWall=removeWall, minWallDist=minWallDist)
     # tilting_index=tilting_index_all_frames(wing_dist_male_scaled,
     # wing_dist_female_scaled, copstartframe)
     for feature in featurelist:
@@ -180,6 +184,8 @@ def prepare_training_data(path, filtering=False, P=0.8, copstartframe=500,
 
 def import_train_test(path_to_csv, path_to_images, positives, filtering=False,
                       P=0.8, copstartframe=500,
+                      removeWall=False,
+                      minWallDist=3,
                       featurelist=["angles_b_scaled",
                                    "tilting_index_scaled",
                                    "head_dist_scaled",
@@ -188,7 +194,9 @@ def import_train_test(path_to_csv, path_to_images, positives, filtering=False,
     """if positives is a list of framenumbers, the first frame should be 1"""
     X = prepare_training_data(path_to_csv, filtering=filtering, P=P,
                               featurelist=featurelist,
-                              copstartframe=copstartframe)
+                              copstartframe=copstartframe,
+                              removeWall=removeWall,
+                              minWallDist=minWallDist)
     num = [int(re.search('d+', filename).group(0)) for filename
            in os.listdir(path_to_images)]
     num_shifted = [numb-1 for numb in num]
@@ -200,8 +208,10 @@ def import_train_test(path_to_csv, path_to_images, positives, filtering=False,
     return X_training, y_training
 
 
-def import_train_test_from_csv(paths_to_csv, paths_to_labels, filtering=False, 
+def import_train_test_from_csv(paths_to_csv, paths_to_labels, filtering=False,
                                P=0.8,
+                               removeWall=False,
+                               minWallDist=3,
                                featurelist=["angles_b_scaled",
                                             "tilting_index_scaled",
                                             "head_dist_scaled",
@@ -217,7 +227,9 @@ def import_train_test_from_csv(paths_to_csv, paths_to_labels, filtering=False,
         nums_pos = []
         X = prepare_training_data(path_to_csv, filtering=filtering, P=P,
                                   featurelist=featurelist,
-                                  copstartframe=copstartframe)
+                                  copstartframe=copstartframe,
+                                  removeWall=removeWall,
+                                  minWallDist=minWallDist)
         for i in range(0, len(labeltable[labeltable.keys()[1]]), 2):
             nums_neg = nums_neg+list(range(labeltable[labeltable.keys()[1]][i],
                                            labeltable[labeltable.keys()[1]][i+1]))
@@ -244,6 +256,8 @@ def learning_pipeline(paths_to_csv, paths_to_images, positives=[],
                       copstartframe=500,
                       training_from_csv=True,
                       filename='trained_models.joblib',
+                      removeWall=False,
+                      minWallDist=3,
                       featurelist=["angles_b_scaled",
                                    "head_dist_scaled",
                                    "abd_dist_scaled",
@@ -254,6 +268,8 @@ def learning_pipeline(paths_to_csv, paths_to_images, positives=[],
                                                           paths_to_images,
                                                           filtering=filtering_train,
                                                           P=P,
+                                                          removeWall=removeWall,
+                                                          minWallDist=minWallDist,
                                                           featurelist=featurelist)
         copstartframe = copstartframes[0]
     else:
@@ -261,6 +277,8 @@ def learning_pipeline(paths_to_csv, paths_to_images, positives=[],
                                  positives,
                                  filtering=filtering_train,
                                  P=P,
+                                 removeWall=removeWall,
+                                 minWallDist=minWallDist,
                                  featurelist=featurelist,
                                  copstartframe=copstartframe)
     X_train, X_test, y_train, y_test = train_test_split(X, y)
@@ -327,6 +345,8 @@ def learning_pipeline(paths_to_csv, paths_to_images, positives=[],
         data = prepare_training_data(paths_to_csv[0],
                                      filtering=filtering_data,
                                      P=P,
+                                     removeWall=removeWall,
+                                     minWallDist=minWallDist,
                                      featurelist=featurelist,
                                      copstartframe=copstartframe)
         predictionsLogReg = logReg.predict_proba(data)
@@ -406,6 +426,8 @@ def apply_pretrained(models, data, startframe=0):
 def evalulate_pretrained(paths_to_csv, paths_to_images, positives=[],
                          copstartframe=500, testdata_from_csv=True,
                          filename='trained_models.joblib',
+                         removeWall=False,
+                         minWallDist=3,
                          featurelist=["angles_b_scaled",
                                       "head_dist_scaled",
                                       "tilting_index_scaled",
@@ -422,6 +444,8 @@ def evalulate_pretrained(paths_to_csv, paths_to_images, positives=[],
         X_test, y_test, copstartframe = import_train_test_from_csv(
                                         paths_to_csv, paths_to_images,
                                         filtering=False, P=0.8,
+                                        removeWall=removeWall,
+                                        minWallDist=minWallDist,
                                         featurelist=featurelist)
     else:
         X_test, y_test = import_train_test(
@@ -430,6 +454,8 @@ def evalulate_pretrained(paths_to_csv, paths_to_images, positives=[],
                          positives,
                          filtering=False,
                          P=0.8,
+                         removeWall=removeWall,
+                         minWallDist=minWallDist,
                          featurelist=featurelist,
                          copstartframe=copstartframe)
     # evaluation of the ensemble model
@@ -438,7 +464,7 @@ def evalulate_pretrained(paths_to_csv, paths_to_images, positives=[],
     predKnn = knn.predict_proba(X_test)
     predRandomF = randomF.predict_proba(X_test)
     predNB = NB.predict_proba(X_test)
-    # creating predictions by averaging 
+    # creating predictions by averaging
     # the predicted class probabilities from each model
     ensemblePred = (predLogReg+predSVC+predKnn+predRandomF+predNB)/5
     yProb = ensemblePred[:, 1]
