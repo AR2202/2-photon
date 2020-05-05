@@ -17,6 +17,7 @@ on these features to recognize normal vs. abnormal mating positions
 * matplotlib
 * pandas
 * joblib
+* pytest (for tests only)
 
 ## Usage
 
