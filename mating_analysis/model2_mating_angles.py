@@ -49,14 +49,18 @@ percentileTilting75_1 = np.percentile(tilting1, 75)
 
 copulationstart2 = 1936
 # angles
-angles_b2, wing_dist_male2, abd_dist2, head_dist2, rownumbers2 = unfiltered_outputs(path_to_data2)
+angles_b2, wing_dist_male2, abd_dist2, head_dist2, rownumbers2 = filtered_outputs(
+                                                                     path_to_data2,
+                                                                     0.8,
+                                                                     removeWall=True,
+                                                                     minWallDist=10)
 angles_cop2 = 180*angles_b2[copulationstart2:]/math.pi
 median2 = np.median(angles_cop2)
 percentile25_2 = np.percentile(angles_cop2, 25)
 percentile75_2 = np.percentile(angles_cop2, 75)
-#above cutoff
+# above cutoff
 above_cutoff2 = 100*len(angles_cop2[angles_cop2 > cutoff])/len(angles_cop2)
-#tilting
+# tilting
 tilting2 = tilting_index(wing_dist_male2, copulationstart2)
 median2tilting = np.median(tilting2)
 percentileTilting25_2 = np.percentile(tilting2, 25)
