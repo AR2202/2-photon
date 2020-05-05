@@ -268,7 +268,9 @@ def learning_pipeline(paths_to_csv, paths_to_images, positives=[],
                                                           paths_to_images,
                                                           filtering=filtering_train,
                                                           P=P,
-                                                          removeWall=removeWall,
+                                                          removeWall=False,
+                                                          # should be false to
+                                                          # avoid shift in labels
                                                           minWallDist=minWallDist,
                                                           featurelist=featurelist)
         copstartframe = copstartframes[0]
@@ -277,7 +279,7 @@ def learning_pipeline(paths_to_csv, paths_to_images, positives=[],
                                  positives,
                                  filtering=filtering_train,
                                  P=P,
-                                 removeWall=removeWall,
+                                 removeWall=False,
                                  minWallDist=minWallDist,
                                  featurelist=featurelist,
                                  copstartframe=copstartframe)

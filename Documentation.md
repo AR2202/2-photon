@@ -1,14 +1,15 @@
 # Short User Guide
 
-# fly mating video analysis scripts
+## fly mating video analysis scripts
 
 This is a collection of python scripts for the analysis of tracked fly mating videos.
 The tracking is done using Deep Lab Cut. The Deep Lab Cut model was trained to label
-points on the flies' head, abdomen and shoulders. These scripts are for calculating 
+points on the flies' head, abdomen and shoulders. These scripts are for calculating
 the mating angle and tilting index. Furthermore, a machine learning model is trained
 on these features to recognize normal vs. abnormal mating positions
 
-## Requirements
+### Requirements
+
 * python 3
 * the following python libraries:
 * numpy
@@ -19,20 +20,22 @@ on these features to recognize normal vs. abnormal mating positions
 * joblib
 * pytest (for tests only)
 
-## Usage
+### Usage
 
 All of the descriptions below assume you have trained a Deep Lab Cut model to recognize the head, abdomen and shoulders of the flies and applied that model to your videos. The outpul csv file of the model is the input data to these scripts.
 
-Two different models are supported. 
+Two different models are supported.
+
 * Model 1: All the points are labelled in both flies
 * Model 2: Shoulders are labelled only in the male fly.
 
-## Usage with model 1
+### Usage with model 1
 
 This is very similar to the usage outlined below for model 2, detailed description to follow.
-## Usage with model 2
 
-### calculating the mating angle and tilting index
+### Usage with model 2
+
+#### calculating the mating angle and tilting index
 
 To calculate the mating angle for each row of your csv file, use the function unfiltered_outputs() from the mating_angles_model2 module:
 
@@ -53,7 +56,7 @@ tilting_ind will be an array of your tilting indices. The input arguments are th
 #### Using a script to calculate the median mating angles and tilting indices in a video
 
 The sample script  model2_mating_angles can be used to calculate median mating angles and tilting indices. The paths are examples and have to be changed to the actual paths to the data. At the top of the file, change the line:
-`sys.path.append("path")` 
+`sys.path.append("path")`
 to the path of the mating_angles_model2.py file
 
 Additional lines might need to be commented out if you don't have labelled data. You can also change some lines to print, plot or save the mating_angles and tilting_indices.
@@ -62,11 +65,12 @@ Additional lines might need to be commented out if you don't have labelled data.
 
 The filtered_outputs() and unfiltered_outputs() functions in the mating_angles_model2.py module take the optional keyword arguments removeWall and minWallDist. Defaults are removeWall=False and minWallDist=3. removeWall specifies whether frames where flies are on the side wall should be removed. minWallDist is the minimum distance to the wall (in pixels) that flies should have if frames are to be kept.
 
-### Training a machine learning model to classify frames into 'normal' or 'abnormal' mating positions
+#### Training a machine learning model to classify frames into 'normal' or 'abnormal' mating positions
 
 #### Creating training data
 
 Label some frames in your videos as in the example_labels.csv file. The first row should contain column headers. The columns should be:
+
 * column 1: copulation start frame for that video (one row only)
 * column 2: normal position frame numbers, pairs of consecutive rows will be interpreted as start and end frame of a normal period
 * column 3: abnormal position frame numbers, pairs of consecutive rows will be interpreted as start and end frame of a normal period
@@ -113,15 +117,13 @@ The keyword arguments are optional.
 
 The script model2_test_apply.py gives an example of how to train the model. The paths have to be changed.
 
-# 2-photon Calcium imaging analysis scripts
+## 2-photon Calcium imaging analysis scripts
 
 This is a collection of MATLAB scripts for calcium imaging data analysis.
 
+### Requirements
 
-
-## Requirements
 * MATLAB R2016a or later. MATLAB R2017a or later recommended.
 * All of the scripts in this package need to be in the MATLAB path
-
 
 Documentation is not yet available.
