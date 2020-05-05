@@ -34,6 +34,22 @@ def load_csv_file(path):
     return dffloat
 
 
+def angle_from_cos(FemaleHeadX,
+                   FemaleHeadY,
+                   FemaleAbdomenX, FemaleAbdomenY,
+                   MaleHeadX, MaleHeadY,
+                   MaleAbdomenX, MaleAbdomenY):
+    """uses vector algebra to calculate angles"""
+    vector_f = [(FemaleHeadX - FemaleAbdomenX), (FemaleHeadY - FemaleAbdomenY)]
+    vector_m = [(MaleHeadX - MaleAbdomenX), (MaleHeadY - MaleAbdomenY)]
+    unit_vector_f = vector_f / np.linalg.norm(vector_f)
+    unit_vector_m = vector_m / np.linalg.norm(vector_m)
+    dot_product = np.dot(unit_vector_f, unit_vector_m)
+    angle = np.arccos(dot_product)
+
+    return angle
+
+
 def signDeltax(deltaxFly, deltayFly):
     """determines the sign of the fly's orientation -
     necessary for determining
@@ -101,6 +117,7 @@ def mating_angle_from_body_axis(FemaleHeadX, FemaleHeadY,
                                            relativeSign)
     return matingAngle
 
+
 def mating_angle_from_body_axis_pd_df(df):
     """applies the mating_angle_from_body_axis function
     to a row in a pandas dataframe"""
@@ -114,12 +131,34 @@ def mating_angle_from_body_axis_pd_df(df):
                                                  df.MaleAbdomenY)
     return matingAngleRow
 
-    
+
 def mating_angles_all_rows_from_body_axis(path):
     """applies the mating_angle_from_body_axis function
     to all rows in a dataframe"""
     data = load_csv_file(path)
     angles = data.apply(mating_angle_from_body_axis_pd_df, axis=1)
+    return angles
+
+
+def mating_angle_from_cos_pd_df(df):
+    """applies the mating_angle_from_body_axis function
+    to a row in a pandas dataframe"""
+    matingAngleRow = angle_from_cos(df.FemaleHeadX,
+                                    df.FemaleHeadY,
+                                    df.FemaleAbdomenX,
+                                    df.FemaleAbdomenY,
+                                    df.MaleHeadX,
+                                    df.MaleHeadY,
+                                    df.MaleAbdomenX,
+                                    df.MaleAbdomenY)
+    return matingAngleRow
+
+
+def mating_angles_all_rows_from_cos(path):
+    """applies the mating_angle_from_body_axis function
+    to all rows in a dataframe"""
+    data = load_csv_file(path)
+    angles = data.apply(mating_angle_from_cos_pd_df, axis=1)
     return angles
 
 
@@ -148,7 +187,7 @@ def filtered_mating_angles(path, P):
     those with a likelihood > P"""
     data = load_csv_file(path)
     dataF, rownumbers = filter_by_likelihood_body(data, P)
-    angles_b = dataF.apply(mating_angle_from_body_axis_pd_df, axis=1)
+    angles_b = dataF.apply(mating_angle_from_cos_pd_df, axis=1)
     return angles_b, rownumbers
 
 
@@ -181,7 +220,7 @@ def filtered_wing_distance(path, P):
     This is the function that should be used if you want filtering of data by 
     those with a likelihood > P"""
     data = load_csv_file(path)
-    dataF,rownumbers = filter_by_likelihood_body(data, P)
+    dataF, rownumbers = filter_by_likelihood_body(data, P)
     wing_dist_male = dataF.apply(wing_distance_male, axis=1)
     return wing_dist_male, rownumbers
 
@@ -201,7 +240,7 @@ def filtered_outputs(path, P, removeWall=False, minWallDist=3):
     if removeWall:
         dataF = dataF[distanceToCentroid < ((d/2)-minWallDist)]
         rownumbers = rownumbers[distanceToCentroid < ((d/2)-minWallDist)]  #check if this is correct
-    angles_b = dataF.apply(mating_angle_from_body_axis_pd_df, axis=1)
+    angles_b = dataF.apply(mating_angle_from_cos_pd_df, axis=1)
     wing_dist_male = dataF.apply(wing_distance_male, axis=1)
     abd_dist = dataF.apply(abd_distance, axis=1)
     head_dist = dataF.apply(head_distance, axis=1)
@@ -217,11 +256,16 @@ def unfiltered_outputs(path, removeWall=False, minWallDist=3):
     rownumbers = []
     data = load_csv_file(path)
     centroidx, centroidy, d = centroids(data)
-    distanceToCentroid = data.apply(lambda df: centroid_distance(df, centroidx, centroidy), axis=1)   
+    distanceToCentroid = data.apply(lambda df:
+                                    centroid_distance(
+                                        df,
+                                        centroidx,
+                                        centroidy),
+                                    axis=1)
     if removeWall:
-        data = data[distanceToCentroid < ((d/2)-minWallDist)]    
+        data = data[distanceToCentroid < ((d/2)-minWallDist)]
         rownumbers = np.where(distanceToCentroid < ((d/2)-minWallDist))[0]
-    angles_b = data.apply(mating_angle_from_body_axis_pd_df, axis=1)
+    angles_b = data.apply(mating_angle_from_cos_pd_df, axis=1)
     wing_dist_male = data.apply(wing_distance_male, axis=1)
     abd_dist = data.apply(abd_distance, axis=1)
     head_dist = data.apply(head_distance, axis=1)
@@ -255,7 +299,8 @@ def tilting_index(malewingdist, copstartframe, rownumbers=[]):
     """applies tilting_row function to the dataframe,
     taking all frames before copstartframe as baseline"""
     if rownumbers:
-        copstartframe = len([frame for frame in range(copstartframe) if frame in rownumbers]) 
+        copstartframe = len([frame for frame in range(copstartframe)
+                             if frame in rownumbers])
     male_resting = np.median(malewingdist[1:copstartframe-1])
     tilting = malewingdist[copstartframe:]
     tilting_ind = tilting/male_resting

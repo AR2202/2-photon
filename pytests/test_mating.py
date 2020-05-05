@@ -12,6 +12,7 @@ from mating_angles_model2 import filter_by_likelihood_body, load_csv_file
 from mating_angles_model2 import unfiltered_outputs, filtered_outputs
 from mating_angles_model2 import centroids, centroid_distance, tilting_index
 from mating_angles_model2 import tilting_index_all_frames
+from mating_angles_model2 import angle_from_cos, mating_angle_from_cos_pd_df
 
 testdatapath = "testdata_pytest/exampledata.csv"
 
@@ -36,18 +37,39 @@ def test_mating_angle_from_body_axis():
     assert mating_angle_from_body_axis(2, 1, 1, 0, -1, 2, 0, 1) == math.pi/2
 
 
+def test_angle_from_cos():
+    assert angle_from_cos(2, 1, 1, 0, -1, 2, 0, 1) == math.pi/2
+    assert angle_from_cos(2, 1, 1, 0, 0, 1, -1, 2) == math.pi/2
+    assert angle_from_cos(2, 0, 1, 0, 0, 1, -1, 2) < math.pi/2
+    assert angle_from_cos(2, 0, 1, 0, -1, 2, 0, 1) > math.pi/2
+
+
 def test_zero_division_mating_angle_from_body_axis():
     with pytest.raises(ZeroDivisionError):
         mating_angle_from_body_axis(2, 0, 1, 0, -0, 2, 0, 1)
 
 
+def test_zero_division_angle_from_cos():
+    assert angle_from_cos(2, 0, 1, 0, 0, 2, 0, 1) == math.pi/2
+
+
 def test_mating_angle_from_body_axis_pd_df():
     datadict = {"FemaleHeadX": [2], "FemaleHeadY": [1],
-                "FemaleAbdomenX":[1], "FemaleAbdomenY": [0],
+                "FemaleAbdomenX": [1], "FemaleAbdomenY": [0],
                 "MaleHeadX": [-1], "MaleHeadY": [2],
                 "MaleAbdomenX": [0], "MaleAbdomenY": [1]}
     df = pd.DataFrame(datadict)
     angles = df.apply(mating_angle_from_body_axis_pd_df, axis=1)
+    assert angles[0] == math.pi/2
+
+
+def test_mating_angle_from_cos_pd_df():
+    datadict = {"FemaleHeadX": [2], "FemaleHeadY": [1],
+                "FemaleAbdomenX": [1], "FemaleAbdomenY": [0],
+                "MaleHeadX": [-1], "MaleHeadY": [2],
+                "MaleAbdomenX": [0], "MaleAbdomenY": [1]}
+    df = pd.DataFrame(datadict)
+    angles = df.apply(mating_angle_from_cos_pd_df, axis=1)
     assert angles[0] == math.pi/2
 
 
