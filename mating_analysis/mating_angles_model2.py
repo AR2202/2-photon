@@ -45,6 +45,12 @@ def angle_from_cos(FemaleHeadX,
     unit_vector_f = vector_f / np.linalg.norm(vector_f)
     unit_vector_m = vector_m / np.linalg.norm(vector_m)
     dot_product = np.dot(unit_vector_f, unit_vector_m)
+    if dot_product > 1:
+        print("warning: vector product was {:.2f}".format(dot_product))
+        dot_product = math.floor(dot_product)
+    elif dot_product < -1:
+        print("warning: vector product was {:.2f}".format(dot_product))
+        dot_product = math.ceil(dot_product)
     angle = np.arccos(dot_product)
 
     return angle
@@ -307,7 +313,9 @@ def tilting_index(malewingdist, copstartframe, rownumbers=np.array([])):
     return tilting_ind
 
 
-def tilting_index_all_frames(malewingdist, copstartframe, rownumbers=np.array([])):
+def tilting_index_all_frames(malewingdist,
+                             copstartframe,
+                             rownumbers=np.array([])):
     """applies tilting_row function to the dataframe,
     taking all frames before copstartframe as baseline"""
     if rownumbers.size > 0:

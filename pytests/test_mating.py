@@ -90,6 +90,7 @@ def test_filter_by_likelihood_body():
     assert len(filtered_data_female_H) == len(filtered_data)
     assert len(filtered_data_male_A) == len(filtered_data)
     assert len(filtered_data_male_H) == len(filtered_data)
+    assert isinstance(rows, np.ndarray), "rows should be a numpy array"
 
 
 def test_filtered_outputs():
@@ -118,6 +119,8 @@ def test_filtered_outputs():
         6000, "there are rownumbers missing in the filtered dataset"
     assert rownumbers_filter08[0] ==\
         0, "rownumbers should be 0 based"
+    assert isinstance(rownumbers, np.ndarray), "rownumbers should be a numpy array"
+    assert isinstance(rownumbers_filter08, np.ndarray), "rownumbers should be a numpy array"
 
 
 def test_removeWall_option():
@@ -134,6 +137,8 @@ def test_removeWall_option():
     assert 0 in rownumbers_r
     assert 12231 not in rownumbers_r
     assert 6000 in rownumbers_r
+    assert isinstance(rownumbers, np.ndarray), "rownumbers should be a numpy array"
+    assert isinstance(rownumbers_r, np.ndarray), "rownumbers_r should be a numpy array"
 
 
 def test_centroids():
@@ -163,6 +168,7 @@ def test_centroid_distance():
     assert d/2 < 300, "the radius of the chamber should be smaller than 300 px"
     assert 12231 not in rownumbers, "frame 4257 should not be in rownumbers"
     assert 8815 in rownumbers, "frame 19168 should  be in rownumbers"
+    assert isinstance(rownumbers, np.ndarray), "rows should be numpy array"
 
 
 def test_tilting_index():
@@ -196,6 +202,7 @@ def test_tilting_index_all_frames_df():
     copstartframe = 3
     tilting_ind = tilting_index_all_frames(wing_dist_male, copstartframe)
     assert round(tilting_ind[1]) == 1
+    assert isinstance(rownumbers, np.ndarray), "rownumbers should be np.array"
 
 
 def test_tilting_index_all_frames_df_copstart0():
@@ -204,6 +211,7 @@ def test_tilting_index_all_frames_df_copstart0():
     copstartframe = 0
     tilting_ind = tilting_index_all_frames(wing_dist_male, copstartframe)
     assert round(tilting_ind[1]) == 1
+    assert isinstance(rownumbers, np.ndarray), "rownumbers should be np.array"
 
 
 def test_tilting_index_df_copstart0():
@@ -234,7 +242,7 @@ def test_scale_filtered():
 
 
 def test_scale_unfiltered_content():
-    angles_b, _, _, _, _ = unfiltered_outputs(testdatapath)
+    angles_b, _, _, _, rows = unfiltered_outputs(testdatapath)
     angles_b_scaled, _, _, _, _ = scale_unfiltered(testdatapath)
     assert ((angles_b_scaled[1, 0] > angles_b_scaled[100, 0]) ==
             (angles_b[1] > angles_b[100])
@@ -245,6 +253,7 @@ def test_scale_unfiltered_content():
     assert angles_b[1] > 0
     assert angles_b_scaled[1, 0] > 0
     assert angles_b_scaled[100, 0] > 0
+    assert isinstance(rows, np.ndarray), "rows should be numpy array"
 
 
 def test_prepare_training_data():
