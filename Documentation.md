@@ -22,18 +22,7 @@ on these features to recognize normal vs. abnormal mating positions
 
 ### Usage
 
-All of the descriptions below assume you have trained a Deep Lab Cut model to recognize the head, abdomen and shoulders of the flies and applied that model to your videos. The outpul csv file of the model is the input data to these scripts.
-
-Two different models are supported.
-
-* Model 1: All the points are labelled in both flies
-* Model 2: Shoulders are labelled only in the male fly.
-
-### Usage with model 1
-
-This is very similar to the usage outlined below for model 2, detailed description to follow.
-
-### Usage with model 2
+All of the descriptions below assume you have trained a Deep Lab Cut model to recognize the head, abdomen of both flies and shoulders of the male flies and applied that model to your videos. The outpul csv file of the model is the input data to these scripts.
 
 #### calculating the mating angle and tilting index
 
