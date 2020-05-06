@@ -29,13 +29,18 @@ from joblib import dump, load
 
 
 def scale_angles(angles):
-    angles_matrix = angles.values.reshape(-1,1)
+    """scales the input array to have values between 0 and 1."""
+    angles_matrix = angles.values.reshape(-1, 1)
     scaled = sklearn.preprocessing.MinMaxScaler()
-    scaled_angles = scaled.fit_transform(angles_matrix) 
+    scaled_angles = scaled.fit_transform(angles_matrix)
     return(scaled_angles)
 
 
-def scale_filtered(path, P, removeWall=False, minWallDist=3, copstartframe=500):
+def scale_filtered(path,
+                   P,
+                   removeWall=False,
+                   minWallDist=3,
+                   copstartframe=500):
     """loads the csv file of deeplabcut data
     specified as the path argument and determines mating angle
     from both wing and body axis data;
@@ -84,14 +89,16 @@ def scale_unfiltered(path, removeWall=False, minWallDist=3, copstartframe=500):
 
 
 def train_SGD(X, y, loss="log"):
+    """trains the stochastic gradient descent algorithm
+    with default loss="log" it uses logistic regression
+    uses anova chi2 for feature selection"""
     X_train, X_test, y_train, y_test = train_test_split(X, y)
     n = X_train.shape[0]
     max_iter = np.ceil(10**6 / n)
     parameters = {
         'sgd__alpha': (0.00001, 0.000001),
         'sgd__penalty': ('l2', 'elasticnet'),
-        # 'sdg__max_iter': (10, 50, 80),
-}
+                 }
     pipe = Pipeline([('anova', SelectPercentile(chi2)),
                      ('sgd', SGDClassifier(
                          loss=loss,
@@ -105,6 +112,8 @@ def train_SGD(X, y, loss="log"):
 
 
 def train_knn(X, y):
+    """trains the k nearest neighbors algoithm
+    feature selection is done by support vector classifier"""
     X_train, X_test, y_train, y_test = train_test_split(X, y)
     parameters = {'knc__n_neighbors': [1, 2, 3, 4, 5],
                   'knc__weights': ['uniform', 'distance']}
@@ -118,6 +127,8 @@ def train_knn(X, y):
 
 
 def train_SVC(X, y):
+    """trains the support vector classifier
+    feature selction is done with anova"""
     X_train, X_test, y_train, y_test = train_test_split(X, y)
     param_grid = [
               {'svc__C': [1, 10, 100, 1000], 'svc__kernel': ['linear']},
@@ -126,23 +137,27 @@ def train_SVC(X, y):
               ]
     pipe = Pipeline([('anova', SelectPercentile(chi2)),
                      ('svc', SVC(probability=True))])
-    grid_search = GridSearchCV(pipe, param_grid, verbose=1)           
-    supportV = grid_search.fit(X_train, y_train)  
+    grid_search = GridSearchCV(pipe, param_grid, verbose=1)
+    supportV = grid_search.fit(X_train, y_train)
     CVScore = grid_search.best_score_
     testScore = supportV.score(X_test, y_test)
     return supportV, testScore, CVScore
 
 
 def train_NB(X, y):
+    """trains the naive bayes algorithm;
+    feature selection is done with linear support vecotor classifier"""
     X_train, X_test, y_train, y_test = train_test_split(X, y)
     pipe = Pipeline([('feature_selection', SelectFromModel(LinearSVC())),
                     ('classification', GaussianNB())])
-    NB = pipe.fit(X_train, y_train)  
+    NB = pipe.fit(X_train, y_train)
     testScore = NB.score(X_test, y_test)
     return NB, testScore
 
 
 def train_randomForest(X, y):
+    """trains the randomForst algorithm;
+    feature selection by support vector classifier"""
     X_train, X_test, y_train, y_test = train_test_split(X, y)
     parameters = {'rfc__n_estimators': [10, 25, 50, 75, 100, 125]}
     pipe = Pipeline([('feature_selection', SelectFromModel(LinearSVC())),
@@ -191,7 +206,9 @@ def import_train_test(path_to_csv, path_to_images, positives, filtering=False,
                                    "head_dist_scaled",
                                    "abd_dist_scaled"]):
     """prepares training dataset"""
-    """if positives is a list of framenumbers, the first frame should be 1"""
+    """if positives is a list of framenumbers, the first frame should be 1;
+    uses a directory with the images as input;
+    unlikely to be used in future"""
     X = prepare_training_data(path_to_csv, filtering=filtering, P=P,
                               featurelist=featurelist,
                               copstartframe=copstartframe,
@@ -216,7 +233,7 @@ def import_train_test_from_csv(paths_to_csv, paths_to_labels, filtering=False,
                                             "tilting_index_scaled",
                                             "head_dist_scaled",
                                             "abd_dist_scaled"]):
-    """prepares training dataset"""
+    """prepares training dataset from a csv file of labelled frames"""
     copstartframes = []
     Xs_training = np.array([])
     ys_training = np.array([])
@@ -262,7 +279,9 @@ def learning_pipeline(paths_to_csv, paths_to_images, positives=[],
                                    "head_dist_scaled",
                                    "abd_dist_scaled",
                                    "tilting_index_scaled"]):
-    """pipeline for machine learning"""
+    """pipeline for machine learning;
+    prepares the training dataset, trains all models, tests all models;
+    outputs the models as a dictionary"""
     if training_from_csv:
         X, y, copstartframes = import_train_test_from_csv(paths_to_csv,
                                                           paths_to_images,
@@ -403,7 +422,8 @@ def load_pretrained(filename='trained_models.joblib'):
 
 def apply_pretrained(models, data, startframe=0):
     """apply the pretrained model to new data"""
-    """startframe can be used to subset data - for example to include only copulation frames"""
+    """startframe can be used to subset data -
+    for example to include only copulation frames"""
     # load models
     logReg = models["LogReg"]["model"]
     suppVC = models["SVC"]["model"]
@@ -492,6 +512,7 @@ def evalulate_pretrained(paths_to_csv, paths_to_images, positives=[],
 
 
 def train_RidgeRegressor(X, y):
+    """trains the ridge regression model"""
     X_train, X_test, y_train, y_test = train_test_split(X, y)
     ridge = RidgeCV()
     reg = ridge.fit(X_train, y_train)
@@ -506,10 +527,12 @@ def train_RidgeRegressor(X, y):
 
 
 def coords_to_1D(df_x, df_y):
+    """transforms the coordinates to a one dimensional array in one row of the dataframe"""
     return (600*df_y+df_x)
 
 
 def prepare_features(headX, headY, abdomenX, abdomenY, wing1X, wing1Y, wing2X, wing2Y):
+    """prepares the features of the regression model"""
     head = scale_angles(coords_to_1D(headX, headY))
     abdomen = scale_angles(coords_to_1D(abdomenX, abdomenY))
     wing1 = scale_angles(coords_to_1D(wing1X, wing1Y))
@@ -519,6 +542,7 @@ def prepare_features(headX, headY, abdomenX, abdomenY, wing1X, wing1Y, wing2X, w
 
 
 def prepare_male_features(path):
+    """prepares the features for male data of a csv file"""
     data = load_csv_file(path)
     malefeatures = prepare_features(data.MaleHeadX,
                                     data.MaleHeadY,
@@ -533,7 +557,8 @@ def prepare_male_features(path):
 
 
 def prepare_regression_training_features(path, label=1):
-    """label: the index of the feature that is used as a label for training purposes;
+    """prepares the features for training a regression model;
+    label: the index of the feature that is used as a label for training purposes;
     corresponds to the index of features in prepare_features()
     0:head
     1:abdomen
@@ -547,7 +572,7 @@ def prepare_regression_training_features(path, label=1):
     return malefeat, labelMale
 
 
-def train_regression_models(path,label=1):
+def train_regression_models(path, label=1):
     """label: the index of the feature that is used as a label for training purposes;
     corresponds to the index of features in prepare_features()
     0:head

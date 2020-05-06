@@ -3,7 +3,7 @@ import math
 import pandas as pd
 import numpy as np
 import sys
-sys.path.append("../mating_analysis")
+sys.path.append("./mating_analysis")
 import mating_angles_model2
 from mating_angles_model2 import signDeltax2, mating_angle_from_angles
 from mating_angles_model2 import mating_angle_from_body_axis
@@ -13,8 +13,13 @@ from mating_angles_model2 import unfiltered_outputs, filtered_outputs
 from mating_angles_model2 import centroids, centroid_distance, tilting_index
 from mating_angles_model2 import tilting_index_all_frames
 from mating_angles_model2 import angle_from_cos, mating_angle_from_cos_pd_df
+from mating_angles_learn_model2 import scale_filtered, scale_unfiltered
+from mating_angles_learn_model2 import prepare_training_data
 
-testdatapath = "testdata_pytest/exampledata.csv"
+# this file contains the tests for the mating_angles_model2
+#
+# path to test data
+testdatapath = "./pytests/testdata_pytest/exampledata.csv"
 
 
 def test_signDeltax2():
@@ -214,3 +219,49 @@ def test_npwhere():
     above3 = np.where(nparray > 3)[0]
     assert 4 in above3
     assert 2 not in above3
+
+
+def test_scale_unfiltered():
+    angles_b_scaled, _, _, _, _ = scale_unfiltered(testdatapath)
+    assert all(angles_b_scaled >= 0), "data should be between 0 and 1"
+    assert all(angles_b_scaled <= 1), "data should be between 0 and 1"
+
+
+def test_scale_filtered():
+    angles_b_scaled, _, _, _, _ = scale_filtered(testdatapath, 0.8)
+    assert all(angles_b_scaled >= 0), "data should be between 0 and 1"
+    assert all(angles_b_scaled <= 1), "data should be between 0 and 1"
+
+
+def test_scale_unfiltered_content():
+    angles_b, _, _, _, _ = unfiltered_outputs(testdatapath)
+    angles_b_scaled, _, _, _, _ = scale_unfiltered(testdatapath)
+    assert ((angles_b_scaled[1, 0] > angles_b_scaled[100, 0]) ==
+            (angles_b[1] > angles_b[100])
+            ), "relations between data should be preserved after scaling"
+    assert len(angles_b) == len(angles_b_scaled)
+    assert angles_b.shape == (19681,)
+    assert angles_b_scaled.shape == (19681, 1)
+    assert angles_b[1] > 0
+    assert angles_b_scaled[1, 0] > 0
+    assert angles_b_scaled[100, 0] > 0
+
+
+def test_prepare_training_data():
+    features1 = ["angles_b_scaled",
+                 "head_dist_scaled",
+                 "abd_dist_scaled",
+                 "tilting_index_scaled"]
+    features2 = ["angles_b_scaled",
+                 "head_dist_scaled",
+                 "abd_dist_scaled"]
+    X1 = prepare_training_data(testdatapath, featurelist=features1)
+    X2 = prepare_training_data(testdatapath, featurelist=features2)
+    assert X1.shape == (19681, 4)
+    assert X2.shape == (19681, 3)
+
+
+def test_prepare_training_data_non_existent_feature():
+    features1 = ["feature_does_not_exist"]
+    with pytest.raises(NameError):
+        _ = prepare_training_data(testdatapath, featurelist=features1)

@@ -253,7 +253,7 @@ def unfiltered_outputs(path, removeWall=False, minWallDist=3):
     from both wing and body axis data as well as wing distance;
     This is the function that should be used if you don't want filtering of data by 
     those with a likelihood > P"""
-    rownumbers = []
+    rownumbers = np.array([])
     data = load_csv_file(path)
     centroidx, centroidy, d = centroids(data)
     distanceToCentroid = data.apply(lambda df:
@@ -295,10 +295,10 @@ def tilting_row(df):
     return tilting
 
 
-def tilting_index(malewingdist, copstartframe, rownumbers=[]):
+def tilting_index(malewingdist, copstartframe, rownumbers=np.array([])):
     """applies tilting_row function to the dataframe,
     taking all frames before copstartframe as baseline"""
-    if rownumbers:
+    if rownumbers.size > 0:
         copstartframe = len([frame for frame in range(copstartframe)
                              if frame in rownumbers])
     male_resting = np.median(malewingdist[1:copstartframe-1])
@@ -307,10 +307,10 @@ def tilting_index(malewingdist, copstartframe, rownumbers=[]):
     return tilting_ind
 
 
-def tilting_index_all_frames(malewingdist, copstartframe, rownumbers=[]):
+def tilting_index_all_frames(malewingdist, copstartframe, rownumbers=np.array([])):
     """applies tilting_row function to the dataframe,
     taking all frames before copstartframe as baseline"""
-    if rownumbers:
+    if rownumbers.size > 0:
         copstartframe = len([frame for frame in range(copstartframe)
                              if frame in rownumbers])
     male_resting = np.median(malewingdist[1:copstartframe-1])
@@ -319,24 +319,29 @@ def tilting_index_all_frames(malewingdist, copstartframe, rownumbers=[]):
 
 
 def abd_distance(df):
+    """calculates abdominal distance for one row in dataframe"""
     distanceMF = distance(df.MaleAbdomenX, df.MaleAbdomenY,
                           df.FemaleAbdomenX, df.FemaleAbdomenY)
     return distanceMF
 
 
 def head_distance(df):
+    """calculates head distance for one row in dataframe"""
     distanceMF = distance(df.MaleHeadX, df.MaleHeadY,
                           df.FemaleHeadX, df.FemaleHeadY)
     return distanceMF
 
 
 def centroid_distance(df, centroidx, centroidy):
+    """calculates male abdomen to centroid distance for one row in dataframe"""
     distancec = distance(df.MaleAbdomenX, df.MaleAbdomenY,
                          centroidx, centroidy)
     return distancec
 
 
 def distance(xmale, ymale, xfemale, yfemale):
+    """calculates a distance between two points,
+    each of which are entered as their x and y coordinates"""
     distance = math.sqrt((xmale-xfemale)**2+(ymale-yfemale)**2)
     return distance
 
