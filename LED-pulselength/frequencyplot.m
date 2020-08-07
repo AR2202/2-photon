@@ -133,6 +133,7 @@ for g=1:size(genders,1)
                     f = string(frequencies(i));
                     outputname = strcat(pulselengthname,f,'Hz');
                     all_filenames=[];
+                    all_directorynames={};
                     
                     
                     for p = 1:numel(directories)
@@ -146,20 +147,36 @@ for g=1:size(genders,1)
                             directoryname=pathname;
                         else
                             directoryname = fullfile(pathname,foldername,directories(p).name);
-                            disp(directoryname);
+                            %disp(directoryname);
+                            
+                        
+                            
                         end
                         files=dir(char(strcat(directoryname,'/',subfoldername,'/*',gender,'*',neuronpart,'*',pulsedurstr,'*',f,'Hz*',pulselengthname,'*.tif')));
                         newfilenames=arrayfun(@(f) fullfile(directoryname,subfoldername,f.name),files, 'uni',false);
+                        newdirectorynames=arrayfun(@(f) fullfile(directoryname),files, 'uni',false);
                         all_filenames = vertcat(all_filenames,newfilenames);
+                        all_directorynames = vertcat(all_directorynames,newdirectorynames);
                         if inhibconc(inhib) ==0
                             filenames = all_filenames(~contains(all_filenames,inhibname));
+                            directorynames = all_directorynames(~contains(all_filenames,inhibname));
                         else
                             filenames = all_filenames(contains(all_filenames,inhibstring));
+                            directorynames = all_directorynames(contains(all_filenames,inhibstring));
                         end
-                        disp(filenames);
+                        
+                       % disp(filenames);
+                       % disp(directorynames);
                     end
-                    fluo=cellfun(@(filename)extract_fluo(filename),filenames,'uni',false);
-                    fluomat=cell2mat(fluo);
+                    disp(filenames);
+                    flynumbers=cellfun(@(filename)regexp(filename,"fly\d+(",'match'),filenames,'uni',false);
+                   % disp(flynumbers);
+                    fluo_all=cellfun(@(filename)extract_fluo(filename),filenames,'uni',false);
+                    fluomat_all=cell2mat(fluo_all);
+                    fluo_av=cellfun(@(directoryname1,flynumber1) average_within_fly(directorynames,flynumbers,fluomat_all,directoryname1,flynumber1),directorynames,flynumbers,'uni',false);
+                    fluomat_av=cell2mat(fluo_av);
+                    fluomat=unique(fluomat_av,'row');
+                    fluo=num2cell(fluomat,2);
                     pulseaverage_dff=cellfun(@(f) average_pulses(f,pulsetimes,framerate),fluo,'uni',false);
                     pulseavmat=cell2mat(pulseaverage_dff);
                     
@@ -249,7 +266,7 @@ for g=1:size(genders,1)
         end
     end
 end
-
+end
 %This creates events of 180 frames
 function pulseav_dff=average_pulses(fluo, pulsetimes,framerate)
 pulsefluo=zeros(size(pulsetimes,2),180);
@@ -259,3 +276,16 @@ for numpulse = 1:size(pulsetimes,2)
 end
 mean_pulsefluo=mean(pulsefluo,1);
 pulseav_dff=calculate_dff(mean_pulsefluo,2,58);
+end
+%function for checking if data are from the same animal
+function average_event=average_within_fly(directorynames,flynumbers,fluo,directoryname1,flynumber1)
+
+sames = cellfun(@(directoryname,flynumber)...
+    (contains(directoryname,directoryname1) && contains(flynumber,flynumber1)),...
+    directorynames,flynumbers);
+%checking if both the flynumber and the directoryname in which the 
+%experiment was found is the same
+total_fluo=fluo(sames,:);
+
+average_event=mean(total_fluo,1);
+end
