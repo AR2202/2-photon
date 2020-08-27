@@ -1,6 +1,6 @@
 %Annika Rings, September 2019
 %
-%FREQUENCYPLOT makes a plot of deltaF/F vs. Frequency for different
+%FREQUENCYPLOT2 makes a plot of deltaF/F vs. Frequency for different
 %pulsedurations
 %
 %dependencies:
