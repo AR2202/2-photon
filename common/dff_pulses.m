@@ -5,7 +5,7 @@
  x=x/framerate;
         for i=1:numel(pulsetimes)
             start_event=round(pulsetimes(i)*framerate);
-            end_event = round(pulsetimes(i)*framerate+pulsedur*framerate+framerate)-1;
+            end_event = round(pulsetimes(i)*framerate)+round(pulsedur*framerate+framerate)-1;
             start_base=round(pulsetimes(i)*framerate-framerate)-1;
             end_base=round(pulsetimes(i)*framerate)-1;
             pulse_f0=mean(fluo(start_base:end_base));
