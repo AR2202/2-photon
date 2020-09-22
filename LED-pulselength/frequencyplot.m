@@ -169,7 +169,7 @@ for g=1:size(genders,1)
                        % disp(directorynames);
                     end
                     disp(filenames);
-                    flynumbers=cellfun(@(filename)regexp(filename,"fly\d+(",'match'),filenames,'uni',false);
+                    flynumbers=cellfun(@(filename)regexp(filename,'fly\d+(\(|\_)','match'),filenames,'uni',false);
                    % disp(flynumbers);
                     fluo_all=cellfun(@(filename)extract_fluo(filename),filenames,'uni',false);
                     fluomat_all=cell2mat(fluo_all);
