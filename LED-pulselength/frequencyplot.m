@@ -29,13 +29,22 @@
 % only relevant if pulsetimesfromfile is set to true; default: 'stimtimes.mat'
 % 'subfoldername': name of the imaging subfolder
 % (a subdirectory of 'foldername' or of each of its subdirectories), default: 'ROI'
+%'inhibitor_conc': list of concentrations of toxin used, default:
+%[0,150,300]
+% if no inhibitor was used, choose [0]
+% 'inhibitor_unit': unit of the inhibitor concentration, as given in the
+% filename; irrelevant if no inhibitor was used, default: 'uM'
+% 'inhibitor_name': string of the name of the inhibitor as given in the
+% filename, defalut: 'PTX'
 
 
 
 function frequencyplot(foldername,varargin)
 
 
-
+%------------------------------------------------------------------------
+%optional key-value pare arguments and their defaults
+%------------------------------------------------------------------------
 options = struct('framerate',5.92,'baseline_start',2,'baseline_end',11,...
     'frequencies',[4,10,20,40], 'pulselengths',[8,12,20],...
     'pulsetimes',[20,40,60,80],'genders',{{'_male';'female'}},...
@@ -46,6 +55,9 @@ options = struct('framerate',5.92,'baseline_start',2,'baseline_end',11,...
     'resultsdir','Results','multiroi',false,'numrois',1,...
     'pulsetimesfromfile',false,'pulsetimesfile','stimtimes.mat','subfoldername','ROI');
 arguments = varargin;
+%------------------------------------------------------------------------
+%setting optional key-value pair arguments
+%-------------------------------------------------------------------------
 
 %call the options_resolver function to check optional key-value pair
 %arguments
@@ -56,11 +68,8 @@ arguments = varargin;
 
 
 framerate = options.framerate; % frame rate in Hz
-
-
 baseline_start = options.baseline_start;
 baseline_end = options.baseline_end;
-
 frequencies=options.frequencies; %LED frequencies of the experiments
 pulselengths=options.pulselengths;
 genders = options.genders;
@@ -73,7 +82,8 @@ pulsetimesfromfile=options.pulsetimesfromfile;
 pulsetimesfile=options.pulsetimesfile;
 inhibconc=options.inhibitor_conc;
 inhibname=options.inhibitor_name;
-inhibunit=options.inhibitor_unit;
+inhibunit=options.inhibitor_unit
+
 if pulsetimesfromfile
     load(pulsetimesfile);
     pulsetimes = stimstarts./framerate;
@@ -99,6 +109,11 @@ if ~multiroi
     
     numrois =1; %set numrois to 1 if multiroi is false
 end
+
+%---------------------------------------------------------------------
+%determine if single folder or multiple folders should be analyzed
+%---------------------------------------------------------------------
+
 stackdir = fullfile(pathname,foldername,subfoldername);
 
 if exist(stackdir, 'dir')
@@ -116,26 +131,34 @@ else
     issubdir=false;
     
 end
+%-------------------------------------------------------
+%the main loop
+%-------------------------------------------------------
+
+%loop through the genders
 for g=1:size(genders,1)
     
     gender=genders{g};
     disp(gender);
+    %loop through the neuronparts
     for n=1:size(neuronparts,1)
         neuronpart=neuronparts{n};
+        %loop through inhibitor concentrations
         for inhib = 1:length(inhibconc)
             inhibstring = strcat(string(inhibconc(inhib)),inhibunit,inhibname);
             disp(inhibstring);
-            
+           %loop through pulselengths 
             for j = 1:length(pulselengths)
                 pulselengthname=strcat(string(pulselengths(j)),'ms_');
                 disp(pulselengthname);
+                %loop through frequencies
                 for i = 1:length(frequencies)
                     f = string(frequencies(i));
                     outputname = strcat(pulselengthname,f,'Hz');
                     all_filenames=[];
                     all_directorynames={};
                     
-                    
+                    %loop through directories
                     for p = 1:numel(directories)
                         if ~directories(p).isdir
                             continue;
@@ -147,16 +170,20 @@ for g=1:size(genders,1)
                             directoryname=pathname;
                         else
                             directoryname = fullfile(pathname,foldername,directories(p).name);
-                            %disp(directoryname);
+                            
                             
                         
                             
                         end
+                        %the expected structure of the filenames
                         files=dir(char(strcat(directoryname,'/',subfoldername,'/*',gender,'*',neuronpart,'*',pulsedurstr,'*',f,'Hz*',pulselengthname,'*.tif')));
                         newfilenames=arrayfun(@(f) fullfile(directoryname,subfoldername,f.name),files, 'uni',false);
                         newdirectorynames=arrayfun(@(f) fullfile(directoryname),files, 'uni',false);
                         all_filenames = vertcat(all_filenames,newfilenames);
                         all_directorynames = vertcat(all_directorynames,newdirectorynames);
+                        %if inhibitor_conc is 0, make sure the filename
+                        %does not contain the inhibitorname. otherwise,
+                        %find the concentration given in the filename
                         if inhibconc(inhib) ==0
                             filenames = all_filenames(~contains(all_filenames,inhibname));
                             directorynames = all_directorynames(~contains(all_filenames,inhibname));
@@ -165,24 +192,32 @@ for g=1:size(genders,1)
                             directorynames = all_directorynames(contains(all_filenames,inhibstring));
                         end
                         
-                       % disp(filenames);
-                       % disp(directorynames);
+                       
                     end
                     disp(filenames);
+                    %find flynumber: based on a regular expression,
+                    %expecting the flynumber to be preceeded by the string
+                    %'fly' and followed either by a ( or _
                     flynumbers=cellfun(@(filename)regexp(filename,'fly\d+(\(|\_)','match'),filenames,'uni',false);
-                   % disp(flynumbers);
+                   %extract fluorescence for all files using the (external) extract_fluo
+                   %function
                     fluo_all=cellfun(@(filename)extract_fluo(filename),filenames,'uni',false);
+                    %convert to matrix
                     fluomat_all=cell2mat(fluo_all);
+                    %average all experiments that come from the same fly
+                    %(i.e. have the same fly number and the same directory
+                    %name)
                     fluo_av=cellfun(@(directoryname1,flynumber1) average_within_fly(directorynames,flynumbers,fluomat_all,directoryname1,flynumber1),directorynames,flynumbers,'uni',false);
                     fluomat_av=cell2mat(fluo_av);
                     fluomat=unique(fluomat_av,'row');
                     fluo=num2cell(fluomat,2);
+                    %average the traces
                     pulseaverage_dff=cellfun(@(f) average_pulses(f,pulsetimes,framerate),fluo,'uni',false);
                     pulseavmat=cell2mat(pulseaverage_dff);
-                    
+                    %first pulses
                     firstpulse_dff=cellfun(@(f) average_pulses(f,pulsetimes(1),framerate),fluo,'uni',false);
                     firstmat=cell2mat(firstpulse_dff);
-                    
+                    %last pullses
                     lastpulse_dff=cellfun(@(f) average_pulses(f,pulsetimes(size(pulsetimes,2)),framerate),fluo,'uni',false);
                     lastmat=cell2mat(lastpulse_dff);
                     
@@ -237,6 +272,7 @@ for g=1:size(genders,1)
                     dff_of_pulses=cellfun(@(f)dff_pulses(f,pulsetimes,pulsedur,framerate),fluo,'uni',false);
                     
                     pulsedff=cell2mat(dff_of_pulses);
+                    %save data to a .mat file
                     outputmatfile=fullfile(outputdir,(strcat(outputname,gender,'_',neuronpart,'_',pulsedurstr,inhibstring,'.mat')));
                     save(outputmatfile,'pulsedff','mean_dff','n_files','SEM_dff','dff','mean_pulseav_dff', 'SEM_pulseav_dff','mean_first_dff','SEM_first_dff','mean_last_dff','SEM_last_dff');
                     pulsemeans(j,i)=mean(pulsedff);
@@ -267,6 +303,10 @@ for g=1:size(genders,1)
     end
 end
 end
+%---------------------------------------
+%functions used in the above main function
+%----------------------------------------
+
 %This creates events of 180 frames
 function pulseav_dff=average_pulses(fluo, pulsetimes,framerate)
 pulsefluo=zeros(size(pulsetimes,2),180);
@@ -279,6 +319,7 @@ end
 
 pulseav_dff=mean(pulsefluo_dff,1);
 end
+
 %function for checking if data are from the same animal
 function average_event=average_within_fly(directorynames,flynumbers,fluo,directoryname1,flynumber1)
 
