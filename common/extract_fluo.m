@@ -1,3 +1,4 @@
+%extract the mean fluorescence for each frame of the tiffstack
 function fluo=extract_fluo(tiffile)
             startdir=pwd;
             filename = tiffile;

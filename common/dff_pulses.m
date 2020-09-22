@@ -1,4 +1,6 @@
- function pulse_dff=dff_pulses(fluo, pulsetimes,pulsedur,framerate)
+%function for calculating the AUC of the deltaF/F traces during the pulse
+%until 1s after the pulse. Baseline: 1s before the pulse
+function pulse_dff=dff_pulses(fluo, pulsetimes,pulsedur,framerate)
  pulsedff=zeros(numel(pulsetimes),round(pulsedur*framerate+framerate));
  %aucs = zeros(numel(pulsetimes),1);
  x=(0:round(pulsedur*framerate+framerate)-1);
