@@ -41,6 +41,10 @@ options = struct('framerate',5.92,'baseline_start',2,'baseline_end',11,...
     'subfoldername','ROI');
 arguments = varargin;
 
+%------------------------------------------------------------------
+%             Checking optional arguments
+%-----------------------------------------------------------------
+
 %call the options_resolver function to check optional key-value pair
 %arguments
 [options,~]=options_resolver(options,arguments,'spontaneous_activity');
@@ -50,8 +54,6 @@ arguments = varargin;
 
 
 framerate = options.framerate; % frame rate in Hz
-
-
 baseline_start = options.baseline_start;
 baseline_end = options.baseline_end;
 genders = options.genders;
@@ -63,7 +65,6 @@ inhibconc=options.inhibitor_conc;
 inhibname=options.inhibitor_name;
 inhibunit=options.inhibitor_unit;
 
-
 startdir=pwd;
 pathname = startdir;
 subfoldername=options.subfoldername;%must be a folder within the imaging folder
@@ -72,6 +73,10 @@ if ~multiroi
     
     numrois =1; %set numrois to 1 if multiroi is false
 end
+%------------------------------------------------------------
+%test if there are several folders or only one to be analyzed
+%------------------------------------------------------------
+
 stackdir = fullfile(pathname,foldername,subfoldername);
 
 if exist(stackdir, 'dir')
@@ -89,6 +94,10 @@ else
     issubdir=false;
     
 end
+%-----------------------------------------------------
+%the main loop
+%-----------------------------------------------------
+
 for g=1:size(genders,1)
     
     gender=genders{g};
@@ -100,73 +109,75 @@ for g=1:size(genders,1)
             disp(inhibstring);
             
             
-                    all_filenames={};
-                    all_directorynames={};
-                    
-                    
-                    for p = 1:numel(directories)
-                        if ~directories(p).isdir
-                            continue;
-                        end
-                        if ismember(directories(p).name,{'.','..','.DS_Store'})
-                            continue;
-                        end
-                        if issubdir
-                            directoryname=pathname;
-                        else
-                            directoryname = fullfile(pathname,foldername,directories(p).name);
-                           
-                            
-                        
-                            
-                        end
-                        files=dir(char(strcat(directoryname,'/',subfoldername,'/*',gender,'*',neuronpart,'*.tif')));
-                     
-                        newfilenames=arrayfun(@(f) fullfile(directoryname,subfoldername,f.name),files, 'uni',false);
-                        %disp(newfilenames);
-                        newdirectorynames=arrayfun(@(f) fullfile(directoryname),files, 'uni',false);
-                        all_filenames = vertcat(all_filenames,newfilenames);
-                        all_directorynames = vertcat(all_directorynames,newdirectorynames);
-                        if inhibconc(inhib) ==0
-                            filenames_i = all_filenames(~contains(all_filenames,inhibname));
-                            directorynames_i = all_directorynames(~contains(all_filenames,inhibname));
-                        else
-                            filenames_i = all_filenames(contains(all_filenames,inhibstring));
-                            directorynames_i = all_directorynames(contains(all_filenames,inhibstring));
-                        end
-                        filenames = filenames_i(~contains(filenames_i,'Hz'));
-                        directorynames = directorynames_i(~contains(filenames_i,'Hz'));
-                       
-                    end
-                    disp(filenames);
-                    %disp(directorynames);
-                    flynumbers=cellfun(@(filename)regexp(filename,"fly\d+(",'match'),filenames,'uni',false);
-                   
-                    fluo_all=cellfun(@(filename)extract_fluo(filename),filenames,'uni',false);
-                    fluomat_all=cell2mat(fluo_all);
-                    fluo_av=cellfun(@(directoryname1,flynumber1) average_within_fly(directorynames,flynumbers,fluomat_all,directoryname1,flynumber1),directorynames,flynumbers,'uni',false);
-                    fluomat_av=cell2mat(fluo_av);
-                    fluomat=unique(fluomat_av,'row');
-                    fluo=num2cell(fluomat,2);
-                    
-                    %calculating deltaF/F
-                    dff=calculate_dff(fluomat,baseline_start,baseline_end);
-                    numframes = size(dff,2);
-                    
-                    framenumbers=1:numframes;
-                    x=framenumbers/framerate;
-                    
-                   
-                    
-                    %make the figure name and path to output
+            all_filenames={};
+            all_directorynames={};
+            
+            
+            for p = 1:numel(directories)
+                if ~directories(p).isdir
+                    continue;
+                end
+                if ismember(directories(p).name,{'.','..','.DS_Store'})
+                    continue;
+                end
+                if issubdir
+                    directoryname=pathname;
+                else
+                    directoryname = fullfile(pathname,foldername,directories(p).name);
                     
                     
                     
                     
-                    outputmatfile=fullfile(outputdir,(strcat(gender,'_',neuronpart,'_',inhibstring,'spontaneous.mat')));
-                    save(outputmatfile,'dff');
-                    
-         
+                end
+                files=dir(char(strcat(directoryname,'/',subfoldername,'/*',gender,'*',neuronpart,'*.tif')));
+                
+                newfilenames=arrayfun(@(f) fullfile(directoryname,subfoldername,f.name),files, 'uni',false);
+                
+                newdirectorynames=arrayfun(@(f) fullfile(directoryname),files, 'uni',false);
+                all_filenames = vertcat(all_filenames,newfilenames);
+                all_directorynames = vertcat(all_directorynames,newdirectorynames);
+                if inhibconc(inhib) ==0
+                    filenames_i = all_filenames(~contains(all_filenames,inhibname));
+                    directorynames_i = all_directorynames(~contains(all_filenames,inhibname));
+                else
+                    filenames_i = all_filenames(contains(all_filenames,inhibstring));
+                    directorynames_i = all_directorynames(contains(all_filenames,inhibstring));
+                end
+                filenames = filenames_i(~contains(filenames_i,'Hz'));
+                directorynames = directorynames_i(~contains(filenames_i,'Hz'));
+                
+            end
+            disp(filenames);
+            
+            flynumbers=cellfun(@(filename)regexp(filename,'fly\d+(\(|\_)','match'),filenames,'uni',false);
+            
+            fluo_all=cellfun(@(filename)extract_fluo(filename),filenames,'uni',false);
+            fluomat_all=cell2mat(fluo_all);
+            fluo_av=cellfun(@(directoryname1,flynumber1) average_within_fly(directorynames,flynumbers,fluomat_all,directoryname1,flynumber1),directorynames,flynumbers,'uni',false);
+            fluomat_av=cell2mat(fluo_av);
+            fluomat=unique(fluomat_av,'row');
+            fluo=num2cell(fluomat,2);
+            %-----------------------
+            %calculating deltaF/F
+            %-----------------------
+            
+            dff=calculate_dff(fluomat,baseline_start,baseline_end);
+            numframes = size(dff,2);
+            
+            framenumbers=1:numframes;
+            x=framenumbers/framerate;
+            
+            
+            
+            %make the figure name and path to output
+            
+            
+            
+            
+            outputmatfile=fullfile(outputdir,(strcat(gender,'_',neuronpart,'_',inhibstring,'spontaneous.mat')));
+            save(outputmatfile,'dff');
+            
+            
             
             
             
@@ -174,14 +185,15 @@ for g=1:size(genders,1)
     end
 end
 end
-
+%-------------------------------------------------------
 %function for checking if data are from the same animal
+%--------------------------------------------------------
 function average_event=average_within_fly(directorynames,flynumbers,fluo,directoryname1,flynumber1)
 
 sames = cellfun(@(directoryname,flynumber)...
     (contains(directoryname,directoryname1) && contains(flynumber,flynumber1)),...
     directorynames,flynumbers);
-%checking if both the flynumber and the directoryname in which the 
+%checking if both the flynumber and the directoryname in which the
 %experiment was found is the same
 total_fluo=fluo(sames,:);
 
