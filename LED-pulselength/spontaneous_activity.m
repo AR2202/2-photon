@@ -25,7 +25,13 @@
 % 'subfoldername': name of the imaging subfolder
 % (a subdirectory of 'foldername' or of each of its subdirectories), default: 'ROI'
 
-
+%'inhibitor_conc': list of concentrations of toxin used, default:
+%[0,150,300]
+% if no inhibitor was used, choose [0]
+% 'inhibitor_unit': unit of the inhibitor concentration, as given in the
+% filename; irrelevant if no inhibitor was used, default: 'uM'
+% 'inhibitor_name': string of the name of the inhibitor as given in the
+% filename, defalut: 'PTX'
 
 function spontaneous_activity(foldername,varargin)
 
