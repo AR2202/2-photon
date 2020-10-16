@@ -117,7 +117,7 @@ This is a collection of MATLAB scripts for calcium imaging data analysis.
 
 ### Usage
 
-#### Analysing functional connectivity calcium imaging experiments
+#### Image stabilization, background subtraction and ROI selection
 
 1. Run image stabilizer Fiji scripts in the  preprocessing_Fiji folder. Select your script:
 
@@ -130,7 +130,11 @@ This is a collection of MATLAB scripts for calcium imaging data analysis.
 * Run bckg-sub_makeROI_wholedir_with_exclude.ijm for single ROI per file
 * Run bckg-sub_multiROI_wholedir_with_exclud.ijm for multiple ROIs per file
 
-3. Run the MATLAB script frequencyplot.m in the LED-pulselength folder
+#### Analysing functional connectivity calcium imaging experiments
+
+1. Run the Fiji scripts for image stabilization, background subtraction and ROI selection (see above
+)
+2. Run the MATLAB script frequencyplot.m in the LED-pulselength folder
 
 Navigate to the folder that contains your imaging folder. The script expects the directory structure to be either of the following:
 
@@ -181,3 +185,118 @@ Optional key-value-pair arguments:
 'subfoldername': name of the imaging subfolder (a subdirectory of 'foldername' or of each of its subdirectories), default: 'ROI'
 
 The script will output several .mat files containing the data per experiment type as well as .eps files. It will also create a plot of ∆F/F vs frequency.
+
+#### Analysing touch experiments
+
+1. Run the Fiji scripts for image stabilization, background subtraction and ROI selection (see above
+)
+2. Run the MATLAB script genitalia_touch.m in the touch folder
+
+Navigate to the folder that contains your imaging folder. The script expects the directory structure to adhere to the following rules:
+
+* an imaging folder containing a subdirectory named 'ROI' or 'ROIS' (if 'multiroi' is set to true)
+* a Results folder where the Results should be saved
+
+Run the following command from the MATLAB command window (or from a script):
+
+`genitalia_touch(foldername,varargin)`
+
+Required argument:
+
+foldername: the name of the imaging folder
+
+Optional key-value-pair arguments:
+
+'framerate': numeric (in Hz), default: 5.92
+
+'baseline_start': numeric (in frames), default: 2
+
+'baseline_end': numeric (in frames), default: 11
+
+'outputdir': directory where the .xlsx table and plot of results should be saved
+
+'multiroi': multiple ROIs per file, default false
+
+The script will output an .xlsx files containing the data per experiment type as well as .eps files. 
+
+3. Make an .xlsx table containing times of the touches, either by watching the behavioural video and manually marking frames or by automated video analysis. Save a separate .xlsx table for each imaging experiment. The name of the .xlsx file should be 'touchtimes_[imaging_foldername]_[experiment_number]' where imaging_foldername == the name of the folder the respective experiment can be found in and experiment_number is the 3-digit number of the imaging experiment.
+
+The touchtimes can either be specified framewise, i.e. each frame of the video that contains a touch is specified separately, or only the start and the end of each touch are given. The latter is referred to as the 'reduced touchtimes format' in the following description.
+
+4. Plot each experiment with touches (optional)
+
+Run the following command from the MATLAB command window (or from a script):
+
+`plot_with_touches(varargin)`
+
+Required argument: None
+
+Optional key-value-pair arguments:
+
+'framerate': numeric (in Hz), default: 5.92
+
+'touchdir': path to the directory containing the .xlsx tables of touchtimes, default: 'touchtimes'
+
+'resultsdir': path to the directory containing the .xlsx tables of the imaging data created by 'genitala_touch', default: 'Results'
+
+'outputdirmean': directory where results should be saved
+
+'reduced': whether reduced touchtimes format was used, see above
+
+If reduced is set to true, the script assumes the touchtimes files are in 'reduced touchtimes format' (see above). If it is set to false, it assumes all touchtimes are given separately. If the 'reduced' parameter is not explicitly specified, the script assumes that the touchtimes files adhere to the following rule: if the name of the folder containing the files (the 'touchdir' parameter) contains the string 'reduced', 'reduced touchtimes format' was used. Otherwise, all touchtimes for all frames containing touches are given.
+
+Examples:
+
+`plot_with_touches('touchdir','touchtimes_reduced')`
+
+or
+
+`plot_with_touches('reduced',true)`
+
+or
+
+`plot_with_touches('touchdir','my_touchtimes','reduced',true)`
+
+will use the reduced touchtimes format, while
+
+`plot_with_touches('touchdir','touchtimes_reduced','reduced',false)`
+
+or
+
+`plot_with_touches('touchdir','my_touchtimes','reduced',false)`
+
+will not.
+
+5. Align imaging results to touches 
+
+Run the following command from the MATLAB command window (or from a script):
+
+`align_touches(varargin)`
+
+Required argument: None
+
+Optional key-value-pair arguments:
+
+'framerate': numeric (in Hz), default: 5.92
+
+'numframes': number of imaging frames, default: 600
+
+'touchdir': path to the directory containing the .xlsx tables of touchtimes, default: 'touchtimes'
+
+'resultsdir': path to the directory containing the .xlsx tables of the imaging data created by 'genitala_touch', default: 'Results'
+
+'outputdirmean': directory where results should be saved
+
+'outputdir_singles': directory where results for single experiments should be saved (depricated)
+
+'basetime': length of baseline in s
+
+'eventtime': length of an event in s
+
+'intervaltime': min time between touches in s
+
+'excludedoubles: whether touches on both sides in a short timeperiod should be excluded. Default: false
+
+'filterstring' : a string by which exps should be filtered; this can be a specific part of the neuron imaged from or a treatment type
+
+'reduced': whether reduced touchtimes format was used, see above

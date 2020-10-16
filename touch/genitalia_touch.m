@@ -4,7 +4,7 @@ arguments=varargin;
  options = struct('framerate',5.92,'numberframes',600,'baseline_start',2,'baseline_end',11,'outputdir','../Results','multiROI',false);
 %call the options_resolver function to check optional key-value pair
 %arguments
-[options,~]=options_resolver(options,arguments,'plot_with_touches');
+[options,~]=options_resolver(options,arguments,'genitalia_touch');
 %setting the values for optional arguments
 framerate = options.framerate;
 numberframes = options.numberframes;

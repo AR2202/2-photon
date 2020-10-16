@@ -32,10 +32,12 @@
 % outputdirsingles:outputdirectory for single experiment plots (disabled at
 % the moment)
 %basetime: length of baseline, default: 10s eventtime: length of an event
-%(after the touch), default: 20s intervaltime: length of minimum interval
-%between touches, default: 10s excludedoubles: whether touches on both
+%(after the touch), default: 20s 
+%intervaltime: length of minimum interval
+%between touches, default: 10s 
+%excludedoubles: whether touches on both
 %sides in a short timeperiod should be excluded. Default: false
-% filterstring = 'medial_superficial'; % a string by which exps should be filtered
+% filterstring : a string by which exps should be filtered
 %this can be a specific part of the neuron imaged form
 %dependencies:
 %-options_resolver.m
@@ -261,7 +263,7 @@ average_eventpeak_contra=cellfun(@(foundinfilename,foundinfile)...
 average_peak_mat=transpose(cell2mat(average_eventpeak));
 average_peak_mat_contra=transpose(cell2mat(average_eventpeak_contra));
 
-%This part of the script averages over the experiments of each species type
+%This part of the script averages over the experiments of each sex
 %--------------------------------------------------------------------------
 combinedtable_unfiltered...
     = table(average_peak_mat, mean_event, t_foundfilename,t_foundin,eventsmat,average2mat,average2mat_peak_aligned);
