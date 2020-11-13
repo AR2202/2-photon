@@ -1,7 +1,7 @@
 function [dff,virgindff, virginf,filenames]=genitalia_touch(foldername,varargin)
 
 arguments=varargin;
- options = struct('framerate',5.92,'numberframes',600,'baseline_start',2,'baseline_end',11,'outputdir','../Results','multiROI',false);
+ options = struct('framerate',5.92,'numberframes',600,'baseline_start',2,'baseline_end',11,'outputdir','../Results','multiroi',false);
 %call the options_resolver function to check optional key-value pair
 %arguments
 [options,~]=options_resolver(options,arguments,'genitalia_touch');
@@ -11,7 +11,7 @@ numberframes = options.numberframes;
 baseline_start = options.baseline_start;
 baseline_end = options.baseline_end;
 outputdirv=options.outputdir;
-multiROI=options.multiROI;
+multiROI=options.multiroi;
 
 %% 1. Set constants, variables and local functions
 

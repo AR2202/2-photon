@@ -194,12 +194,12 @@ The script will output several .mat files containing the data per experiment typ
 
 1. Run the Fiji scripts for image stabilization, background subtraction and ROI selection (see above
 )
-2. Run the MATLAB script genitalia_touch.m in the touch folder
+2. a. Run the MATLAB script genitalia_touch.m in the touch folder for each experiment folder you want to analyse:
 
 Navigate to the folder that contains your imaging folder. The script expects the directory structure to adhere to the following rules:
 
-* an imaging folder containing a subdirectory named 'ROI' or 'ROIS' (if 'multiroi' is set to true)
-* a Results folder where the Results should be saved
+* the argument given to the function is an imaging folder containing a subdirectory named 'ROI' or 'ROIS' (if 'multiroi' is set to true)
+* a Results folder called 'Results' where the Results should be saved is in a directory upstream of the directory that the script is run from. If the directory structure does not conform to these conventions, additional arguments have to be given to specify where the folders are located (see below)
 
 Run the following command from the MATLAB command window (or from a script):
 
@@ -222,6 +222,31 @@ Optional key-value-pair arguments:
 'multiroi': multiple ROIs per file, default false
 
 The script will output an .xlsx files containing the data per experiment type as well as .eps files. 
+
+2. b. Instead of running the script for each folder individually as outlined in 2. a.), a script can be run from the top directory to analyse all experiments at once with the run_genitalia_touch() function. If no arguments are given, a subfolder  named 'imaging_preprocessed' is expected to exist in the current diretory, which contains the imaging experiment folders. A different name for this folder can be provided by the optional argument 'foldername'.
+
+Run the following command from the MATLAB command window (or from a script):
+
+`run_genitalia_touch(varargin)`
+
+Required argument: None
+
+Optional key-value-pair arguments:
+
+'foldername': the name of the folder containing the imaging folders
+
+'framerate': numeric (in Hz), default: 5.92
+
+'baseline_start': numeric (in frames), default: 2
+
+'baseline_end': numeric (in frames), default: 11
+
+'outputdir': directory where the .xlsx table and plot of results should be saved
+
+'multiroi': multiple ROIs per file, default false
+
+The script will output an .xlsx files containing the data per experiment type as well as .eps files. 
+
 
 3. Make an .xlsx table containing times of the touches, either by watching the behavioural video and manually marking frames or by automated video analysis. Save a separate .xlsx table for each imaging experiment. The name of the .xlsx file should be 'touchtimes_[imaging_foldername]_[experiment_number]' where imaging_foldername == the name of the folder the respective experiment can be found in and experiment_number is the 3-digit number of the imaging experiment.
 
