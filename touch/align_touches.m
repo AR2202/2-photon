@@ -672,7 +672,7 @@ end
 
 %function for checking if data are from the same animal
 function average_event=average_within_fly(foundfilenamearr,foundinarr,eventsmatarr,filename,foundinfilename)
-flynumb = regexp(filename{1},"fly\d+_",'match');
+flynumb = regexp(filename{1},'fly\d+(\(|\_)','match');
 %expecting the filename to contain the string 'fly' followed by the fly number
 sames = cellfun(@(foundfilename,foundin1)...
     (contains(foundfilename{1}{1},flynumb{1}) && (string(foundin1{1})==string(foundinfilename))),...

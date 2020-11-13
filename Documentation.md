@@ -114,6 +114,10 @@ This is a collection of MATLAB scripts for calcium imaging data analysis.
 
 * MATLAB R2016a or later. MATLAB R2017a or later recommended.
 * All of the scripts in this package need to be in the MATLAB path
+* Boundedline package available from:
+
+https://www.mathworks.com/matlabcentral/fileexchange/27485-boundedline-m
+
 
 ### Usage
 
