@@ -509,6 +509,10 @@ def evalulate_pretrained(paths_to_csv, paths_to_images, positives=[],
     return scores
 
 # Regression Models
+# This model can be used to infer the position of a body part
+# based on the position of the other body parts
+# Used to label points that were labelled with low
+# likelihood in DLC
 
 
 def train_RidgeRegressor(X, y):

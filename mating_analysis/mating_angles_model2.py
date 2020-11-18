@@ -46,10 +46,10 @@ def angle_from_cos(FemaleHeadX,
     unit_vector_m = vector_m / np.linalg.norm(vector_m)
     dot_product = np.dot(unit_vector_f, unit_vector_m)
     if dot_product > 1:
-        print("warning: vector product was {:.2f}".format(dot_product))
+        print("warning: vector dot product was {:.2f}".format(dot_product))
         dot_product = math.floor(dot_product)
     elif dot_product < -1:
-        print("warning: vector product was {:.2f}".format(dot_product))
+        print("warning: vector dot product was {:.2f}".format(dot_product))
         dot_product = math.ceil(dot_product)
     angle = np.arccos(dot_product)
 
@@ -147,7 +147,7 @@ def mating_angles_all_rows_from_body_axis(path):
 
 
 def mating_angle_from_cos_pd_df(df):
-    """applies the mating_angle_from_body_axis function
+    """applies the mating_angle_from_cos function
     to a row in a pandas dataframe"""
     matingAngleRow = angle_from_cos(df.FemaleHeadX,
                                     df.FemaleHeadY,
