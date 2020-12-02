@@ -208,10 +208,11 @@ for g=1:size(genders,1)
                     %average all experiments that come from the same fly
                     %(i.e. have the same fly number and the same directory
                     %name)
-                    fluo_av=cellfun(@(directoryname1,flynumber1) average_within_fly(directorynames,flynumbers,fluomat_all,directoryname1,flynumber1),directorynames,flynumbers,'uni',false);
+                    [fluo_av,flyidentifiers]=cellfun(@(directoryname1,flynumber1) average_within_fly(directorynames,flynumbers,fluomat_all,directoryname1,flynumber1),directorynames,flynumbers,'uni',false);
                     fluomat_av=cell2mat(fluo_av);
-                    fluomat=unique(fluomat_av,'row');
+                    fluomat=unique(fluomat_av,'row','stable');
                     fluo=num2cell(fluomat,2);
+                    uniqueflies=unique(flyidentifiers,'stable');
                     %average the traces
                     pulseaverage_dff=cellfun(@(f) average_pulses(f,pulsetimes,framerate),fluo,'uni',false);
                     pulseavmat=cell2mat(pulseaverage_dff);
@@ -275,7 +276,7 @@ for g=1:size(genders,1)
                     pulsedff=cell2mat(dff_of_pulses);
                     %save data to a .mat file
                     outputmatfile=fullfile(outputdir,(strcat(outputname,gender,'_',neuronpart,'_',pulsedurstr,inhibstring,'.mat')));
-                    save(outputmatfile,'pulsedff','mean_dff','n_files','SEM_dff','dff','mean_pulseav_dff', 'SEM_pulseav_dff','mean_first_dff','SEM_first_dff','mean_last_dff','SEM_last_dff');
+                    save(outputmatfile,'pulsedff','mean_dff','n_files','SEM_dff','dff','mean_pulseav_dff', 'SEM_pulseav_dff','mean_first_dff','SEM_first_dff','mean_last_dff','SEM_last_dff','uniqueflies');
                     pulsemeans(j,i)=mean(pulsedff);
                     pulseSEMs(j,i)=std(pulsedff)/(numel(pulsedff));
                 end
@@ -322,8 +323,11 @@ pulseav_dff=mean(pulsefluo_dff,1);
 end
 
 %function for checking if data are from the same animal
-function average_event=average_within_fly(directorynames,flynumbers,fluo,directoryname1,flynumber1)
-
+function [average_event,fly_identifier]=average_within_fly(directorynames,flynumbers,fluo,directoryname1,flynumber1)
+%disp(directoryname1)
+%disp(flynumber1)
+fly_identifier = char(strcat(directoryname1,flynumber1));
+%disp(fly_identifier);
 sames = cellfun(@(directoryname,flynumber)...
     (contains(directoryname,directoryname1) && contains(flynumber,flynumber1)),...
     directorynames,flynumbers);
