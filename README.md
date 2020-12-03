@@ -1,7 +1,7 @@
 # 2-photon
 
-* Calcium imaging analysis scripts (Matlab)
-* Analysis of mating position in behavioural fly videos (python)
+* Calcium imaging analysis scripts 
+
 
 Please read Documentation for more infos:
 
