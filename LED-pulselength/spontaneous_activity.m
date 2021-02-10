@@ -32,6 +32,7 @@
 % filename; irrelevant if no inhibitor was used, default: 'uM'
 % 'inhibitor_name': string of the name of the inhibitor as given in the
 % filename, defalut: 'PTX'
+% 'maxframes': maximum number of frames to be analysed, default: 500
 
 function spontaneous_activity(foldername,varargin)
 
@@ -44,7 +45,8 @@ options = struct('framerate',5.92,'baseline_start',2,'baseline_end',11,...
     'inhibitor_unit','uM',...
     'inhibitor_name','PTX',...
     'resultsdir','Results','multiroi',false,'numrois',1,...
-    'subfoldername','ROI');
+    'subfoldername','ROI',...
+    'maxframes',500);
 arguments = varargin;
 
 %------------------------------------------------------------------
@@ -70,6 +72,7 @@ numrois=options.numrois;
 inhibconc=options.inhibitor_conc;
 inhibname=options.inhibitor_name;
 inhibunit=options.inhibitor_unit;
+maxFrames = options.maxframes;
 
 startdir=pwd;
 pathname = startdir;
@@ -109,7 +112,9 @@ for g=1:size(genders,1)
     gender=genders{g};
     disp(gender);
     for n=1:size(neuronparts,1)
+       
         neuronpart=neuronparts{n};
+        disp(neuronpart);
         for inhib = 1:length(inhibconc)
             inhibstring = strcat(string(inhibconc(inhib)),inhibunit,inhibname);
             disp(inhibstring);
@@ -158,6 +163,7 @@ for g=1:size(genders,1)
             flynumbers=cellfun(@(filename)regexp(filename,'fly\d+(\(|\_)','match'),filenames,'uni',false);
             
             fluo_all=cellfun(@(filename)extract_fluo(filename),filenames,'uni',false);
+            fluo_all=cellfun(@(fluo)fluo(1:maxFrames),fluo_all,'uni',false);
             fluomat_all=cell2mat(fluo_all);
             fluo_av=cellfun(@(directoryname1,flynumber1) average_within_fly(directorynames,flynumbers,fluomat_all,directoryname1,flynumber1),directorynames,flynumbers,'uni',false);
             fluomat_av=cell2mat(fluo_av);
