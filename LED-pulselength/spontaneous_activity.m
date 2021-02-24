@@ -5,6 +5,7 @@
 %dependencies:
 %requires MATLAB 2018 or later
 %requires the following functions:
+
 %calculate_dff.m (custom function)
 %extract_fluo.m (custom function)
 %options_resolver.m (custom function)
