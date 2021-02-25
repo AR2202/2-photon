@@ -1,6 +1,6 @@
 function [freqs,ampls,aucs] = detectSpontaneous(filename,varargin) 
 %------------------------------------------------------------------------
-%optional key-value pare arguments and their defaults
+%optional key-value pair arguments and their defaults
 %------------------------------------------------------------------------
 options = struct('threshold',0.1,'framerate',5.92);
 arguments = varargin;

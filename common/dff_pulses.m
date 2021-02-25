@@ -21,7 +21,7 @@ function pulse_dff=dff_pulses(fluo, pulsetimes,pulsedur,framerate)
             
             
         end
-        mean_dff=mean(pulsedff);
+        mean_dff=mean(pulsedff,1);
         
         %pulse_dff=mean(mean_dff);
         
