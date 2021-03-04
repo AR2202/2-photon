@@ -1,5 +1,7 @@
 # Short User Guide
 
+<a name="top"></a>
+
 ## 2-photon Calcium imaging analysis scripts
 
 This is a collection of MATLAB scripts for calcium imaging data analysis.
@@ -32,6 +34,8 @@ https://www.mathworks.com/matlabcentral/fileexchange/27485-boundedline-m
 
 * Run bckg-sub_makeROI_wholedir_with_exclude.ijm for single ROI per file
 * Run bckg-sub_multiROI_wholedir_with_exclud.ijm for multiple ROIs per file
+
+[Back to top](#top)
 
 <a name="functionalconn"></a>
 
@@ -90,6 +94,8 @@ Navigate to the folder that contains your imaging folder. The script expects the
     'subfoldername': name of the imaging subfolder (a subdirectory of 'foldername' or of each of its subdirectories), default: 'ROI'
 
     The script will output several .mat files containing the data per experiment type as well as .eps files. It will also create a plot of ∆F/F vs frequency.
+
+[Back to top](#top)
 
 <a name="touch"></a>
 
@@ -230,3 +236,5 @@ The touchtimes can either be specified framewise, i.e. each frame of the video t
     'filterstring' : a string by which exps should be filtered; this can be a specific part of the neuron imaged from or a treatment type
 
     'reduced': whether reduced touchtimes format was used, see above
+    
+    [Back to top](#top)
