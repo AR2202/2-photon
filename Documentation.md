@@ -18,7 +18,7 @@ https://www.mathworks.com/matlabcentral/fileexchange/27485-boundedline-m
 2. [Analysing functional connectivity calcium imaging experiments](#functionalconn)
 3. [Analysing touch experiments](#touch)
 
-<a name=#preprocessing> </a>
+<a name="preprocessing"></a>
 
 #### Image stabilization, background subtraction and ROI selection
 
@@ -33,7 +33,7 @@ https://www.mathworks.com/matlabcentral/fileexchange/27485-boundedline-m
 * Run bckg-sub_makeROI_wholedir_with_exclude.ijm for single ROI per file
 * Run bckg-sub_multiROI_wholedir_with_exclud.ijm for multiple ROIs per file
 
-<a name=#functionalconn> </a>
+<a name="functionalconn"></a>
 
 #### Analysing functional connectivity calcium imaging experiments
 
@@ -91,7 +91,7 @@ Navigate to the folder that contains your imaging folder. The script expects the
 
     The script will output several .mat files containing the data per experiment type as well as .eps files. It will also create a plot of ∆F/F vs frequency.
 
-<a name=#touch> </a>
+<a name="touch"></a>
 
 #### Analysing touch experiments
 
