@@ -1,7 +1,7 @@
 function [dff,virgindff, virginf,filenames]=genitalia_touch(foldername,varargin)
 
 arguments=varargin;
- options = struct('framerate',5.92,'numberframes',600,'baseline_start',2,'baseline_end',11,'outputdir','../Results','multiroi',false);
+ options = struct('framerate',5.92,'numberframes',600,'baseline_start',2,'baseline_end',11,'outputdir','../Results','multiroi',false,'stringtofind','touch');
 %call the options_resolver function to check optional key-value pair
 %arguments
 [options,~]=options_resolver(options,arguments,'genitalia_touch');
@@ -12,6 +12,7 @@ baseline_start = options.baseline_start;
 baseline_end = options.baseline_end;
 outputdirv=options.outputdir;
 multiROI=options.multiroi;
+stringtofind = options.stringtofind;
 
 %% 1. Set constants, variables and local functions
 
@@ -28,12 +29,12 @@ startdir=pwd;
 if multiROI
     subfoldername='ROIS';%must be a folder within the imaging folder
     
-    outputfilev=strcat(foldername,'_touch_needle_mROI.xlsx');
-    outputimgv=strcat(foldername,'_touch_needle_mROI.eps');
+    outputfilev=strcat(foldername,stringtofind,'_mROI.xlsx');
+    outputimgv=strcat(foldername,stringtofind,'_mROI.eps');
 else
     subfoldername='ROI';%must be a folder within the imaging folder
-    outputfilev=strcat(foldername,'_touch_needle.xlsx');
-    outputimgv=strcat(foldername,'_touch_needle.eps');
+    outputfilev=strcat(foldername,stringtofind,'.xlsx');
+    outputimgv=strcat(foldername,stringtofind,'.eps');
 end
 stackdir = fullfile(foldername,subfoldername);
 
@@ -96,7 +97,7 @@ filenames(:) = {''};
             
                       
         end
-        virgins = strfind(filenames,'touch');
+        virgins = strfind(filenames,stringtofind);
        
         nonvirgin = cellfun('isempty',virgins);
        
