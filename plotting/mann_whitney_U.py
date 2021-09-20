@@ -1,3 +1,6 @@
+from scipy.stats import ks_2samp
+from plot_touch import logDecorator
+import plot_touch
 import scipy
 import matplotlib.pyplot as plt
 from scipy import io
@@ -12,11 +15,8 @@ import seaborn as sb
 import itertools
 import statsmodels.stats.multitest as multi
 import sys
-sys.path.append('/Users/annika/Documents/git_repos/matlab_scripts/python_scripts')
-
-import plot_touch
-from plot_touch import logDecorator
-from scipy.stats import ks_2samp
+sys.path.append(
+    '/Users/annika/Documents/git_repos/matlab_scripts/python_scripts')
 
 
 def MWU(pathname='',
@@ -79,33 +79,39 @@ def MWU(pathname='',
                 print(statsk)
                 data1 = pulsedffs[groupnum]
                 data2 = pulsedffs[groupnum+1]
-                stat, p = scipy.stats.mannwhitneyu(data1, data2, use_continuity=True, alternative=None)
-                print("Mann-Whitney-U between {} and {} in {}:".format(gender1, gender2, neuronpart))
+                stat, p = scipy.stats.mannwhitneyu(
+                    data1, data2, use_continuity=True, alternative=None)
+                print(
+                    "Mann-Whitney-U between {} and {} in {}:".format(gender1, gender2, neuronpart))
                 print(p)
                 ps.append(p)
                 comparison = gender1 + " vs. " + gender2 + " in " + neuronpart
                 compares.append(comparison)
         elif compareOn == "neuronparts":
-            
+
             for gend in range(len(genders)):
                 gender = genders[gend]
                 neuronpart1 = neuronparts[0]
                 neuronpart2 = neuronparts[1]
                 data1 = pulsedffs[gend]
                 data2 = pulsedffs[gend+len(genders)]
-                stat, p = scipy.stats.mannwhitneyu(data1, data2, use_continuity=True, alternative=None)
-                print("Mann-Whitney-U between {} and {} in {}:".format(neuronpart1, neuronpart2, gender))
+                stat, p = scipy.stats.mannwhitneyu(
+                    data1, data2, use_continuity=True, alternative=None)
+                print(
+                    "Mann-Whitney-U between {} and {} in {}:".format(neuronpart1, neuronpart2, gender))
                 print(p)
                 ps.append(p)
                 comparison = neuronpart1 + " vs. " + neuronpart2 + " in " + gender
                 compares.append(comparison)
         else:
-            print("not a valid selection for compareOn - must be \"genders\" or \"neuronparts\"")
+            print(
+                "not a valid selection for compareOn - must be \"genders\" or \"neuronparts\"")
     reject, ps_adjusted, _, _ = multi.multipletests(ps, method=multicompmethod)
     for comp, rej, p_ in zip(compares, reject, ps_adjusted):
 
         print("H0 for {} can be rejected: {}, p = {:.2f} ".format(comp, rej, p_))
-    print("Adjusted p values using method {}: {}".format(multicompmethod, ps_adjusted))
+    print("Adjusted p values using method {}: {}".format(
+        multicompmethod, ps_adjusted))
     return ps_adjusted
 
 

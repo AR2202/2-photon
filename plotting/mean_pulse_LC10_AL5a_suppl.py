@@ -9,7 +9,7 @@ labels = ["female", "male", "female no r", "male no r"]
 genders = ["_female", "_male"]
 neuronparts = ["AOTu_", "AOTuNoRetinal"]
 
-optoPlot(genders=genders, labels=labels, pathname=pathname, 
+optoPlot(genders=genders, labels=labels, pathname=pathname,
          neuronparts=neuronparts, ylim=[-0.1, 2.2],
          barylim=[0, 230], pulsedur=5,
          expname='mean_pulse_5s.eps', allonerow=True)

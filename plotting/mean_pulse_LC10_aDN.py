@@ -31,7 +31,7 @@ print("Stats:")
 
 print("0uM PTX:")
 KMWU(pathname=pathname, genders=genders, neuronparts=neuronparts,
-    compareOn="genders", pulsedurs=[5],identifiers=identifiers0)
+     compareOn="genders", pulsedurs=[5], identifiers=identifiers0)
 
 optoPlot(genders=genders, labels=labels, pathname=pathname,
          neuronparts=neuronparts, ylim=[-0.1, 0.5],
@@ -45,7 +45,7 @@ print("Stats:")
 
 print("150 uM PTX:")
 KMWU(pathname=pathname, genders=genders, neuronparts=neuronparts,
-    compareOn="genders", pulsedurs=[5],identifiers=identifiers150)
+     compareOn="genders", pulsedurs=[5], identifiers=identifiers150)
 
 optoPlot(genders=genders, labels=labels, pathname=pathname,
          neuronparts=neuronparts, ylim=[-0.1, 0.5],
@@ -59,4 +59,4 @@ print("Stats:")
 
 print("300 uM PTX:")
 KMWU(pathname=pathname, genders=genders, neuronparts=neuronparts,
-    compareOn="genders", pulsedurs=[5],identifiers=identifiers300)
+     compareOn="genders", pulsedurs=[5], identifiers=identifiers300)

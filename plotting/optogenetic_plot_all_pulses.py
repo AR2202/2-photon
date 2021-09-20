@@ -1,5 +1,5 @@
 import scipy
-import matplotlib.pyplot as plt    
+import matplotlib.pyplot as plt
 from scipy import io
 import matplotlib.patches as patches
 import os
@@ -10,7 +10,6 @@ import re
 import numpy as np
 import seaborn as sb
 import itertools
-
 
 
 def opto_plot_all(pathname='',
@@ -34,13 +33,13 @@ def opto_plot_all(pathname='',
     else:
         fullpath = currentdir
     filelist = os.listdir(fullpath)
-    
+
     if pulsedur < 1:
 
         pulsedurstring = str(int(1000 * pulsedur))+'ms'
     else:
         pulsedurstring = str(pulsedur)+'s'
-   
+
     filelists = []
     for n in neuronparts:
         for g in genders:
@@ -63,7 +62,7 @@ def opto_plot_all(pathname='',
         ncolumns = len(genders)+1
         nrows = len(neuronparts)
     pulsedffs = np.zeros((len(genders)+len(neuronparts), 2))
-    plotnumber = 1    
+    plotnumber = 1
     expnumber = 1
     for filelist in filelists:
         print(filelist)
@@ -77,13 +76,13 @@ def opto_plot_all(pathname='',
         x = [n/framerate for n in range(len(mean))]
         pulsedff = [dat[0] for dat in data["pulsedff"]]
         mean_pulsedff = 100*np.mean(pulsedff)
-        
+
         SEM_pulsedff = 100*np.std(pulsedff)/math.sqrt(n)
         pulsedffs[(expnumber-1), 0] = mean_pulsedff
         pulsedffs[(expnumber-1), 1] = SEM_pulsedff
         ax = plt.subplot(nrows, ncolumns, plotnumber)
         ax.axis('off')
-        
+
         ax.set_ylim(ylim)
         currentAxis = plt.gca()
         for xval in pulsetimes:
@@ -105,7 +104,7 @@ def opto_plot_all(pathname='',
                     color='#1A1A1A',
                     linewidth=0.8,
                     zorder=3)
-    
+
         if plotnumber == ncolumns * (nrows-1)+ncolumns-1:
             bar = AnchoredSizeBar(ax.transData,
                                   10,
@@ -123,11 +122,11 @@ def opto_plot_all(pathname='',
             ax.add_artist(bar_vert)
         numbars = ncolumns-1
         colors = list(itertools.chain.from_iterable(
-                                                    itertools.repeat(
-                                                       c, int(numbars/2))
-                                                    for c in barcols
-                                                    )
-                      )
+            itertools.repeat(
+                c, int(numbars/2))
+            for c in barcols
+        )
+        )
         plotnumber += 1
         if plotnumber % ncolumns == 0:
             ax = plt.subplot(nrows, ncolumns, plotnumber)
@@ -135,8 +134,10 @@ def opto_plot_all(pathname='',
                 ax.spines[axis].set_visible(False)
                 ax.set_ylim(barylim)
             ax.bar(labels,
-                   [pulsedffs[expnumber-i][0]for i in reversed(range(1, ncolumns))], 
-                   yerr=[pulsedffs[expnumber-i][1]for i in reversed(range(1,ncolumns))],
+                   [pulsedffs[expnumber-i][0]
+                       for i in reversed(range(1, ncolumns))],
+                   yerr=[pulsedffs[expnumber-i][1]
+                         for i in reversed(range(1, ncolumns))],
                    width=0.2,
                    color=colors)
 

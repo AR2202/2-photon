@@ -4,7 +4,7 @@ import kruskal_mann_whitney_U
 from kruskal_mann_whitney_U import KMWU
 
 pathname =\
-     "/Volumes/LaCie/Projects/aDN/imaging/GH146_chrimson_aDN_GCaMP6f/Results/"
+    "/Volumes/LaCie/Projects/aDN/imaging/GH146_chrimson_aDN_GCaMP6f/Results/"
 labels = ["matedFemale"]
 genders = ["_matedFemale_NonRetinal"]
 identifiers = [".mat", "10ms", "40Hz", "0uMPTX"]

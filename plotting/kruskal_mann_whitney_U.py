@@ -15,7 +15,6 @@ import statsmodels.stats.multitest as multi
 from statsmodels.stats.multicomp import (MultiComparison)
 
 
-
 def KMWU(pathname='',
          pulsedurs=[5],
          genders=["_male", "_female", "_matedFemale"],
@@ -57,7 +56,7 @@ def KMWU(pathname='',
                     filelists.append(nfiles)
 
         pulsedffs = []
-   
+
         for filelist in filelists:
 
             fullfile = os.path.join(fullpath, filelist[0])
@@ -73,38 +72,41 @@ def KMWU(pathname='',
                 numgenders = len(genders)
                 data = tuple(pulsedffs[groupnum:(groupnum+numgenders)])
                 df = pd.DataFrame(pulsedffs[groupnum:(groupnum+numgenders)])
-                df.rename(index={0:"female", 1:'matedFemale', 2:'male'})
+                df.rename(index={0: "female", 1: 'matedFemale', 2: 'male'})
                 statsk = scipy.stats.kruskal(*data)
                 print(statsk)
 
                 stacked_data = df.stack().reset_index()
-                stacked_data.rename(index={0:"female", 1:'matedFemale', 2:'male'})
+                stacked_data.rename(
+                    index={0: "female", 1: 'matedFemale', 2: 'male'})
 
                 stacked_data = stacked_data.rename(columns={'level_0': 'genotype',
-                                                    0:'result'})
+                                                            0: 'result'})
 
                 MultiComp = MultiComparison(stacked_data['result'],
-                                    stacked_data['genotype'])
+                                            stacked_data['genotype'])
                 print(MultiComp.allpairtest(scipy.stats.ranksums, method='Holm'))
 
         elif compareOn == "neuronparts":
             for gend in range(len(genders)):
 
-                ind = [(numnpart*len(genders)+gend) for numnpart in range(len(neuronparts))]
+                ind = [(numnpart*len(genders)+gend)
+                       for numnpart in range(len(neuronparts))]
                 data = tuple([pulsedffs[index]for index in ind])
                 df = pd.DataFrame([pulsedffs[index] for index in ind])
                 statsk = scipy.stats.kruskal(*data)
                 print(statsk)
 
                 stacked_data = df.stack().reset_index()
-                stacked_data.rename(index={0:"medial",1:'lateral'})
+                stacked_data.rename(index={0: "medial", 1: 'lateral'})
 
                 stacked_data = stacked_data.rename(columns={'level_0': 'neuronpart',
-                                                            0:'result'})
+                                                            0: 'result'})
 
                 MultiComp = MultiComparison(stacked_data['result'],
                                             stacked_data['neuronpart'])
                 print(MultiComp.allpairtest(scipy.stats.ranksums, method='Holm'))
 
         else:
-            print("not a valid selection for compareOn - must be \"genders\" or \"neuronparts\"")
+            print(
+                "not a valid selection for compareOn - must be \"genders\" or \"neuronparts\"")

@@ -26,8 +26,8 @@ print("Stats:")
 print("5s pulse:")
 
 KMWU(pathname=pathname,
-              genders=genders,
-              compareOn="genders",
-              pulsedurs=[5],
-              identifiers=identifiers,
-              neuronparts=neuronparts)
+     genders=genders,
+     compareOn="genders",
+     pulsedurs=[5],
+     identifiers=identifiers,
+     neuronparts=neuronparts)

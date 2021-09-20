@@ -62,7 +62,8 @@ def MWU_multi(pathname='',
             gender2 = genderneuronparts[g2]
             data1 = pulsedffs[g1]
             data2 = pulsedffs[g2]
-            stat, p = scipy.stats.mannwhitneyu(data1, data2, use_continuity=True, alternative=None)
+            stat, p = scipy.stats.mannwhitneyu(
+                data1, data2, use_continuity=True, alternative=None)
             print("Mann-Whitney-U between {} and {}:".format(gender1, gender2))
             print(p)
             ps.append(p)
@@ -72,5 +73,6 @@ def MWU_multi(pathname='',
     for comp, rej, p_ in zip(compares, reject, ps_adjusted):
 
         print("H0 for {} can be rejected: {}, p = {:.2f} ".format(comp, rej, p_))
-    print("Adjusted p values using method {}: {}".format(multicompmethod, ps_adjusted))
+    print("Adjusted p values using method {}: {}".format(
+        multicompmethod, ps_adjusted))
     return ps_adjusted

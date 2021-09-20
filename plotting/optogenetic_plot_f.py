@@ -1,5 +1,5 @@
 import scipy
-import matplotlib.pyplot as plt    
+import matplotlib.pyplot as plt
 from scipy import io
 import matplotlib.patches as patches
 import os
@@ -10,8 +10,6 @@ import re
 import numpy as np
 import seaborn as sb
 import itertools
-
-
 
 
 def optoPlotf(pathname='',
@@ -32,10 +30,10 @@ def optoPlotf(pathname='',
 
     currentdir = os.getcwd()
     if pathname:
-        if pathname[0]=='/':
+        if pathname[0] == '/':
             fullpath = pathname
         else:
-            fullpath = os.path.join(currentdir,pathname)
+            fullpath = os.path.join(currentdir, pathname)
     else:
         fullpath = currentdir
     filelist = os.listdir(fullpath)
@@ -74,8 +72,8 @@ def optoPlotf(pathname='',
         mean = [dat for dat in data["mean_pulseav_dff"][0]]
         n = int(data["n_files"][0][0])
         SEM = [dat for dat in data["SEM_pulseav_dff"][0]]
-        med_plus_SEM = [m+S for m,S in zip(mean, SEM)]
-        med_minus_SEM = [m-S for m,S in zip(mean, SEM)]
+        med_plus_SEM = [m+S for m, S in zip(mean, SEM)]
+        med_minus_SEM = [m-S for m, S in zip(mean, SEM)]
         x = [f/framerate for f in range(len(mean))]
         pulsedff = [dat[0] for dat in data["pulsedff"]]
         mean_pulsedff = 100*np.mean(pulsedff)
@@ -92,7 +90,7 @@ def optoPlotf(pathname='',
                                        linewidth=0,
                                        facecolor='#DC143C',
                                        alpha=0.5,
-                                       zorder=1))        
+                                       zorder=1))
         ax.fill_between(x,
                         med_minus_SEM,
                         med_plus_SEM,
@@ -121,7 +119,8 @@ def optoPlotf(pathname='',
                                        size_vertical=0.2)
             ax.add_artist(bar_vert)
         numbars = ncolumns-1
-        colors = list(itertools.chain.from_iterable(itertools.repeat(c, int(numbars / 2)) for c in barcols))
+        colors = list(itertools.chain.from_iterable(
+            itertools.repeat(c, int(numbars / 2)) for c in barcols))
         plotnumber += 1
         if plotnumber % ncolumns == 0:
             ax = plot.add_subplot(nrows, ncolumns, plotnumber)
@@ -132,8 +131,10 @@ def optoPlotf(pathname='',
             ax.set_xticks([0, 10, 20, 30, 40, 50, 60, 70, 80])
             ax.set_yticks(ytickrange)
             ax.errorbar(frequencies,
-                        [pulsedffs[expnumber-i][0]for i in reversed(range(1,ncolumns))],
-                        [pulsedffs[expnumber-i][1]for i in reversed(range(1,ncolumns))],
+                        [pulsedffs[expnumber-i][0]
+                            for i in reversed(range(1, ncolumns))],
+                        [pulsedffs[expnumber-i][1]
+                            for i in reversed(range(1, ncolumns))],
                         marker='o',
                         ls='',
                         color='k')

@@ -1,5 +1,5 @@
 import scipy
-import matplotlib.pyplot as plt    
+import matplotlib.pyplot as plt
 from scipy import io
 import matplotlib.patches as patches
 import os
@@ -18,21 +18,24 @@ def frequencies(filelist):
     freq_np = np.array(freq)
     uniquefreq = np.unique(freq_np)
     freq2 = list(uniquefreq)
-    freq2.sort(key=lambda x: int(re.search(r"\d+", x).group(0))) #sort by the frequency in ascending order - the number is extracted from the string and converted to int
+    # sort by the frequency in ascending order - the number is extracted from the string and converted to int
+    freq2.sort(key=lambda x: int(re.search(r"\d+", x).group(0)))
     return freq2
 
 
 def pulselengths(filelist):
-    pulselength = [re.search(r'\d+ms', filename).group(0) for filename in filelist]
+    pulselength = [re.search(r'\d+ms', filename).group(0)
+                   for filename in filelist]
 
     pulse_np = np.array(pulselength)
     uniquepulse = np.unique(pulse_np)
     pulse2 = list(uniquepulse)
-    pulse2.sort(key=lambda x: int(re.search(r"\d+", x).group(0)))#  sort by the pulselength in ascending order - the number is extracted from the string and converted to int
+    # sort by the pulselength in ascending order - the number is extracted from the string and converted to int
+    pulse2.sort(key=lambda x: int(re.search(r"\d+", x).group(0)))
     return pulse2
 
 
-def freqPlot(pathname='',numpulses=4,pulsetimes=[20,40,60,80],pulsedur=5,expname='result'):
+def freqPlot(pathname='', numpulses=4, pulsetimes=[20, 40, 60, 80], pulsedur=5, expname='result'):
     print("this is the start")
     currentdir = os.getcwd()
     if pathname:
@@ -66,23 +69,29 @@ def freqPlot(pathname='',numpulses=4,pulsetimes=[20,40,60,80],pulsedur=5,expname
                  and '.mat' in filename and pulsedurstring in filename
                  and 'ms' in filename and '_Hz' not in filename]
 
-    malefiles_med = [filename for filename in malefiles if 'medial' in filename]
+    malefiles_med = [
+        filename for filename in malefiles if 'medial' in filename]
 
-    malefiles_lat = [filename for filename in malefiles if 'lateral' in filename]
+    malefiles_lat = [
+        filename for filename in malefiles if 'lateral' in filename]
 
     femalefiles = [filename for filename in filelist if '_female' in filename
                    and '.mat' in filename and pulsedurstring in filename
                    and 'ms' in filename and '_Hz' not in filename]
-    femalefiles_med = [filename for filename in femalefiles if 'medial' in filename]
+    femalefiles_med = [
+        filename for filename in femalefiles if 'medial' in filename]
 
-    femalefiles_lat = [filename for filename in femalefiles if 'lateral' in filename]
+    femalefiles_lat = [
+        filename for filename in femalefiles if 'lateral' in filename]
 
     matedfemalefiles = [filename for filename in filelist if '_matedFemale' in filename
                         and '.mat' in filename and pulsedurstring in filename
-                        and 'ms' in filename and '_Hz' not in filename] 
-    matedfemalefiles_med = [filename for filename in matedfemalefiles if 'medial' in filename]
+                        and 'ms' in filename and '_Hz' not in filename]
+    matedfemalefiles_med = [
+        filename for filename in matedfemalefiles if 'medial' in filename]
 
-    matedfemalefiles_lat = [filename for filename in matedfemalefiles if 'lateral' in filename]
+    matedfemalefiles_lat = [
+        filename for filename in matedfemalefiles if 'lateral' in filename]
 
     framerate = 5.92
 
@@ -148,16 +157,18 @@ def freqPlot(pathname='',numpulses=4,pulsetimes=[20,40,60,80],pulsedur=5,expname
                         linewidth=0.8,
                         zorder=3)
                 plotnumber += 1
-            
+
             plt.text(0.02,
                      (0.95-float(linenumber)*0.77/float(numlines)),
                      f,
                      fontsize=12,
                      transform=plt.gcf().transFigure)
             linenumber += 1
-        bar = AnchoredSizeBar(ax.transData, 10, '10 s', 7, frameon=False, size_vertical=0.01)
+        bar = AnchoredSizeBar(ax.transData, 10, '10 s', 7,
+                              frameon=False, size_vertical=0.01)
         ax.add_artist(bar)
-        bar_vert = AnchoredSizeBar(ax.transData, 1, '', 1, frameon=False, size_vertical=0.2)
+        bar_vert = AnchoredSizeBar(
+            ax.transData, 1, '', 1, frameon=False, size_vertical=0.2)
         ax.add_artist(bar_vert)
         plt.savefig(outputname)
         plt.close()

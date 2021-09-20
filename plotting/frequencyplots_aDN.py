@@ -1,5 +1,5 @@
 import scipy
-import matplotlib.pyplot as plt    
+import matplotlib.pyplot as plt
 from scipy import io
 import matplotlib.patches as patches
 import os
@@ -10,20 +10,20 @@ import re
 import numpy as np
 
 
-
 def frequencies(filelist):
-    print (filelist)
+    print(filelist)
     freq = [re.search(r'\d+Hz', filename).group(0) for filename in filelist]
-    freq_np=np.array(freq)
-    uniquefreq=np.unique(freq_np)
-    freq2=list(uniquefreq)
+    freq_np = np.array(freq)
+    uniquefreq = np.unique(freq_np)
+    freq2 = list(uniquefreq)
     freq2.sort(key=lambda x: int(re.search(r"\d+", x).group(0)))
     # sort by the frequency in ascending order - the number is extracted from the string and converted to int
     return freq2
 
 
 def pulselengths(filelist):
-    pulselength = [re.search(r'\d+ms', filename).group(0) for filename in filelist]
+    pulselength = [re.search(r'\d+ms', filename).group(0)
+                   for filename in filelist]
     pulse_np = np.array(pulselength)
     uniquepulse = np.unique(pulse_np)
     pulse2 = list(uniquepulse)
@@ -34,7 +34,7 @@ def pulselengths(filelist):
 
 def freqPlot(pathname='',
              numpulses=4,
-             pulsetimes=[20,40,60,80],
+             pulsetimes=[20, 40, 60, 80],
              pulsedur=5,
              expname='result'):
     print("this is the start")
@@ -51,8 +51,8 @@ def freqPlot(pathname='',
         fullpath = currentdir
     print(fullpath)
     filelist = os.listdir(fullpath)
-    
-    if pulsedur <1:
+
+    if pulsedur < 1:
 
         pulsedurstring = str(int(1000 * pulsedur))+'ms'
     else:
@@ -66,35 +66,43 @@ def freqPlot(pathname='',
     lat_figname_mf = expname + '_matedfemale_lateral.eps'
 
     malefiles = [filename for filename in filelist if '_male' in filename
-               and '.mat' in filename
-               and pulsedurstring in filename
-               and 'ms' in filename and '_Hz' not in filename]
- 
-    malefiles_med = [filename for filename in malefiles if 'medial' in filename]
+                 and '.mat' in filename
+                 and pulsedurstring in filename
+                 and 'ms' in filename and '_Hz' not in filename]
 
-    malefiles_lat = [filename for filename in malefiles if 'lateral' in filename]
+    malefiles_med = [
+        filename for filename in malefiles if 'medial' in filename]
+
+    malefiles_lat = [
+        filename for filename in malefiles if 'lateral' in filename]
 
     femalefiles = [filename for filename in filelist if '_female' in filename
                    and '.mat' in filename
                    and pulsedurstring in filename
                    and 'ms' in filename and '_Hz' not in filename]
-    femalefiles_med = [filename for filename in femalefiles if 'medial' in filename]
+    femalefiles_med = [
+        filename for filename in femalefiles if 'medial' in filename]
 
-    femalefiles_lat = [filename for filename in femalefiles if 'lateral' in filename]
-    
+    femalefiles_lat = [
+        filename for filename in femalefiles if 'lateral' in filename]
+
     matedfemalefiles = [filename for filename in filelist if '_matedFemale' in filename
                         and '.mat' in filename
                         and pulsedurstring in filename
                         and 'ms' in filename and '_Hz' not in filename]
-    matedfemalefiles_med = [filename for filename in matedfemalefiles if 'medial' in filename]
-    
-    matedfemalefiles_lat = [filename for filename in matedfemalefiles if 'lateral' in filename]
+    matedfemalefiles_med = [
+        filename for filename in matedfemalefiles if 'medial' in filename]
+
+    matedfemalefiles_lat = [
+        filename for filename in matedfemalefiles if 'lateral' in filename]
 
     framerate = 5.92
 
-    filelists = [malefiles_med,malefiles_lat,femalefiles_med,femalefiles_lat,matedfemalefiles_med,matedfemalefiles_lat]
-    fignames = [med_figname,lat_figname,med_figname_f,lat_figname_f,med_figname_mf,lat_figname_mf]
-    for filelist, figname in zip (filelists,fignames):
+    filelists = [malefiles_med, malefiles_lat, femalefiles_med,
+                 femalefiles_lat, matedfemalefiles_med, matedfemalefiles_lat]
+    fignames = [med_figname, lat_figname, med_figname_f,
+                lat_figname_f, med_figname_mf, lat_figname_mf]
+    for filelist, figname in zip(filelists, fignames):
         freqs = frequencies(filelist)
         pulsel = pulselengths(filelist)
         numlines = len(freqs)
