@@ -1,7 +1,11 @@
 function run_genitalia_touch(varargin)
+
 arguments = varargin;
     CurrDir = (pwd);
-    options = struct('foldername', 'imaging_preprocessed', 'framerate', 5.92, 'numberframes', 500, 'baseline_start', 2, 'baseline_end', 11, 'outputdir', 'Results', 'multiROI', false, 'stringtofind', 'touch');
+     options = struct('foldername','imaging_preprocessed',...
+     'framerate',5.92,'numberframes',500,...
+     'baseline_start',2,'baseline_end',11,...
+     'outputdir','Results','multiROI',false,'stringtofind','touch');
     %call the options_resolver function to check optional key-value pair
     %arguments
     [options, ~] = options_resolver(options, arguments, 'run_genitalia_touch');
@@ -14,6 +18,7 @@ arguments = varargin;
     multiROI = options.multiROI;
     foldername = options.foldername;
     stringtofind = options.stringtofind;
+
 
 
     cd(foldername);
