@@ -31,3 +31,8 @@ var/
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
+
+#test data
+tests/testdata
+tests/Results_test
+tests/touchtimes*
