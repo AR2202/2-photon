@@ -7,6 +7,7 @@ macro "image_stabilize_deinterleave" {
 inputdir=getDirectory("choose input directory");
 list = getFileList(inputdir);
 outputdir=getDirectory("choose output directory");
+stimdir=getDirectory("choose stimulus directory");
 
 for (j = 0; j < list.length; j++){
 	
@@ -26,7 +27,7 @@ for (j = 0; j < list.length; j++){
 	selectWindow(filename_stim);
 	filesize=nSlices;
 	newfilename_Stim=replace(filename,".tif","_stim.tif");
-	saveAs("Tiff", inputdir+newfilename_Stim);
+	saveAs("Tiff", stimdir+newfilename_Stim);
 	selectWindow(newfilename1);
 	filesize=nSlices;
 	roiManager("reset");
