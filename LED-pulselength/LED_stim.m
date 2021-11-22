@@ -14,7 +14,7 @@ options = struct('framerate', 5.92, 'baseline', 6, 'after_pulse', 6, ...
     'inhibitor_unit', 'uM', ...
     'inhibitor_names', {{'PTX'}}, ...
     'subfoldername', 'ROI', 'stimdir', 'stim',...
-    'protocolname', '_4pulse_5s_');
+    'protocolname', '_4pulse_5s');
 arguments = varargin;
 %------------------------------------------------------------------------
 %% setting optional key-value pair arguments
@@ -83,6 +83,12 @@ else
     issubdir = false;
     
 end
+if ~exist(outputdir, 'dir')
+    disp('Results folder does not exist. Ceating folder:')
+    disp(outputdir);
+    mkdir(fullfile(outputdir,'../'),resultsdir);
+end
+    
 %-------------------------------------------------------
 %% the main loop
 %-------------------------------------------------------
