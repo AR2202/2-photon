@@ -58,7 +58,7 @@ pathname = startdir;
 subfoldername = options.subfoldername; %must be a folder within the imaging folder
 
 if ~multiroi
-
+    
     numrois = 1; %set numrois to 1 if multiroi is false
 end
 
@@ -69,19 +69,19 @@ end
 stackdir = fullfile(pathname, foldername, subfoldername);
 
 if exist(stackdir, 'dir')
-
+    
     outputdir = fullfile(pathname, '../', resultsdir);
     directories.name = fullfile(pathname, foldername);
     pathname = directories.name;
     directories.isdir = 1;
     issubdir = true;
-
+    
 else
-
+    
     outputdir = fullfile(pathname, resultsdir);
     directories = dir(foldername);
     issubdir = false;
-
+    
 end
 %-------------------------------------------------------
 %% the main loop
@@ -89,8 +89,9 @@ end
 
 %loop through the genders
 for g = 1:size(genders, 1)
-
+    
     gender = genders{g};
+    disp('now analysing:')
     disp(gender);
     %loop through the neuronparts
     for n = 1:size(neuronparts, 1)
@@ -100,11 +101,11 @@ for g = 1:size(genders, 1)
             inhibname = inhibnames{inhib};
             inhibstring = strcat(string(inhibconc(inhib)), inhibunit, inhibname);
             disp(inhibstring);
-
+            
             all_filenames = {};
             all_directorynames = {};
             all_stimfilenames = {};
-
+            
             %loop through directories
             for p = 1:numel(directories)
                 if ~directories(p).isdir
@@ -117,8 +118,8 @@ for g = 1:size(genders, 1)
                     directoryname = pathname;
                 else
                     directoryname = fullfile(pathname, foldername, directories(p).name);
-
-
+                    
+                    
                 end
                 %the expected structure of the filenames
                 files = dir(char(strcat(directoryname, '/', subfoldername, '/*', gender, '*', neuronpart,'*',protocolname, '*.tif')));
@@ -128,15 +129,19 @@ for g = 1:size(genders, 1)
                 all_filenames = vertcat(all_filenames, newfilenames);
                 all_directorynames = vertcat(all_directorynames, newdirectorynames);
                 all_stimfilenames = vertcat (all_stimfilenames, newstimfilenames);
+                is_stimfilename = cellfun(@(stimname) isfile(stimname), all_stimfilenames);
+                
+                all_filenames_With_stim = all_filenames(is_stimfilename);
+                all_existing_stimfilenames = all_stimfilenames(is_stimfilename);
                 %if inhibitor_conc is 0, make sure the filename
                 %does not contain the inhibitorname. otherwise,
                 %find the concentration given in the filename
                 %this isn't great, as combinations of inhibitors
                 %are not detected so far.
                 if inhibconc(inhib) == 0
-                    filenames = all_filenames;
+                    filenames = all_filenames_With_stim;
                     directorynames = all_directorynames;
-                    stimfilenames = all_stimfilenames;
+                    stimfilenames = all_existing_stimfilenames;
                     for inhname = 1:length(inhibnames)
                         directorynames = directorynames(~contains(filenames, inhibnames{inhname}));
                         stimfilenames = stimfilenames(~contains(filenames, inhibnames{inhname}));
@@ -144,16 +149,21 @@ for g = 1:size(genders, 1)
                     end
                     inhibstring = '';
                 else
-                    filenames = all_filenames(contains(all_filenames, inhibstring));
+                    filenames = all_filenames_With_stim(contains(all_filenames, inhibstring));
                     directorynames = all_directorynames(contains(all_filenames, inhibstring));
-                    stimfilenames = all_stimfilenames(contains(all_filenames, inhibstring));
+                    stimfilenames = all_existing_stimfilenames(contains(all_filenames, inhibstring));
                     inhibstring = strcat('_', inhibstring);
                 end
-
-
+                if size(all_stimfilenames,1) ~= size(all_existing_stimfilenames,1)
+                    disp('WARNING: these stimfiles were missing:');
+                    disp(setdiff(all_stimfilenames, all_existing_stimfilenames));
+                    
+                end
             end
-
+            disp('analyzing files:')
             disp(filenames);
+            
+            
             %find flynumber: based on a regular expression,
             %expecting the flynumber to be preceeded by the string
             %'fly' and followed either by a ( or _
@@ -167,10 +177,10 @@ for g = 1:size(genders, 1)
             pulsesendframes = cellfun(@(isStim) strfind(isStim,[1 0]), isStimframe, 'uni', false);
             
             
-           
+            
             %pulsedur = 5; %temporary for testing
             pulsedur = pulsesendframes{1}(1) - pulsestartframes{1}(1);
-
+            
             
             pulseaverage_dff_all = cellfun(@(f,pulsestarts) average_pulses_shorter(f, pulsestarts, 1), fluo_all, pulsestartframes,'uni', false);
             pulseavmat = cell2mat(pulseaverage_dff_all);
@@ -189,21 +199,21 @@ for g = 1:size(genders, 1)
             %last pullses
             %lastpulse_dff = cellfun(@(f) average_pulses(f, pulsetimes(size(pulsetimes, 2)), framerate), fluo, 'uni', false);
             %lastmat = cell2mat(lastpulse_dff);
-
-
+            
+            
             %calculating mean, n and SEM of dff
-
+            
             n_flies = size(pulseaverage_dff, 1) / numrois;
             n_rois = size(pulseaverage_dff, 1);
-
+            
             mean_pulseav_dff = mean(fluomat, 1);
             SEM_pulseav_dff = std(fluomat) ./ n_flies;
-%check if raw fluorescence needs to be used here.
+            %check if raw fluorescence needs to be used here.
             dff_of_pulses = cellfun(@(f)AUC_dff(f, pulseframe, pulsedur, framerate,  afterpulse), pulseaverage_dff, 'uni', false);
-%arguments to AUC_pulse are in frames, not seconds
+            %arguments to AUC_pulse are in frames, not seconds
             pulsedff = cell2mat(dff_of_pulses);
-
-
+            
+            
             outputfig2 = fullfile(outputdir, (strcat(gender, '_', neuronpart, inhibstring, '_mean_pulse.eps')));
             fignew2 = figure('Name', strcat(gender, '_', neuronpart, inhibstring, '_mean_pulse'));
             %plot the mean with a shaded area showing the SEM
@@ -211,19 +221,19 @@ for g = 1:size(genders, 1)
             h = boundedline(x2, (transpose(mean_pulseav_dff)), transpose(SEM_pulseav_dff), 'k');
             xlim([0, 150]);
             ylim([-0.2, 0.8])
-
+            
             hpatch2 = patch([pulseframe, pulsedur + pulseframe, pulsedur + pulseframe, pulseframe], [min(ylim) * [1, 1], max(ylim) * [1, 1]], 'r', 'EdgeColor', 'none');
             %send the shaded area to the back of the graph
             uistack(hpatch2, 'bottom');
-
+            
             saveas(fignew2, outputfig2, 'epsc');
-
+            
             %save data to a .mat file
             outputmatfile = fullfile(outputdir, (strcat(gender, '_', neuronpart, protocolname, inhibstring, '.mat')));
             save(outputmatfile, 'pulsedff', 'n_flies', 'mean_pulseav_dff', 'SEM_pulseav_dff', 'uniqueflies');
-
+            
         end
     end
-
+    
 end
 cd(startdir);
