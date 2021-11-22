@@ -13,7 +13,8 @@ options = struct('framerate', 5.92, 'baseline', 6, 'after_pulse', 6, ...
     'inhibitor_conc', [0], ...
     'inhibitor_unit', 'uM', ...
     'inhibitor_names', {{'PTX'}}, ...
-    'subfoldername', 'ROI', 'stimdir', 'stim');
+    'subfoldername', 'ROI', 'stimdir', 'stim',...
+    'protocolname', '_4pulse_5s_');
 arguments = varargin;
 %------------------------------------------------------------------------
 %% setting optional key-value pair arguments
@@ -40,6 +41,8 @@ inhibnames = options.inhibitor_names;
 inhibunit = options.inhibitor_unit;
 baseline = options.baseline; % in frames - currently unused
 afterpulse = options.after_pulse; %in frames - for AUC
+protocolname = options.protocolname;
+
 
 pulseframe = 61; % this is the frame in which the pulse comes, based
 %on the average_pulses_shorter function. Needs to be changed if a different
@@ -118,7 +121,7 @@ for g = 1:size(genders, 1)
 
                 end
                 %the expected structure of the filenames
-                files = dir(char(strcat(directoryname, '/', subfoldername, '/*', gender, '*', neuronpart, '*.tif')));
+                files = dir(char(strcat(directoryname, '/', subfoldername, '/*', gender, '*', neuronpart,'*',protocolname, '*.tif')));
                 newfilenames = arrayfun(@(f) fullfile(directoryname, subfoldername, f.name), files, 'uni', false);
                 newstimfilenames = arrayfun(@(f) fullfile(directoryname, stimdir, strrep(f.name,'-stabilizedROI', '_stim' )), files, 'uni', false);
                 newdirectorynames = arrayfun(@(f) fullfile(directoryname), files, 'uni', false);
@@ -216,7 +219,7 @@ for g = 1:size(genders, 1)
             saveas(fignew2, outputfig2, 'epsc');
 
             %save data to a .mat file
-            outputmatfile = fullfile(outputdir, (strcat(gender, '_', neuronpart, inhibstring, '.mat')));
+            outputmatfile = fullfile(outputdir, (strcat(gender, '_', neuronpart, protocolname, inhibstring, '.mat')));
             save(outputmatfile, 'pulsedff', 'n_flies', 'mean_pulseav_dff', 'SEM_pulseav_dff', 'uniqueflies');
 
         end
