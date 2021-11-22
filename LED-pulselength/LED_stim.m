@@ -15,7 +15,8 @@ options = struct('framerate', 5.92, 'baseline', 6, 'after_pulse', 6, ...
     'inhibitor_names', {{'PTX'}}, ...
     'subfoldername', 'ROI', 'stimdir', 'stim',...
     'protocolname', '_4pulse_5s');
-arguments = varargin;
+arguments = varargin
+
 %------------------------------------------------------------------------
 %% setting optional key-value pair arguments
 %-------------------------------------------------------------------------
@@ -137,16 +138,17 @@ for g = 1:size(genders, 1)
                 all_stimfilenames = vertcat (all_stimfilenames, newstimfilenames);
                 is_stimfilename = cellfun(@(stimname) isfile(stimname), all_stimfilenames);
                 
-                all_filenames_With_stim = all_filenames(is_stimfilename);
+                all_filenames_with_stim = all_filenames(is_stimfilename);
                 all_existing_stimfilenames = all_stimfilenames(is_stimfilename);
+                all_directorynames_with_stim = all_directorynames(is_stimfilename);
                 %if inhibitor_conc is 0, make sure the filename
                 %does not contain the inhibitorname. otherwise,
                 %find the concentration given in the filename
                 %this isn't great, as combinations of inhibitors
                 %are not detected so far.
                 if inhibconc(inhib) == 0
-                    filenames = all_filenames_With_stim;
-                    directorynames = all_directorynames;
+                    filenames = all_filenames_with_stim;
+                    directorynames = all_directorynames_with_stim;
                     stimfilenames = all_existing_stimfilenames;
                     for inhname = 1:length(inhibnames)
                         directorynames = directorynames(~contains(filenames, inhibnames{inhname}));
@@ -155,10 +157,10 @@ for g = 1:size(genders, 1)
                     end
                     inhibstring = '';
                 else
-                    filenames = all_filenames_With_stim(contains(all_filenames, inhibstring));
-                    directorynames = all_directorynames(contains(all_filenames, inhibstring));
-                    stimfilenames = all_existing_stimfilenames(contains(all_filenames, inhibstring));
-                    inhibstring = strcat('_', inhibstring);
+                    filenames = all_filenames_with_stim(contains(all_filenames_with_stim, inhibstring));
+                    directorynames = all_directorynames_with_stim(contains(all_filenames_with_stim, inhibstring));
+                    stimfilenames = all_existing_stimfilenames(contains(all_filenames_with_stim, inhibstring));
+                    
                 end
                 if size(all_stimfilenames,1) ~= size(all_existing_stimfilenames,1)
                     disp('WARNING: these stimfiles were missing:');
@@ -184,7 +186,7 @@ for g = 1:size(genders, 1)
             
             
             
-            %pulsedur = 5; %temporary for testing
+           
             pulsedur = pulsesendframes{1}(1) - pulsestartframes{1}(1);
             
             
@@ -219,7 +221,7 @@ for g = 1:size(genders, 1)
             %arguments to AUC_pulse are in frames, not seconds
             pulsedff = cell2mat(dff_of_pulses);
             
-            
+            inhibstring = strcat('_', inhibstring);
             outputfig2 = fullfile(outputdir, (strcat(gender, '_', neuronpart, inhibstring, '_mean_pulse.eps')));
             fignew2 = figure('Name', strcat(gender, '_', neuronpart, inhibstring, '_mean_pulse'));
             %plot the mean with a shaded area showing the SEM
