@@ -160,14 +160,23 @@ for g = 1:size(genders, 1)
                     filenames = all_filenames_with_stim(contains(all_filenames_with_stim, inhibstring));
                     directorynames = all_directorynames_with_stim(contains(all_filenames_with_stim, inhibstring));
                     stimfilenames = all_existing_stimfilenames(contains(all_filenames_with_stim, inhibstring));
+                    other_inhibs = setdiff(inhibnames, inhibname);
+                    %make sure it doesn't contain the other inhibitors -
+                    %combinations of inhibitors not supported!
+                    for inhname = 1:length(other_inhibs)
+                        directorynames = directorynames(~contains(filenames, other_inhibs{inhname}));
+                        stimfilenames = stimfilenames(~contains(filenames, other_inhibs{inhname}));
+                        filenames = filenames(~contains(filenames, other_inhibs{inhname}));
+                    end
                     
                 end
-                if size(all_stimfilenames,1) ~= size(all_existing_stimfilenames,1)
+                
+            end
+            if size(all_stimfilenames,1) ~= size(all_existing_stimfilenames,1)
                     disp('WARNING: these stimfiles were missing:');
                     disp(setdiff(all_stimfilenames, all_existing_stimfilenames));
                     
                 end
-            end
             disp('analyzing files:')
             disp(filenames);
             
@@ -221,7 +230,7 @@ for g = 1:size(genders, 1)
             %arguments to AUC_pulse are in frames, not seconds
             pulsedff = cell2mat(dff_of_pulses);
             
-            inhibstring = strcat('_', inhibstring);
+           
             outputfig2 = fullfile(outputdir, (strcat(gender, '_', neuronpart, inhibstring, '_mean_pulse.eps')));
             fignew2 = figure('Name', strcat(gender, '_', neuronpart, inhibstring, '_mean_pulse'));
             %plot the mean with a shaded area showing the SEM
