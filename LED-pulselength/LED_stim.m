@@ -117,9 +117,19 @@ for r = 1:size(roinames, 1)
         for n = 1:size(neuronparts, 1)
             neuronpart = neuronparts{n};
             %loop through inhibitor concentrations
-            for inhib = 1:length(inhibconc)
-                inhibname = inhibnames{inhib};
-                inhibstring = strcat(string(inhibconc(inhib)), inhibunit, inhibname);
+            combo = zeros(length(inhibconc), 1);
+            combo(end+1) = 1;
+
+            for inhib = 1:length(inhibconc) + 1
+
+                if ~combo(inhib)
+                    inhibname = inhibnames{inhib};
+                    inhibstring = strcat(string(inhibconc(inhib)), inhibunit, inhibname);
+                else
+
+                    inhibname = strcat(inhibnames{:});
+                    inhibstring = inhibname;
+                end
                 disp(inhibstring);
 
                 all_filenames = {};
@@ -142,7 +152,7 @@ for r = 1:size(roinames, 1)
 
                     end
                     %the expected structure of the filenames
-                    files = dir(char(strcat(directoryname, '/', subfoldername, '/*', gender, '*', neuronpart, '*', protocolname, "*", roiname, '*.tif')));
+                    files = dir(char(strcat(directoryname, '/', subfoldername, '/*', gender, '*', neuronpart, '*', protocolname, '*', roiname, '*.tif')));
                     newfilenames = arrayfun(@(f) fullfile(directoryname, subfoldername, f.name), files, 'uni', false);
                     newstimfilenames = arrayfun(@(f) fullfile(directoryname, stimdir, strrep(f.name, strcat('-stabilized', roiname), '_stim')), files, 'uni', false);
                     newdirectorynames = arrayfun(@(f) fullfile(directoryname), files, 'uni', false);
@@ -159,32 +169,46 @@ for r = 1:size(roinames, 1)
                     %find the concentration given in the filename
                     %this isn't great, as combinations of inhibitors
                     %are not detected so far.
-                    if inhibconc(inhib) == 0
+                    if ~combo(inhib)
+                        if inhibconc(inhib) == 0
+                            filenames = all_filenames_with_stim;
+                            directorynames = all_directorynames_with_stim;
+                            stimfilenames = all_existing_stimfilenames;
+                            for inhname = 1:length(inhibnames)
+                                directorynames = directorynames(~contains(filenames, inhibnames{inhname}));
+                                stimfilenames = stimfilenames(~contains(filenames, inhibnames{inhname}));
+                                filenames = filenames(~contains(filenames, inhibnames{inhname}));
+                            end
+                            inhibstring = '';
+                        else
+                            filenames = all_filenames_with_stim(contains(all_filenames_with_stim, inhibstring));
+                            directorynames = all_directorynames_with_stim(contains(all_filenames_with_stim, inhibstring));
+                            stimfilenames = all_existing_stimfilenames(contains(all_filenames_with_stim, inhibstring));
+                            other_inhibs = setdiff(inhibnames, inhibname);
+                            %make sure it doesn't contain the other inhibitors -
+                            %combinations of inhibitors not supported!
+                            for inhname = 1:length(other_inhibs)
+                                directorynames = directorynames(~contains(filenames, other_inhibs{inhname}));
+                                stimfilenames = stimfilenames(~contains(filenames, other_inhibs{inhname}));
+                                filenames = filenames(~contains(filenames, other_inhibs{inhname}));
+                            end
+
+                        end
+                    else
                         filenames = all_filenames_with_stim;
                         directorynames = all_directorynames_with_stim;
                         stimfilenames = all_existing_stimfilenames;
-                        for inhname = 1:length(inhibnames)
-                            directorynames = directorynames(~contains(filenames, inhibnames{inhname}));
-                            stimfilenames = stimfilenames(~contains(filenames, inhibnames{inhname}));
-                            filenames = filenames(~contains(filenames, inhibnames{inhname}));
-                        end
-                        inhibstring = '';
-                    else
-                        filenames = all_filenames_with_stim(contains(all_filenames_with_stim, inhibstring));
-                        directorynames = all_directorynames_with_stim(contains(all_filenames_with_stim, inhibstring));
-                        stimfilenames = all_existing_stimfilenames(contains(all_filenames_with_stim, inhibstring));
                         other_inhibs = setdiff(inhibnames, inhibname);
-                        %make sure it doesn't contain the other inhibitors -
-                        %combinations of inhibitors not supported!
+
                         for inhname = 1:length(other_inhibs)
-                            directorynames = directorynames(~contains(filenames, other_inhibs{inhname}));
-                            stimfilenames = stimfilenames(~contains(filenames, other_inhibs{inhname}));
-                            filenames = filenames(~contains(filenames, other_inhibs{inhname}));
+                            directorynames = directorynames(contains(filenames, other_inhibs{inhname}));
+                            stimfilenames = stimfilenames(contains(filenames, other_inhibs{inhname}));
+                            filenames = filenames(contains(filenames, other_inhibs{inhname}));
                         end
 
                     end
-
                 end
+
                 if size(all_stimfilenames, 1) ~= size(all_existing_stimfilenames, 1)
                     disp('WARNING: these stimfiles were missing:');
                     disp(setdiff(all_stimfilenames, all_existing_stimfilenames));
