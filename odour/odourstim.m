@@ -7,7 +7,7 @@ function odourstim(foldername, varargin)
 
 arguments = varargin;
 
-options = struct('framerate', 5.92, 'baseline', 6, 'after_pulse',  11, ...
+options = struct('framerate', 5.92, 'baseline', 6, 'after_pulse', 11, ...
     'odours', {{'ethanol'; 'acetic'}}, 'genders', {{'_male'; 'female'; 'matedFemale'}}, ...
     'neuronparts', {{'medial'; 'lateral'}}, ...
     'resultsdir', 'Results', 'multiroi', false, 'numrois', 1, ...
@@ -142,7 +142,7 @@ for r = 1:size(roinames, 1)
                         end
 
                         %the expected structure of the filenames
-                        files = dir(char(strcat(directoryname, '/', subfoldername, '/*', gender, '*', neuronpart, '*', odour,  '*', roiname, '*.tif')));
+                        files = dir(char(strcat(directoryname, '/', subfoldername, '/*', gender, '*', neuronpart, '*', odour, '*', roiname, '*.tif')));
                         newfilenames = arrayfun(@(f) fullfile(directoryname, subfoldername, f.name), files, 'uni', false);
                         newstimfilenames = arrayfun(@(f) fullfile(directoryname, stimdir, strrep(f.name, strcat('-stabilized', roiname), '_stim')), files, 'uni', false);
                         newdirectorynames = arrayfun(@(f) fullfile(directoryname), files, 'uni', false);
@@ -190,70 +190,71 @@ for r = 1:size(roinames, 1)
                         disp(setdiff(all_stimfilenames, all_existing_stimfilenames));
 
                     end
-                    disp('analyzing files:')
-                    disp(filenames);
+                    if (~isempty(filenames))
+                        disp('analyzing files:')
+                        disp(filenames);
 
 
-                    %find flynumber: based on a regular expression,
-                    %expecting the flynumber to be preceeded by the string
-                    %'fly' and followed either by a ( or _
-                    flynumbers = cellfun(@(filename)regexp(filename, 'fly\d+(\(|\_)', 'match'), filenames, 'uni', false);
-                    %extract fluorescence for all files using the (external) extract_fluo
-                    %function
-                    fluo_all = cellfun(@(filename)extract_fluo(filename), filenames, 'uni', false);
-                    stimuli = cellfun(@(sfilename)extract_fluo(sfilename), stimfilenames, 'uni', false);
-                    isStimframe = cellfun(@(stim) stim > 200, stimuli, 'uni', false);
-                    pulsestartframes = cellfun(@(isStim) strfind(isStim, [0, 1]), isStimframe, 'uni', false);
-                    pulsesendframes = cellfun(@(isStim) strfind(isStim, [1, 0]), isStimframe, 'uni', false);
+                        %find flynumber: based on a regular expression,
+                        %expecting the flynumber to be preceeded by the string
+                        %'fly' and followed either by a ( or _
+                        flynumbers = cellfun(@(filename)regexp(filename, 'fly\d+(\(|\_)', 'match'), filenames, 'uni', false);
+                        %extract fluorescence for all files using the (external) extract_fluo
+                        %function
+                        fluo_all = cellfun(@(filename)extract_fluo(filename), filenames, 'uni', false);
+                        stimuli = cellfun(@(sfilename)extract_fluo(sfilename), stimfilenames, 'uni', false);
+                        isStimframe = cellfun(@(stim) stim > 200, stimuli, 'uni', false);
+                        pulsestartframes = cellfun(@(isStim) strfind(isStim, [0, 1]), isStimframe, 'uni', false);
+                        pulsesendframes = cellfun(@(isStim) strfind(isStim, [1, 0]), isStimframe, 'uni', false);
 
 
-                    pulsedur = pulsesendframes{1}(1) - pulsestartframes{1}(1);
+                        pulsedur = pulsesendframes{1}(1) - pulsestartframes{1}(1);
 
 
-                    pulseaverage_dff_all = cellfun(@(f, pulsestarts) average_pulses_odour(f, pulsestarts, 1), fluo_all, pulsestartframes, 'uni', false);
-                    pulseavmat = cell2mat(pulseaverage_dff_all);
-                    %average all experiments that come from the same fly
-                    %(i.e. have the same fly number and the same directory
-                    %name)
-                    [fluo_av, flyidentifiers] = cellfun(@(directoryname1, flynumber1) average_within_fly(directorynames, flynumbers, pulseavmat, directoryname1, flynumber1), directorynames, flynumbers, 'uni', false);
-                    fluomat_av = cell2mat(fluo_av);
-                    fluomat = unique(fluomat_av, 'row', 'stable');
-                    pulseaverage_dff = num2cell(fluomat, 2);
-                    uniqueflies = unique(flyidentifiers, 'stable');
+                        pulseaverage_dff_all = cellfun(@(f, pulsestarts) average_pulses_odour(f, pulsestarts, 1), fluo_all, pulsestartframes, 'uni', false);
+                        pulseavmat = cell2mat(pulseaverage_dff_all);
+                        %average all experiments that come from the same fly
+                        %(i.e. have the same fly number and the same directory
+                        %name)
+                        [fluo_av, flyidentifiers] = cellfun(@(directoryname1, flynumber1) average_within_fly(directorynames, flynumbers, pulseavmat, directoryname1, flynumber1), directorynames, flynumbers, 'uni', false);
+                        fluomat_av = cell2mat(fluo_av);
+                        fluomat = unique(fluomat_av, 'row', 'stable');
+                        pulseaverage_dff = num2cell(fluomat, 2);
+                        uniqueflies = unique(flyidentifiers, 'stable');
 
 
-                    %calculating mean, n and SEM of dff
+                        %calculating mean, n and SEM of dff
 
-                    n_flies = size(pulseaverage_dff, 1) / numrois;
-                    n_rois = size(pulseaverage_dff, 1);
+                        n_flies = size(pulseaverage_dff, 1) / numrois;
+                        n_rois = size(pulseaverage_dff, 1);
 
-                    mean_pulseav_dff = mean(fluomat, 1);
-                    SEM_pulseav_dff = std(fluomat) ./ n_flies;
-                    %check if raw fluorescence needs to be used here.
-                    dff_of_pulses = cellfun(@(f)AUC_dff(f, pulseframe, pulsedur, framerate, afterpulse), pulseaverage_dff, 'uni', false);
-                    %arguments to AUC_pulse are in frames, not seconds
-                    pulsedff = cell2mat(dff_of_pulses);
+                        mean_pulseav_dff = mean(fluomat, 1);
+                        SEM_pulseav_dff = std(fluomat) ./ n_flies;
+                        %check if raw fluorescence needs to be used here.
+                        dff_of_pulses = cellfun(@(f)AUC_dff(f, pulseframe, pulsedur, framerate, afterpulse), pulseaverage_dff, 'uni', false);
+                        %arguments to AUC_pulse are in frames, not seconds
+                        pulsedff = cell2mat(dff_of_pulses);
 
 
-                    outputfig2 = fullfile(outputdir, (strcat(gender, '_', neuronpart, inhibstring, '_', odour, '_', roiname, '_mean_pulse.eps')));
-                    fignew2 = figure('Name', strcat(gender, '_', neuronpart, inhibstring, '_', odour, '_', roiname, '_mean_pulse'));
-                    %plot the mean with a shaded area showing the SEM
-                    x2 = 1:size(mean_pulseav_dff,2);
-                    times = (x2-1)/framerate;
-                    h = boundedline(times, (transpose(mean_pulseav_dff)), transpose(SEM_pulseav_dff), 'k');
-                    xlim([times(1), times(end)]);
-                    ylim([-0.2, 0.8])
+                        outputfig2 = fullfile(outputdir, (strcat(gender, '_', neuronpart, inhibstring, '_', odour, '_', roiname, '_mean_pulse.eps')));
+                        fignew2 = figure('Name', strcat(gender, '_', neuronpart, inhibstring, '_', odour, '_', roiname, '_mean_pulse'));
+                        %plot the mean with a shaded area showing the SEM
+                        x2 = 1:size(mean_pulseav_dff, 2);
+                        times = (x2 - 1) / framerate;
+                        h = boundedline(times, (transpose(mean_pulseav_dff)), transpose(SEM_pulseav_dff), 'k');
+                        xlim([times(1), times(end)]);
+                        ylim([-0.2, 0.8])
 
-                    hpatch2 = patch(([pulseframe, pulsedur + pulseframe, pulsedur + pulseframe, pulseframe]-1)./framerate, [min(ylim) * [1, 1], max(ylim) * [1, 1]], 'r', 'EdgeColor', 'none');
-                    %send the shaded area to the back of the graph
-                    uistack(hpatch2, 'bottom');
+                        hpatch2 = patch(([pulseframe, pulsedur + pulseframe, pulsedur + pulseframe, pulseframe] - 1)./framerate, [min(ylim) * [1, 1], max(ylim) * [1, 1]], 'r', 'EdgeColor', 'none');
+                        %send the shaded area to the back of the graph
+                        uistack(hpatch2, 'bottom');
 
-                    saveas(fignew2, outputfig2, 'epsc');
+                        saveas(fignew2, outputfig2, 'epsc');
 
-                    %save data to a .mat file
-                    outputmatfile = fullfile(outputdir, (strcat(gender, '_', neuronpart, protocolname, inhibstring, '_', odour, '_', roiname, '.mat')));
-                    save(outputmatfile, 'pulsedff', 'n_flies', 'mean_pulseav_dff', 'SEM_pulseav_dff', 'uniqueflies');
-
+                        %save data to a .mat file
+                        outputmatfile = fullfile(outputdir, (strcat(gender, '_', neuronpart, protocolname, inhibstring, '_', odour, '_', roiname, '.mat')));
+                        save(outputmatfile, 'pulsedff', 'n_flies', 'mean_pulseav_dff', 'SEM_pulseav_dff', 'uniqueflies');
+                    end
 
                 end
             end
