@@ -96,7 +96,7 @@ if ~exist(outputdir, 'dir')
 end
 
 if (isempty(roinames))
-    roinames = {"ROI"};
+    roinames = {'ROI'};
 end
 %-------------------------------------------------------
 
