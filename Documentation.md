@@ -104,7 +104,7 @@ Navigate to the folder that contains your imaging folder. The script expects the
 
 <a name="odour"></a>
 
-#### Analysing oudour stimulation calcium imaging experiments
+#### Analysing odour stimulation calcium imaging experiments
 
 1. Run the Fiji scripts for image stabilization, background subtraction and ROI selection (see above
 )
@@ -120,7 +120,7 @@ Navigate to the folder that contains your imaging folder. The script expects the
 
     Run the following command from the MATLAB command window:
 
-    `odourtim(foldername,varargin)`
+    `odourstim(foldername,varargin)`
 
     ##### Required argument:
 
