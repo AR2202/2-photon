@@ -19,6 +19,7 @@ https://www.mathworks.com/matlabcentral/fileexchange/27485-boundedline-m
 1. [Image stabilization, background subtraction and ROI selection](#preprocessing)
 2. [Analysing functional connectivity calcium imaging experiments](#functionalconn)
 3. [Analysing touch experiments](#touch)
+4. [Analysing odour experiments](#odour)
 
 <a name="preprocessing"></a>
 
@@ -34,6 +35,9 @@ https://www.mathworks.com/matlabcentral/fileexchange/27485-boundedline-m
 
 * Run bckg-sub_makeROI_wholedir_with_exclude.ijm for single ROI per file
 * Run bckg-sub_multiROI_wholedir_with_exclud.ijm for multiple ROIs per file
+* Run bckg-sub_customROI_wholedir_with_exclude.ijm for multiple (currently 2) ROIs with custom names
+
+When running these scripts, you will be prompted to select input and output folders for the data. Those can be any folders anywhere, however, it is reccomended to adhere to the conventions outlined below to facilitate further analysis.
 
 [Back to top](#top)
 
@@ -43,43 +47,35 @@ https://www.mathworks.com/matlabcentral/fileexchange/27485-boundedline-m
 
 1. Run the Fiji scripts for image stabilization, background subtraction and ROI selection (see above
 )
-2. Run the MATLAB script frequencyplot.m in the LED-pulselength folder
+2. Run the MATLAB script LED_stim.m in the LED-pulselength folder
 
 Navigate to the folder that contains your imaging folder. The script expects the directory structure to be either of the following:
 
-* an imaging folder containing a subdirectory named 'subfoldername' (default: 'ROI') (along with a variable number of other folders, that will not be analysed) or:
+* an imaging folder containing a subdirectory named 'subfoldername' (default: 'ROI', if it has a different name, this will have to be specified as a key-value-pair argument in the subsequent script) (along with a variable number of other folders, that will not be analysed) or:
 * an imaging folder containing multiple subdirectories, each of which contains a subdirectory named 'subfoldername'(default: 'ROI')
-* The filename should follow these conventions: \*gender\*neuronpart\*pulsedur\*fHz\*pulselength\*.tif
+* The filename should follow these conventions: \*gender\*neuronpart\*protocolname\*roiname\*.tif
 
-    where gender, neuronpart, pulsedur,f,pulselength correspond to those values passed as arguments to the function frequencyplot() (or their defaults).
+    where gender, neuronpart, protocolname,roiname correspond to those values passed as arguments to the function frequencyplot() (or their defaults).
 
     Run the following command from the MATLAB command window:
 
-    `frequencyplot(foldername,varargin)`
+    `LED_stim(foldername,varargin)`
 
-    Required argument:
+    ##### Required argument:
 
     foldername: the name of the imaging folder
 
-    Optional key-value-pair arguments:
+    ##### Optional key-value-pair arguments:
 
     'framerate': numeric (in Hz), default: 5.92
 
-    'baseline_start': numeric (in frames), default: 2
+    'baseline': currently unused; numeric (in frames), default: 6
 
-    'baseline_end': numeric (in frames), default: 11
-
-    'frequencies': 1-D array, default: [4,10,20,40]
-
-    'pulselengths': 1-D array, default: [8,12,20]
-
-    'pulsetimes': 1-D-array, default: [20,40,60,80]
+    'after_pulse': number of frames after the end of the pulse to be used for AUC calculation; numeric (in frames), default: 6
 
     'genders': cell array, default: {'_female';'_male'}
 
     'neuronparts': cell array, default: {'medial';'lateral'}
-
-    'pulsedur': numeric (in s), default 5
 
     'resultsdir': name of folder where results should go, default 'Results'
 
@@ -87,13 +83,84 @@ Navigate to the folder that contains your imaging folder. The script expects the
 
     'numrois': number of ROIs per file ,default: 1
 
-    'pulsetimesfromfile': read stimulation times from a file, default: false
+    'roinames': cell array of names of different ROIs, this should be used when customROI Fiji script was used in the previous step; it isn't necessary when multiroi was used; default: empty
 
-    'pulsetimesfile': name of the file containing the stimulus times, only relevant if pulsetimesfromfile is set to true; default: 'stimtimes.mat'
+    'inhibitor_conc': array of concentrations of the inhibitor, default [0]; for several inhibitors, this should be in the same order as the array 'inhibitor_names'
+
+    'inhibitor_unit': unit the inhibitor concentration was measured in, default: 'uM'
+
+    'inhibitor_names': cell array of the names (strings) of the inhibitors, default: {{'PTX'}}; should be in the same order as the corresponding inhibitor_conc
+
+    'stimdir': name of the directory that the stimulus channel is saved to, default: 'stim'
+
+    'protocolname': name of the protocol which is present in the filename of the recording, default: '_4pulse_5s'
 
     'subfoldername': name of the imaging subfolder (a subdirectory of 'foldername' or of each of its subdirectories), default: 'ROI'
 
-    The script will output several .mat files containing the data per experiment type as well as .eps files. It will also create a plot of ∆F/F vs frequency.
+    The script will output several .mat files containing the data per experiment type as well as .eps files. It will output a warning if a recording doesn't have a corresponding stimulus file and will ommit the corresponding experiments. For several inhibitors, it will analyse any experiments containing one or all of them and output the results in separate files.
+
+[Back to top](#top)
+
+
+<a name="odour"></a>
+
+#### Analysing oudour stimulation calcium imaging experiments
+
+1. Run the Fiji scripts for image stabilization, background subtraction and ROI selection (see above
+)
+2. Run the MATLAB script odourstim.m in the odour folder
+
+Navigate to the folder that contains your imaging folder. The script expects the directory structure to be either of the following:
+
+* an imaging folder containing a subdirectory named 'subfoldername' (default: 'ROI', if it has a different name, this will have to be specified as a key-value-pair argument in the subsequent script) (along with a variable number of other folders, that will not be analysed) or:
+* an imaging folder containing multiple subdirectories, each of which contains a subdirectory named 'subfoldername'(default: 'ROI')
+* The filename should follow these conventions: \*gender\*neuronpart\*odour\*roiname\*.tif
+
+    where gender, neuronpart, protocolname,roiname correspond to those values passed as arguments to the function frequencyplot() (or their defaults).
+
+    Run the following command from the MATLAB command window:
+
+    `odourtim(foldername,varargin)`
+
+    ##### Required argument:
+
+    foldername: the name of the imaging folder
+
+    ##### Optional key-value-pair arguments:
+
+    'framerate': numeric (in Hz), default: 5.92
+
+    'baseline': currently unused; numeric (in frames), default: 6
+
+    'after_pulse': number of frames after the end of the pulse to be used for AUC calculation; numeric (in frames), default: 6
+
+    'genders': cell array, default: {'_female';'_male'}
+
+    'neuronparts': cell array, default: {'medial';'lateral'}
+
+    'odours': cell array, default {'ethanol'; 'acetic'}
+
+    'resultsdir': name of folder where results should go, default 'Results'
+
+    'multiroi': multiple ROIs per file, default false
+
+    'numrois': number of ROIs per file ,default: 1
+
+    'roinames': cell array of names of different ROIs, this should be used when customROI Fiji script was used in the previous step; it isn't necessary when multiroi was used; default: empty
+
+    'inhibitor_conc': array of concentrations of the inhibitor, default [0]; for several inhibitors, this should be in the same order as the array 'inhibitor_names'
+
+    'inhibitor_unit': unit the inhibitor concentration was measured in, default: 'uM'
+
+    'inhibitor_names': cell array of the names (strings) of the inhibitors, default: {{'PTX'}}; should be in the same order as the corresponding inhibitor_conc
+
+    'stimdir': name of the directory that the stimulus channel is saved to, default: 'stim'; in this context, 'stimulus' refers to the odour stimulus
+
+    'protocolname': name of the protocol which is present in the filename of the recording, default: '_4pulse_5s'
+
+    'subfoldername': name of the imaging subfolder (a subdirectory of 'foldername' or of each of its subdirectories), default: 'ROI'
+
+    The script will output several .mat files containing the data per experiment type as well as .eps files. It will output a warning if a recording doesn't have a corresponding stimulus file and will ommit the corresponding experiments. For several inhibitors, it will analyse any experiments containing one or all of them and output the results in separate files.
 
 [Back to top](#top)
 
