@@ -119,8 +119,13 @@ for r = 1:size(roinames, 1)
                 %loop through inhibitor concentrations
                 combo = zeros(length(inhibconc), 1);
                 combo(end+1) = 1;
+                if length(unique(inhibnames)) == 1
+                    numinhibs = length(inhibconc);
+                else
+                    numinhibs = length(inhibconc) + 1;
+                end
 
-                for inhib = 1:length(inhibconc) + 1
+                for inhib = 1:numinhibs
 
                     if ~combo(inhib)
                         inhibname = inhibnames{inhib};
