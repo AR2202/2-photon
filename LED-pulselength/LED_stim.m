@@ -288,7 +288,7 @@ for r = 1:size(roinames, 1)
 
                     %save data to a .mat file
                     outputmatfile = fullfile(outputdir, (strcat(gender, '_', neuronpart, protocolname, inhibstring, roiname, '.mat')));
-                    save(outputmatfile, 'pulsedff', 'n_flies', 'mean_pulseav_dff', 'SEM_pulseav_dff', 'uniqueflies');
+                    save(outputmatfile, 'pulsedff', 'n_flies', 'mean_pulseav_dff', 'SEM_pulseav_dff', 'uniqueflies','fluomat');
                 end
             end
         end
