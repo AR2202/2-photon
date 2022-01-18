@@ -247,9 +247,11 @@ for r = 1:size(roinames, 1)
                     %name)
                     [fluo_av, flyidentifiers] = cellfun(@(directoryname1, flynumber1) average_within_fly(directorynames, flynumbers, pulseavmat, directoryname1, flynumber1), directorynames, flynumbers, 'uni', false);
                     fluomat_av = cell2mat(fluo_av);
-                    fluomat = unique(fluomat_av, 'row', 'stable');
+                    fluomat_nonempty = rmmissing(fluomat_av);
+                    flyidentifiers_nonempty = flyidentifiers(all(~isnan(fluomat_av), 2));
+                    fluomat = unique(fluomat_nonempty, 'row', 'stable');
                     pulseaverage_dff = num2cell(fluomat, 2);
-                    uniqueflies = unique(flyidentifiers, 'stable');
+                    uniqueflies = unique(flyidentifiers_nonempty, 'stable');
                     %
                     %first pulses
                     % firstpulse_dff = cellfun(@(f) average_pulses(f, pulsetimes(1), framerate), fluo, 'uni', false);
@@ -288,7 +290,7 @@ for r = 1:size(roinames, 1)
 
                     %save data to a .mat file
                     outputmatfile = fullfile(outputdir, (strcat(gender, '_', neuronpart, protocolname, inhibstring, roiname, '.mat')));
-                    save(outputmatfile, 'pulsedff', 'n_flies', 'mean_pulseav_dff', 'SEM_pulseav_dff', 'uniqueflies','fluomat');
+                    save(outputmatfile, 'pulsedff', 'n_flies', 'mean_pulseav_dff', 'SEM_pulseav_dff', 'uniqueflies', 'fluomat');
                 end
             end
         end
