@@ -247,7 +247,8 @@ for r = 1:size(roinames, 1)
                         %(i.e. have the same fly number and the same directory
                         %name)
 
-
+                        [fluo_av, flyidentifiers] = cellfun(@(directoryname1, flynumber1) average_within_fly(directorynames, flynumbers, pulseavmat, directoryname1, flynumber1), directorynames, flynumbers, 'uni', false);
+                 
                         fluomat_av = cell2mat(fluo_av);
                         fluomat_nonempty = rmmissing(fluomat_av);
                         flyidentifiers_nonempty = flyidentifiers(all(~isnan(fluomat_av), 2));
