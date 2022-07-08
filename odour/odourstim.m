@@ -16,7 +16,7 @@ options = struct('framerate', 5.92, 'baseline', 6, 'after_pulse', 11, ...
     'inhibitor_unit', 'uM', ...
     'inhibitor_names', {{'PTX'}}, ...
     'subfoldername', 'ROI', 'stimdir', 'stim', ...
-    'protocolname', '');
+    'protocolname', '', 'firstpulse', false, 'pulseframe', 81, 'eventdur', 180);
 
 %------------------------------------------------------------------------
 %setting optional key-value pair arguments
@@ -51,9 +51,11 @@ afterpulse = options.after_pulse; %in frames - for AUC
 protocolname = options.protocolname;
 roinames = options.roinames;
 stimdir = options.stimdir;
+firstpulse = options.firstpulse;
+eventdur = options.eventdur;
 
 
-pulseframe = 81;
+pulseframe = options.pulseframe;
 
 startdir = pwd;
 pathname = startdir;
@@ -234,14 +236,26 @@ for r = 1:size(roinames, 1)
                         fluo_all = cellfun(@(filename)extract_fluo(filename), filenames, 'uni', false);
                         stimuli = cellfun(@(sfilename)extract_fluo(sfilename), stimfilenames, 'uni', false);
                         isStimframe = cellfun(@(stim) stim > 200, stimuli, 'uni', false);
+                        
                         pulsestartframes = cellfun(@(isStim) strfind(isStim, [0, 1]), isStimframe, 'uni', false);
                         pulsesendframes = cellfun(@(isStim) strfind(isStim, [1, 0]), isStimframe, 'uni', false);
+                      
+
+n = 1;
+    while isempty(pulsesendframes{n})
+       
+         n = n + 1;
+    end
+                        pulsedur = pulsesendframes{n}(1) - pulsestartframes{n}(1);
+                        
+                        if firstpulse
+                            pulseaverage_dff_all = cellfun(@(f, pulsestarts) average_pulses_odour(f, first_nonempty(pulsestarts), 1, pulseframe, eventdur), fluo_all, pulsestartframes, 'uni', false);
+                        else
 
 
-                        pulsedur = pulsesendframes{1}(1) - pulsestartframes{1}(1);
 
-
-                        pulseaverage_dff_all = cellfun(@(f, pulsestarts) average_pulses_odour(f, pulsestarts, 1), fluo_all, pulsestartframes, 'uni', false);
+                        pulseaverage_dff_all = cellfun(@(f, pulsestarts) average_pulses_odour(f, pulsestarts, 1, pulseframe, eventdur), fluo_all, pulsestartframes, 'uni', false);
+                        end
                         pulseavmat = cell2mat(pulseaverage_dff_all);
                         %average all experiments that come from the same fly
                         %(i.e. have the same fly number and the same directory
@@ -298,3 +312,9 @@ for r = 1:size(roinames, 1)
     end
 end
 cd(startdir);
+
+ function first_or_empty = first_nonempty(m) 
+     if isempty(m)
+         first_or_empty = [];
+     else first_or_empty = m(1);
+     end
