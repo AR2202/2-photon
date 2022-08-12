@@ -13,6 +13,9 @@ This is a collection of MATLAB scripts for calcium imaging data analysis.
 * Boundedline package available from:
 
 https://www.mathworks.com/matlabcentral/fileexchange/27485-boundedline-m
+* Fiji image stabilizer:
+
+https://imagej.net/plugins/image-stabilizer
 
 ### Usage
 
