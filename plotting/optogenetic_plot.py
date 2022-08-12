@@ -1,5 +1,5 @@
 import scipy
-import matplotlib.pyplot as plt    
+import matplotlib.pyplot as plt
 from scipy import io
 import matplotlib.patches as patches
 import os
@@ -10,7 +10,6 @@ import re
 import numpy as np
 import seaborn as sb
 import itertools
-
 
 
 def optoPlot(pathname='',
@@ -129,9 +128,21 @@ def optoPlot(pathname='',
                 zorder=3)
         # add the scalebar to the last plot of calcium traces
         if plotnumber == ncolumns * (nrows-1) + ncolumns - 1:
-            bar = AnchoredSizeBar(ax.transData, 10, '10 s', 6, frameon=False, size_vertical=0.005,color='#545454')
+            bar = AnchoredSizeBar(ax.transData,
+                                  10,
+                                  '10 s',
+                                  6,
+                                  frameon=False,
+                                  size_vertical=0.005,
+                                  color='#545454')
             ax.add_artist(bar)
-            bar_vert = AnchoredSizeBar(ax.transData, 0.2, '', 2, frameon=False, size_vertical=0.2,color='#545454')
+            bar_vert = AnchoredSizeBar(ax.transData,
+                                       0.2,
+                                       '',
+                                       2,
+                                       frameon=False,
+                                       size_vertical=0.2,
+                                       color='#545454')
             ax.add_artist(bar_vert)
         plotnumber += 1
         # if it is the last plot in the row
@@ -140,7 +151,7 @@ def optoPlot(pathname='',
             ax = plot.add_subplot(nrows, ncolumns, plotnumber)
             ax.set_xticks([])
             ax.set_yticks(ytickrange)
-            
+
             ax.tick_params(axis='y',
                            length=1,
                            color='#545454',
@@ -152,8 +163,10 @@ def optoPlot(pathname='',
                 ax.spines[axis].set_visible(False)
                 ax.set_ylim(barylim)
             ax.bar(labels,
-                   [pulsedffs[expnumber-i][0]for i in reversed(range(1, ncolumns))],
-                   yerr=[pulsedffs[expnumber-i][1]for i in reversed(range(1, ncolumns))],
+                   [pulsedffs[expnumber-i][0]
+                       for i in reversed(range(1, ncolumns))],
+                   yerr=[pulsedffs[expnumber-i][1]
+                         for i in reversed(range(1, ncolumns))],
                    width=(figuresize[0]/40),
                    linewidth=0,
                    ecolor='#545454',

@@ -1,7 +1,5 @@
 import scipy
-from scipy import io
 import os
-import numpy as np
 import statsmodels.stats.multitest as multi
 
 
@@ -11,8 +9,10 @@ def MWU_multi(pathname='',
               neuronparts=["medial", "lateral"],
               comparisons=[(0, 1), (2, 3), (0, 2), (1, 3)],
               identifiers=[".mat", "10ms", "40Hz"],
+              exclude=[],
               key="pulsedff",
-              multicompmethod='holm'):
+              multicompmethod='holm',
+              pulsedur_in_filename=False):
     currentdir = os.getcwd()
     if pathname:
         if pathname[0] == '/':
@@ -25,7 +25,9 @@ def MWU_multi(pathname='',
     dirlist = os.listdir(fullpath)
     ps = []
     for pulsedur in pulsedurs:
-        if pulsedur < 1:
+        if not pulsedur_in_filename:
+            pulsedurstring = ''
+        elif pulsedur < 1:
 
             pulsedurstring = str(int(1000 * pulsedur))+'ms'
         else:
@@ -41,7 +43,10 @@ def MWU_multi(pathname='',
                 gfiles = [filename for filename in dirlist
                           if g in filename and pulsedurstring in filename
                           and all([identifier in filename
-                                   for identifier in identifiers])]
+                                   for identifier in identifiers])
+                          and all([excluder not in filename
+                                   for excluder in exclude])
+                          ]
                 nfiles = [filename for filename in gfiles if n in filename]
                 if nfiles:
                     filelists.append(nfiles)
@@ -54,6 +59,7 @@ def MWU_multi(pathname='',
             data = scipy.io.loadmat(fullfile, matlab_compatible=True)
             pulsedff = [dat[0] for dat in data[key]]
             pulsedffs.append(pulsedff)
+
         # Mann-Whitney-U test
 
         compares = []
@@ -61,7 +67,9 @@ def MWU_multi(pathname='',
             gender1 = genderneuronparts[g1]
             gender2 = genderneuronparts[g2]
             data1 = pulsedffs[g1]
+
             data2 = pulsedffs[g2]
+
             stat, p = scipy.stats.mannwhitneyu(
                 data1, data2, use_continuity=True, alternative=None)
             print("Mann-Whitney-U between {} and {}:".format(gender1, gender2))

@@ -1,17 +1,7 @@
 import scipy
 import pandas as pd
-import matplotlib.pyplot as plt
-from scipy import io
-import matplotlib.patches as patches
 import os
-import math
-from mpl_toolkits.axes_grid1.anchored_artists import AnchoredSizeBar
-import matplotlib.patches as patches
-import re
-import numpy as np
-import seaborn as sb
-import itertools
-import statsmodels.stats.multitest as multi
+
 from statsmodels.stats.multicomp import (MultiComparison)
 
 
@@ -20,10 +10,14 @@ def KMWU(pathname='',
          genders=["_male", "_female", "_matedFemale"],
          neuronparts=["medial", "lateral"],
          identifiers=[".mat", "10ms", "40Hz"],
+         exclude=[],
          key="pulsedff",
          compareOn="genders",
-         multicompmethod='holm'):
-    '''performs a Kruskal-wallis test followed by multiple comparisons with mann-whitney-U-test'''
+         multicompmethod='Holm',
+         pulsedur_in_filename=False):
+    '''performs a Kruskal-wallis test
+    followed by multiple comparisons with
+    mann-whitney-U-test'''
 
     currentdir = os.getcwd()
     if pathname:
@@ -35,9 +29,12 @@ def KMWU(pathname='',
         fullpath = currentdir
 
     dirlist = os.listdir(fullpath)
-    ps = []
+
     for pulsedur in pulsedurs:
-        if pulsedur < 1:
+
+        if not pulsedur_in_filename:
+            pulsedurstring = ''
+        elif pulsedur < 1:
 
             pulsedurstring = str(int(1000 * pulsedur))+'ms'
         else:
@@ -50,7 +47,10 @@ def KMWU(pathname='',
                 gfiles = [filename for filename in dirlist
                           if g in filename and pulsedurstring in filename
                           and all([identifier in filename
-                                   for identifier in identifiers])]
+                                   for identifier in identifiers])
+                          and all([excluder not in filename
+                                   for excluder in exclude])
+                          ]
                 nfiles = [filename for filename in gfiles if n in filename]
                 if nfiles:
                     filelists.append(nfiles)
@@ -60,7 +60,9 @@ def KMWU(pathname='',
         for filelist in filelists:
 
             fullfile = os.path.join(fullpath, filelist[0])
+
             data = scipy.io.loadmat(fullfile, matlab_compatible=True)
+
             pulsedff = [dat[0] for dat in data[key]]
             pulsedffs.append(pulsedff)
 
@@ -85,7 +87,8 @@ def KMWU(pathname='',
 
                 MultiComp = MultiComparison(stacked_data['result'],
                                             stacked_data['genotype'])
-                print(MultiComp.allpairtest(scipy.stats.ranksums, method='Holm'))
+                print(MultiComp.allpairtest(scipy.stats.ranksums,
+                                            method=multicompmethod))
 
         elif compareOn == "neuronparts":
             for gend in range(len(genders)):
@@ -105,8 +108,10 @@ def KMWU(pathname='',
 
                 MultiComp = MultiComparison(stacked_data['result'],
                                             stacked_data['neuronpart'])
-                print(MultiComp.allpairtest(scipy.stats.ranksums, method='Holm'))
+                print(MultiComp.allpairtest(scipy.stats.ranksums,
+                                            method=multicompmethod))
 
         else:
             print(
-                "not a valid selection for compareOn - must be \"genders\" or \"neuronparts\"")
+                "not a valid selection for compareOn - \
+                    must be \"genders\" or \"neuronparts\"")

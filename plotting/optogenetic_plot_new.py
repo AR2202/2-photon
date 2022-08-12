@@ -5,11 +5,7 @@ import matplotlib.patches as patches
 import os
 import math
 from mpl_toolkits.axes_grid1.anchored_artists import AnchoredSizeBar
-import matplotlib.patches as patches
-import re
 import numpy as np
-import seaborn as sb
-import itertools
 
 
 def optoPlot(pathname='',
@@ -26,7 +22,8 @@ def optoPlot(pathname='',
              barcols=['m', 'g'],
              ytickrange=np.arange(0, 250, step=50),
              figuresize=(6, 1.2)):
-    '''makes a plot of the calcium traces with stimulation times indicated and a bar graph of the mean deltaF/F'''
+    '''makes a plot of the calcium traces with stimulation times indicated and
+    a bar graph of the mean deltaF/F'''
     currentdir = os.getcwd()
     if pathname:
         # if pathname is given
@@ -52,7 +49,7 @@ def optoPlot(pathname='',
         pulsedurstring = str(pulsedur) + 's'
 
     filelists = []
-    # go through the list of neuronparts and geners and find the right file for each
+    # go through the list of neuronparts and geners and find the right file
     # append it to the filelist
     for n in neuronparts:
         for g in genders:
@@ -132,11 +129,23 @@ def optoPlot(pathname='',
                 zorder=3)
         # add the scalebar to the last plot of calcium traces
         if plotnumber == ncolumns * (nrows-1) + ncolumns - 1:
-            bar = AnchoredSizeBar(ax.transData, 10, '10 s', 'lower right',
-                                  borderpad=2, frameon=False, size_vertical=0.005, color='#545454')
+            bar = AnchoredSizeBar(ax.transData,
+                                  10,
+                                  '10 s',
+                                  'lower right',
+                                  borderpad=2,
+                                  frameon=False,
+                                  size_vertical=0.005,
+                                  color='#545454')
             ax.add_artist(bar)
-            bar_vert = AnchoredSizeBar(ax.transData, 0.2, '$\Delta$F/F', 'upper right',
-                                       borderpad=0.1, frameon=False, size_vertical=0.2, color='#545454')
+            bar_vert = AnchoredSizeBar(ax.transData,
+                                       0.2,
+                                       '$\Delta$F/F',
+                                       'upper right',
+                                       borderpad=0.1,
+                                       frameon=False,
+                                       size_vertical=0.2,
+                                       color='#545454')
             ax.add_artist(bar_vert)
         plotnumber += 1
         # if it is the last plot in the row
