@@ -3,11 +3,13 @@
 //for batch processing of all files in specified input directory
 //subtracts background fluorescence, and sets all values outside a user-specified ROI to 0
 // @ Annika Rings May 2017
-macro "extract_fluo_wholedir" {
+macro "extract_fluo_customROI" {
 inputdir=getDirectory("choose input directory");
 list = getFileList(inputdir);
 outputdir=getDirectory("choose output directory for ROI");
 excludedir=getDirectory("choose output directory for excluded experiments");
+roi1 = getString("enter name of first ROI","gamma4");
+roi2 = getString("enter name of second ROI", "gamma5");	
 
 for (j = 0; j < list.length; j++){
 for (j = 0; j < list.length; j++){
@@ -16,8 +18,8 @@ for (j = 0; j < list.length; j++){
     selectWindow(list[j]);
 	filename=getTitle;
 	filesize=nSlices;
-	roi_filename=replace(filename,".tif","ROI.csv");
-	
+	roi1_filename=replace(filename,".tif",roi1+".csv");
+	roi2_filename=replace(filename,".tif",roi2+".csv");
 	roiManager("reset");
 	run("Clear Results");
 	selectWindow(filename);
@@ -39,12 +41,15 @@ for (j = 0; j < list.length; j++){
 	run("Clear Results");
 	roiManager("Select", 0);
 	roiManager("Delete");
-	waitForUser("select ROI and press t");
-	
+	waitForUser("select "+roi1+" and press t");
+	waitForUser("select "+roi2+" and press t");
 	
 	selectWindow(title);
 	run("Select None");	
-    
+    run("Duplicate...", "title="+roi2+".tif duplicate");
+
+	
+	
 	
 	Dialog.create("exclude");
 		Dialog.addCheckbox("exclude", false);
@@ -53,14 +58,14 @@ for (j = 0; j < list.length; j++){
 	exclude = Dialog.getCheckbox();
   if (exclude) {
   	print ("excluded");
-  	extract_fluo(title, 0, excludedir, roi_filename);
+  	extract_fluo(title, 0, excludedir, roi1_filename);
   	
-  	
+  	extract_fluo(roi2+".tif", 1, excludedir, roi2_filename);
   }
   else {
-	extract_fluo(title, 0, outputdir, roi_filename);
+	extract_fluo(title, 0, outputdir, roi1_filename);
   	
-  	
+  	extract_fluo(roi2+".tif", 1, outputdir, roi2_filename);
   	
 	}
 	run("Close All");

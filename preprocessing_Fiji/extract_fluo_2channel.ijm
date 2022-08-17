@@ -11,6 +11,8 @@ excludedir=getDirectory("choose output directory for excluded experiments");
 stimdir=getDirectory("choose stimulus directory");
 roi1 = getString("enter name of first ROI","gamma4");
 roi2 = getString("enter name of second ROI", "gamma5");	
+run("Set Measurements...", "mean redirect=None decimal=9");
+
 
 for (j = 0; j < list.length; j++){
 for (j = 0; j < list.length; j++){
