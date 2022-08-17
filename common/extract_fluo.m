@@ -12,6 +12,7 @@ no_frame = numel(tiffInfo);
 fluo = zeros(1,no_frame);
 % create empty cell array to preallocate memory;
 if parallelize
+    try
 parfor iFrame = 1:no_frame
     %safe image date in the movie cell array
     Movie = double(imread(filename, ...%'Info', tiffInfo,...
@@ -21,7 +22,14 @@ parfor iFrame = 1:no_frame
     fclose('all');
     %requires MATLAB 2018b or later!!!
 end
-else
+    catch ME
+        errorMessage = ME.message;
+        disp(errorMessage);
+        parallelize = false;
+        
+    end
+end
+if ~parallelize
     for iFrame = 1:no_frame
     %safe image date in the movie cell array
     Movie = double(imread(filename, ...%'Info', tiffInfo,...
