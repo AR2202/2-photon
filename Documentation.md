@@ -8,7 +8,8 @@ This is a collection of MATLAB scripts for calcium imaging data analysis.
 
 ### Requirements
 
-* MATLAB R2016a or later. MATLAB R2017a or later recommended.
+* MATLAB R2018b or later
+* Matlab parallel computing toolbox required for some options
 * All of the scripts in this package need to be in the MATLAB path
 * Boundedline package available from:
 
@@ -20,9 +21,10 @@ https://imagej.net/plugins/image-stabilizer
 ### Usage
 
 1. [Image stabilization, background subtraction and ROI selection](#preprocessing)
-2. [Analysing functional connectivity calcium imaging experiments](#functionalconn)
-3. [Analysing touch experiments](#touch)
-4. [Analysing odour experiments](#odour)
+2. [Background subtraction and ROI selection without stabilization](#preprocessing2)
+3. [Analysing functional connectivity calcium imaging experiments](#functionalconn)
+4. [Analysing touch experiments](#touch)
+5. [Analysing odour experiments](#odour)
 
 <a name="preprocessing"></a>
 
@@ -34,13 +36,36 @@ https://imagej.net/plugins/image-stabilizer
 * image_stabilize_wholedir_deinterleave.ijm for 2 channel experiment
 * image_stabilize_wholedir_deinterleave3channel.ijm for 3 channel experiment
 
+
 2. Run the background subtraction and ROI selection script:
 
 * Run bckg-sub_makeROI_wholedir_with_exclude.ijm for single ROI per file
 * Run bckg-sub_multiROI_wholedir_with_exclud.ijm for multiple ROIs per file
 * Run bckg-sub_customROI_wholedir_with_exclude.ijm for multiple (currently 2) ROIs with custom names
+* Run extract_fluo_wholedir.ijm for a single ROI if csv file of mean fluorescence within ROI should be produced instead of saving an image of the ROI.
+* Run extract_fluo_customROI.ijm for multiple (currently 2) ROIs with custom names. Produces csv file of mean fluorescence within ROI.
 
-When running these scripts, you will be prompted to select input and output folders for the data. Those can be any folders anywhere, however, it is reccomended to adhere to the conventions outlined below to facilitate further analysis.
+
+When running these scripts, you will be prompted to select input and output folders for the data as well as an output folder for the simulus file and a folder for excluded experiments. Those can be any folders anywhere, however, it is reccomended to adhere to the conventions outlined below to facilitate further analysis.
+
+You will be prompted to select the background of your image and the ROI. Use the mouse and free hand selection tool.
+It is important to select the ROI in the maximum projection image and not the image stack.
+
+<a name="preprocessing2"></a>
+
+#### Background subtraction and ROI selection without image stabilization
+
+This method does not require the imageStabilizer to be installed.
+
+This method can be used to replace step 1 and 2 above and requires only 1 step.
+
+* Run extract_fluo_wholedir.ijm for a single ROI if csv file of mean fluorescence within ROI should be produced instead of saving an image of the ROI.
+* Run extract_fluo_customROI.ijm for multiple (currently 2) ROIs with custom names. Produces csv file of mean fluorescence within ROI.
+
+When running these scripts, you will be prompted to select input and output folders for the data as well as an output folder for the simulus file and a folder for excluded experiments. Those can be any folders anywhere, however, it is reccomended to adhere to the conventions outlined below to facilitate further analysis.
+
+You will be prompted to select the background of your image and the ROI. Use the mouse and free hand selection tool.
+It is important to select the ROI in the maximum projection image and not the image stack.
 
 [Back to top](#top)
 
@@ -100,6 +125,14 @@ Navigate to the folder that contains your imaging folder. The script expects the
 
     'subfoldername': name of the imaging subfolder (a subdirectory of 'foldername' or of each of its subdirectories), default: 'ROI'
 
+    'pulseframe': first frame of stimulus, in the output, i.e. how many frames prior to stimulus should be included, default: 61
+
+    'use_fluo': whether pre-extracted (e.g. in imageJ) fluorescence should be read from csv file, default: false
+
+    'stabilized': whether image stabilization was used, default: true
+
+    'parallelize': whether analysis should be parallelized. Option requires parallel computing toolbox. default: true
+
     The script will output several .mat files containing the data per experiment type as well as .eps files. It will output a warning if a recording doesn't have a corresponding stimulus file and will ommit the corresponding experiments. For several inhibitors, it will analyse any experiments containing one or all of them and output the results in separate files.
 
 [Back to top](#top)
@@ -135,7 +168,7 @@ Navigate to the folder that contains your imaging folder. The script expects the
 
     'baseline': currently unused; numeric (in frames), default: 6
 
-    'after_pulse': number of frames after the end of the pulse to be used for AUC calculation; numeric (in frames), default: 6
+    'after_pulse': number of frames after the end of the pulse to be used for AUC calculation; numeric (in frames), default: 11
 
     'genders': cell array, default: {'_female';'_male'}
 
@@ -162,6 +195,18 @@ Navigate to the folder that contains your imaging folder. The script expects the
     'protocolname': name of the protocol which is present in the filename of the recording, default: '_4pulse_5s'
 
     'subfoldername': name of the imaging subfolder (a subdirectory of 'foldername' or of each of its subdirectories), default: 'ROI'
+
+    'use_fluo': whether pre-extracted (e.g. in imageJ) fluorescence should be read from csv file, default: false
+
+    'stabilized': whether image stabilization was used, default: true
+    
+    'parallelize': whether analysis should be parallelized. Option requires parallel computing toolbox. default: true
+
+    'firstpulse': whether only first pulse should be analysed in a multi-stimulus file, default: false
+
+    'pulseframe': first frame of stimulus, in the output, i.e. how many frames prior to stimulus should be included, default: 81
+
+    'eventdur': total length of an event, default: 180
 
     The script will output several .mat files containing the data per experiment type as well as .eps files. It will output a warning if a recording doesn't have a corresponding stimulus file and will ommit the corresponding experiments. For several inhibitors, it will analyse any experiments containing one or all of them and output the results in separate files.
 
