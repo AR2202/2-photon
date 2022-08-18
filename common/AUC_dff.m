@@ -10,7 +10,7 @@ start_event = pulseframe;
 end_event = pulseframe + pulsedur + after;
 
 
-f = dff(start_event:end_event) ;
+f = dff(start_event:end_event);
 
 
 auc = trapz(x, f);
