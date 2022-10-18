@@ -1,15 +1,11 @@
 
-//macro for 2-P image analysis
-//for batch processing of all files in specified input directory
-//subtracts background fluorescence, and sets all values outside a user-specified ROI to 0
-// @ Annika Rings May 2017
 macro "extract_fluo_wholedir" {
 inputdir=getDirectory("choose input directory");
 list = getFileList(inputdir);
 outputdir=getDirectory("choose output directory for ROI");
 excludedir=getDirectory("choose output directory for excluded experiments");
 
-for (j = 0; j < list.length; j++){
+
 for (j = 0; j < list.length; j++){
 	
 	open(inputdir+list[j]);
@@ -64,9 +60,10 @@ for (j = 0; j < list.length; j++){
   	
 	}
 	run("Close All");
-}
-}
+
+
 roiManager("reset");
+}
 }
 function extract_fluo(windowname, roinumber, dir, outputname) {
 	run("Set Measurements...", "mean redirect=None decimal=9");

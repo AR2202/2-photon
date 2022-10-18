@@ -1,8 +1,4 @@
 
-//macro for 2-P image analysis
-//for batch processing of all files in specified input directory
-//subtracts background fluorescence, and sets all values outside a user-specified ROI to 0
-// @ Annika Rings May 2017
 macro "extract_fluo_2channel" {
 inputdir=getDirectory("choose input directory");
 list = getFileList(inputdir);
@@ -14,7 +10,7 @@ roi2 = getString("enter name of second ROI", "gamma5");
 run("Set Measurements...", "mean redirect=None decimal=9");
 
 
-for (j = 0; j < list.length; j++){
+
 for (j = 0; j < list.length; j++){
 	
 	open(inputdir+list[j]);
@@ -80,7 +76,7 @@ for (j = 0; j < list.length; j++){
   	
 	}
 	
-}
+
 
 extract_fluo(filename_stim, 2, stimdir, stimfilename);
 
