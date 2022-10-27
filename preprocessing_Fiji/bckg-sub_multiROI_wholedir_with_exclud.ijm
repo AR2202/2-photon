@@ -8,7 +8,7 @@ inputdir=getDirectory("choose input directory");
 list = getFileList(inputdir);
 outputdir2=getDirectory("choose output directory for ROI");
 excludedir=getDirectory("choose output directory for excluded experiments");
-for (j = 0; j < list.length; j++){
+
 for (j = 0; j < list.length; j++){
 	
 	open(inputdir+list[j]);
