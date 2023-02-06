@@ -5,6 +5,9 @@ switch nargin
         parallelize = false;
 end
 filename = tiffile;
+if endsWith(filename, ".csv")
+    fluo = load_fluo(filename);
+else
 tiffInfo = imfinfo(filename);
 
 % Get the number of images in the file (numel is number elements in array)
@@ -28,8 +31,8 @@ end
         parallelize = false;
         
     end
-end
-if ~parallelize
+
+else
     for iFrame = 1:no_frame
     %safe image date in the movie cell array
     Movie = double(imread(filename, ...%'Info', tiffInfo,...
@@ -39,4 +42,5 @@ if ~parallelize
     fclose('all');
     %requires MATLAB 2018b or later!!!
     end
+end
 end
