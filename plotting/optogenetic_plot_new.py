@@ -17,13 +17,14 @@ def optoPlot(pathname='',
              identifiers=[".mat", "10ms", "40Hz"],
              exclude=[],
              ylim=[-0.2, 0.3],
-             barylim=[0, 30],
+             barylim=[0, 100],
              allonerow=False,
              barcols=['m', 'g'],
-             ytickrange=np.arange(0, 250, step=50),
-             figuresize=(6, 1.2)):
+             ytickrange=np.arange(-50, 150, step=50),
+             figuresize=(10, 2)):
     '''makes a plot of the calcium traces with stimulation times indicated and
     a bar graph of the mean deltaF/F'''
+    print('plotting with optogenetic_plot_new')
     currentdir = os.getcwd()
     if pathname:
         # if pathname is given
@@ -151,30 +152,44 @@ def optoPlot(pathname='',
         # if it is the last plot in the row
         # make the bar plot
         if plotnumber % ncolumns == 0:
-            ax = plot.add_subplot(nrows, ncolumns, plotnumber)
-            ax.set_xticks([])
-            ax.set_yticks(ytickrange)
+            ax2 = plot.add_subplot(nrows, ncolumns, plotnumber)
 
-            ax.tick_params(axis='y',
-                           length=1,
-                           color='#545454',
-                           width=0.3,
-                           labelsize=6,
-                           pad=0.2,
-                           labelcolor='#545454')
             for axis in ["bottom", "top", "right"]:
-                ax.spines[axis].set_visible(False)
-                ax.set_ylim(barylim)
-            ax.bar(labels,
-                   [pulsedffs[expnumber-i][0]
-                       for i in reversed(range(1, ncolumns))],
-                   yerr=[pulsedffs[expnumber-i][1]
-                         for i in reversed(range(1, ncolumns))],
-                   width=(figuresize[0]/40),
-                   linewidth=0,
-                   ecolor='#545454',
-                   error_kw={"elinewidth": 0.5},
-                   color=barcols)
+                ax2.spines[axis].set_visible(False)
+                ax2.set_ylim(barylim)
+            ax2.bar(labels,
+                    [pulsedffs[expnumber-i][0]
+                     for i in reversed(range(1, ncolumns))],
+                    yerr=[pulsedffs[expnumber-i][1]
+                          for i in reversed(range(1, ncolumns))],
+                    width=(figuresize[0]/40),
+                    linewidth=0,
+                    ecolor='#545454',
+                    error_kw={"elinewidth": 0.5},
+                    color=barcols)
+            if plotnumber == (nrows*ncolumns):
+                ax2.set_xticks(labels)
+            else:
+                ax2.set_xticks([])
+
+            ax2.set_yticks(ytickrange)
+            ax2.set_ylabel('AUC')
+
+            ax2.tick_params(axis='y',
+                            length=1,
+                            color='#545454',
+                            width=0.3,
+                            labelsize=6,
+                            pad=0.2,
+                            labelcolor='#545454')
+            ax2.tick_params(axis='x',
+                            length=1,
+                            color='#545454',
+                            width=0.3,
+                            labelsize=6,
+                            pad=0.2,
+                            labelcolor='#545454',
+                            labelrotation=45.0)
 
             plotnumber += 1
         expnumber += 1
